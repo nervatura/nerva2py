@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource>
+  <object class="wxMenuBar" name="fMain_menu">
+    <object class="wxMenu" name="main_base">
+      <label>main_base</label>
+      <object class="wxMenu" name="_main_base_customer">
+        <label>_main_base_customer</label>
+      </object>
+    </object>
+    <object class="wxMenu" name="main_program">
+      <label>main_program</label>
+      <object class="wxMenuItem" name="main_program_help">
+        <label>main_program_help</label>
+        <bitmap>assets/icon16_help.png</bitmap>
+      </object>
+      <object class="wxMenuItem" name="main_program_about">
+        <label>main_program_about</label>
+        <bitmap>assets/icon16_ntura.png</bitmap>
+      </object>
+      <object class="separator"/>
+      <object class="wxMenuItem" name="main_exit">
+        <label>main_exit</label>
+        <bitmap>assets/icon16_door.png</bitmap>
+      </object>
+    </object>
+  </object>
+  <object class="wxMenu" name="main_base_customer">
+    <label>main_base_customer</label>
+    <object class="wxMenuItem" name="main_base_customer_new">
+      <label>main_base_customer_new</label>
+      <bitmap>assets/icon16_customer.png</bitmap>
+    </object>
+    <object class="wxMenuItem" name="main_base_customer_browser">
+      <label>main_base_customer_browser</label>
+      <bitmap>assets/icon16_browser.png</bitmap>
+    </object>
+  </object>
+</resource>

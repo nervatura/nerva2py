@@ -1,0 +1,679 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Nervatura Programming Interface</title>
+<link rel="shortcut icon" href="{{=URL('static','favicon.ico')}}">
+<style type="text/css">
+.body {
+  background-color: #ffffff;
+  padding: 20pt 42.5pt 42.5pt 42.5pt;
+  font-family: sans-serif;
+  color: #444444;
+}
+a {
+    text-decoration: none;
+    color: #3B7687;
+}
+th,td {
+  padding: 5px;
+}
+.fhead {
+  background-color: #E5E5E5;
+  font-weight: bold;
+  color: #8B2500;
+}
+.fdesc {
+  font-style: italic;
+}
+.fname {
+  color: red;
+  background-color: #FFE7BA;
+}
+.ftype {
+  color: #000000;
+  font-weight: normal;
+}
+.defvalue {
+  color: #0F0F0F;
+  font-weight: normal;
+  font-style: italic;
+}
+.retpar {
+  font-weight: bold;
+  color: #8B2500;
+}
+.exblock {
+  background-color: #F5F5F5;
+  padding: 5px;
+}
+</style>
+</head>
+<body class="body">
+  <h1 align="center">
+    Nervatura Programming Interface 
+  </h1>
+  <p align="center"><b><i><a href="http://www.pyamf.org/architecture/typemap.html"
+          target="_blank">AMF</a> encoded version<br> Ver.No: {{=response.verNo}}</i></b></p>
+  
+  <p>
+    <b>Function Overview</b>
+  </p>
+  
+  <table
+    style="border-width: 1px; border-style: solid; border-collapse: collapse;"
+    border="1" cellpadding="2" cellspacing="0" width="100%">
+    <tbody>
+      <tr bgcolor="#E5E5E5">
+        <th>Name</th>
+        <th>Return type</th>
+        <th width="100%">Parameters</th>
+      </tr>
+      <tr>
+        <td><a href="#getLogin_amf">getLogin_amf</a></td>
+        <td>Object / dict</td>
+        <td>database, username, password, validdata</td>
+      </tr>
+      <tr>
+        <td><a href="#callFunction_amf">callFunction_amf</a></td>
+        <td>Any type</td>
+        <td>login, functionName, paramList</td>
+      </tr>
+      <tr>
+        <td><a href="#executeSql_amf">executeSql_amf</a></td>
+        <td>Boolean / bool</td>
+        <td>login, sqlKey, sqlStr, paramList</td>
+      </tr>
+      <tr>
+        <td><a href="#loadView_amf">loadView_amf</a></td>
+        <td>Array</td>
+        <td>login, sqlKey, sqlStr, whereStr, havingStr, paramList, simpleList, orderStr</td>
+      </tr>
+      <tr>
+        <td><a href="#loadTable_amf">loadTable_amf</a></td>
+        <td>Array</td>
+        <td>login, classAlias, filterStr, orderStr</td>
+      </tr>
+      <tr>
+        <td><a href="#loadDataSet_amf">loadDataSet_amf</a></td>
+        <td>Array</td>
+        <td>login, dataSetInfo</td>
+      </tr>
+      <tr>
+        <td><a href="#saveRecord_amf">saveRecord_amf</a></td>
+        <td>Typed Object / class instance</td>
+        <td>login, record, validate</td>
+      </tr>
+      <tr>
+        <td><a href="#saveRecordSet_amf">saveRecordSet_amf</a></td>
+        <td>Array</td>
+        <td>login, recordSet, validate</td>
+      </tr>
+      <tr>
+        <td><a href="#deleteRecord_amf">deleteRecord_amf</a></td>
+        <td>Boolean / bool</td>
+        <td>login, record</td>
+      </tr>
+      <tr>
+        <td><a href="#deleteRecordSet_amf">deleteRecordSet_amf</a></td>
+        <td>Boolean / bool</td>
+        <td>login, recordSet</td>
+      </tr>
+      <tr>
+        <td><a href="#saveDataSet_amf">saveDataSet_amf</a></td>
+        <td>Array</td>
+        <td>login, dataSet, validate</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <p class="exblock">
+    <b>More Examples: </b><a href={{=URL( 'ndr', 'getResource')+'?file_name=download/nwx&content=application/zip&file_type=zip'}} 
+    target="_blank"><b><i>Nervatura wxPython Client</i></b></a> and <a href={{=URL( 'ndr', 'getResource')+'?file_name=download/terminal_demo&content=application/zip&file_type=zip'}} 
+    target="_blank"><b><i>Nervatura Terminal Client</i></b></a>
+  </p>
+  
+  <p>
+    <b>Function Details</b>
+  </p>
+
+	<table
+		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
+		border="1" cellpadding="2" cellspacing="0" width="100%">
+		<tbody>
+			<tr class="fhead">
+				<td><a name="getLogin_amf" class="fname">getLogin_amf</a>(database<span
+					class="ftype">::String</span>, username<span class="ftype">::String</span>,
+					password<span class="ftype">::String</span>, validdata<span
+					class="ftype">::Boolean</span><span class="defvalue">=False</span>)<span
+					class="ftype">::Object</span></td>
+			</tr>
+			<tr>
+				<td>
+					<p class="fdesc">Login rights control. Successful login
+						additional information is available.<br>
+						<span class="retpar">database</span>: <span class="fdesc">
+              an <b>NAS</b> alias set for a database</span><br>
+            <span class="retpar">username, password</span>: <span class="fdesc">
+              valid username and password for the database</span>
+				  </p>
+					<p>
+					  The result value is a <a href="#validator">validator</a> object.
+					</p>
+					<p class="exblock"><b><u><i>Examples:</i></u></b><br><br>
+					  <b><i>ActionScript and 
+					    <a href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/mx/rpc/remoting/mxml/RemoteObject.html">
+					      RemoteObject</a>:</i></b><br>
+					  var channel:AMFChannel = new AMFChannel("amf-channel", "http://127.0.0.1:8000/nerva2py/npi/call/amfrpc3");<br>
+            var channels:ChannelSet = new ChannelSet(); channels.addChannel(channel);<br>
+            var ro:RemoteObject = new RemoteObject("amfrpc3");<br>
+            ro.destination="default"; ro.concurrency = "multiple"; ro.showBusyCursor = true; ro.channelSet = channels;<br>
+            <br>
+            var op:AbstractOperation = ro.getOperation('getLogin_amf');<br>
+            op.addEventListener(ResultEvent.RESULT, getLogin_amf); op.addEventListener(FaultEvent.FAULT, connectFault);<br>
+            op.send("localdemo", "admin", null, true);<br>
+            <br>
+            private function getLogin_amf(event:Event):void {if (ResultEvent(event).result["valid"]== true) {}}<br>
+            private function connectFault(event:FaultEvent):void {}<br>
+					  
+					  <br>
+					  <b><i>Python and <a href="http://www.pyamf.org/index.html">PyAMF</a>:</i></b><br>
+					  service = RemotingService("http://127.0.0.1:8000/nerva2py/npi/call/amfrpc3").getService("default")<br>
+            login = service.getLogin_amf("localdemo", "admin", None, True)<br>
+            if login["valid"]==True:<br>
+            &nbsp;&nbsp;pass<br>
+					  <br>
+					  
+					  <b><i>Microsoft .NET and <a href="http://www.fluorinefx.com/">FluorineFx</a>:</i></b><br>
+					  (...)
+					</p>
+					
+				</td>
+				
+			<tr class="fhead">
+        <td><a name="callFunction_amf" class="fname">callFunction_amf</a>(<a href="#login">login</a><span
+          class="ftype">::Object</span>, functionName<span class="ftype">::String</span>,
+          paramList<span class="ftype">::Any type</span>)<span
+          class="ftype">::Any type</span></td>
+      </tr>
+      <tr>
+				<td>
+					<p class="fdesc">It calls for the <span class="retpar">functionName</span> server-side function. The
+						<span class="retpar">paramList</span> parameters are passed.
+					</p>
+					<p>The result for the called function result.</p>
+					
+					<p class="exblock"><b><u><i>Examples:</i></u></b><br><br>
+            <b><i>ActionScript and 
+              <a href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/mx/rpc/remoting/mxml/RemoteObject.html">
+                RemoteObject</a>:</i></b><br>
+            ro = (...)<br>
+            var op:AbstractOperation = ro.getOperation('callFunction_amf');<br>
+            op.addEventListener(ResultEvent.RESULT, getCustnumber); op.addEventListener(FaultEvent.FAULT, connectFault);<br>
+            op.send({database: "localdemo", username: "admin", password: null}, "nextNumber", {id:"custnumber", step:true});<br>
+            <br>
+            <b><i>Python and <a href="http://www.pyamf.org/index.html">PyAMF</a>:</i></b><br>
+            service = RemotingService("http://127.0.0.1:8000/nerva2py/npi/call/amfrpc3").getService("default")<br>
+            result = service.callFunction_amf({"database": "localdemo", "username": "admin", "password": None}, 
+              "nextNumber", {"id":"customer_number", "step":False})<br>
+          </p>   
+				</td>
+			</tr>
+			
+			<tr class="fhead">
+        <td><a name="executeSql_amf" class="fname">executeSql_amf</a>(<a href="#login">login</a><span
+          class="ftype">::Object</span>, sqlKey<span class="ftype">::String</span>, sqlStr<span class="ftype">::String</span>,
+          paramList<span class="ftype">::Array</span>)<span
+          class="ftype">::Boolean</span></td>
+      </tr>
+      <tr>
+        <td>
+          <p class="fdesc">Execute the <span class="retpar">sqlStr</span> statement on the database. If <span class="retpar">sqlKey</span> 
+            value is not null, the statement is replaced with stored in the <b>NAS</b> <span class="retpar">login.appl</span> table.<br>
+            <span class="retpar">paramList</span>: <span class="fdesc">
+              the list of <a href="#param">param</a> objects</span>
+          </p>
+          <p>True if the SQL statement runs successfully.</p>
+          
+          <p class="exblock"><b><u><i>Examples:</i></u></b><br><br>
+            <i>Close all customer order between 2011.01.01 and 2011.02.01, in EUR:</i><br>
+            sqlStr = "update trans set closed=1<br>
+            &nbsp;&nbsp;where deleted=0 and transtype =(select id from groups where groupvalue='order')<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;and direction =(select id from groups where groupvalue='out')<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;and curr=@curr and transdate>=@from_date and transdate<@to_date"<br><br>
+  
+            <b><i>ActionScript and 
+              <a href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/mx/rpc/remoting/mxml/RemoteObject.html">
+                RemoteObject</a>:</i></b><br>
+            ro = (...)<br>
+            var paramList:ArrayCollection = new ArrayCollection;<br>
+            paramList.addItem({name:"@curr", value:"EUR", wheretype:"in", type:"string"});<br>
+            paramList.addItem({name:"@from_date", value:"2011-01-01", wheretype:"in", type:"date"});<br>
+            paramList.addItem({name:"@to_date", value:"2011-02-01", wheretype:"in", type:"date"});<br><br>
+            
+            var op:AbstractOperation = ro.getOperation('executeSql_amf');<br>
+            op.addEventListener(ResultEvent.RESULT, closedResult); op.addEventListener(FaultEvent.FAULT, connectFault);<br>
+            op.send({database: "localdemo", username: "admin", password: null}, null, sqlStr, paramList);<br>
+            <br>
+            <b><i>Python and <a href="http://www.pyamf.org/index.html">PyAMF</a>:</i></b><br>
+            service = RemotingService("http://127.0.0.1:8000/nerva2py/npi/call/amfrpc3").getService("default")<br>
+            paramList = []<br>
+            paramList.append({"name":"@curr", "value":"EUR", "wheretype":"in", "type":"string"})<br>
+            paramList.append({"name":"@from_date", "value":"2011-01-01", "wheretype":"in", "type":"date"})<br>
+            paramList.append({"name":"@to_date", "value":"2011-02-01", "wheretype":"in", "type":"date"})<br><br>
+            
+            result = service.executeSql_amf({"database": "localdemo", "username": "admin", "password": None}, 
+              null, sqlStr, paramList)<br>
+          </p>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="loadView_amf" class="fname">loadView_amf</a>(<a href="#login">login</a><span
+          class="ftype">::Object</span>, sqlKey<span class="ftype">::String</span>, sqlStr<span class="ftype">::String</span>,
+          whereStr<span class="ftype">::String</span>, havingStr<span class="ftype">::String</span>, 
+          paramList<span class="ftype">::Array</span>, 
+          simpleList<span class="ftype">::Boolean</span><span class="defvalue">=False</span>,
+          orderStr<span class="ftype">::String</span><span class="defvalue">=""</span>)<span
+          class="ftype">::Array</span></td>
+      </tr>
+      <tr>
+        <td>
+          <p class="fdesc">Loads the <span class="retpar">sqlStr</span> query from the database. If <span class="retpar">sqlKey</span> 
+            value is not null, the query is replaced with stored in the <b>NAS</b> <span class="retpar">login.appl</span> table.<br>
+            <span class="retpar">whereStr</span>: <span class="fdesc">
+              the valid sql where filter string</span><br>
+            <span class="retpar">havingStr</span>: <span class="fdesc">
+              the valid sql having filter string</span><br>
+            <span class="retpar">paramList</span>: <span class="fdesc">
+              the list of <a href="#param">param</a> objects</span><br>
+            <span class="retpar">simpleList</span>: <span class="fdesc">
+              Optional. If set to False, the results will be converted to a sequence of dictionaries keyed with the table field names.
+              Default value: False.</span><br>
+            <span class="retpar">orderStr</span>: <span class="fdesc">
+              Optional. The valid sql orderby string. Default value: ""</span>
+          </p>
+          <p>The result for the execute query result.</p>
+          
+          <p class="exblock"><b><u><i>Examples:</i></u></b><br><br>
+            <i>All customer invoices from 2011.01.01, between 0 and 1 000 000, in EUR, order by duedate:</i><br>
+            sqlStr = "select t.transnumber, t.transdate <br>
+            &nbsp;&nbsp;from trans t <br>
+            &nbsp;&nbsp;inner join groups tt on t.transtype=tt.id and tt.groupvalue='invoice'<br>
+            &nbsp;&nbsp;inner join groups dt on t.direction=dt.id and dt.groupvalue='out'<br>
+            &nbsp;&nbsp;where t.deleted=0 @where_str <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;and t.id in(select trans_id from item where deleted=0 group by trans_id having @having_str)<br>
+            &nbsp;&nbsp;order by @orderby_str"<br><br>
+            whereStr="t.curr=@curr and t.transdate>@from_date"<br>
+            havingStr="sum(amount)>=@from_amount and sum(amount)<=@to_amount"<br>
+            orderStr="duedate"<br><br>
+            
+            <b><i>ActionScript and 
+              <a href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/mx/rpc/remoting/mxml/RemoteObject.html">
+                RemoteObject</a>:</i></b><br>
+            ro = (...)<br>
+            var paramList:ArrayCollection = new ArrayCollection;<br>
+            paramList.addItem({name:"@curr", value:"EUR", wheretype:"where", type:"string"});<br>
+            paramList.addItem({name:"@from_date", value:"2011-01-01", wheretype:"where", type:"date"});<br>
+            paramList.addItem({name:"@from_amount", value:0, wheretype:"having", type:"number"});<br>
+            paramList.addItem({name:"@to_amount", value:1000000, wheretype:"having", type:"number"});<br><br>
+            
+            var op:AbstractOperation = ro.getOperation('loadView_amf');<br>
+            op.addEventListener(ResultEvent.RESULT, loadResult); op.addEventListener(FaultEvent.FAULT, connectFault);<br>
+            op.send({database: "localdemo", username: "admin", password: null}, 
+              null, sqlStr, whereStr, havingStr, paramList, False, orderStr);<br>
+            <br>
+            <b><i>Python and <a href="http://www.pyamf.org/index.html">PyAMF</a>:</i></b><br>
+            service = RemotingService("http://127.0.0.1:8000/nerva2py/npi/call/amfrpc3").getService("default")<br>
+            paramList = []<br>
+            paramList.append({"name":"@curr", "value":"EUR", "wheretype":"where", "type":"string"})<br>
+            paramList.append({"name":"@from_date", "value":"2011-01-01", "wheretype":"where", "type":"date"})<br>
+            paramList.append({"name":"@from_amount", "value":0, "wheretype":"having", "type":"number"})<br>
+            paramList.append({"name":"@to_amount", "value":1000000, "wheretype":"having", "type":"number"})<br><br>
+            
+            result = service.loadView_amf({"database": "localdemo", "username": "admin", "password": None}, 
+              null, sqlStr, whereStr, havingStr, paramList, False, orderStr)<br>
+          </p>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="loadTable_amf" class="fname">loadTable_amf</a>(<a href="#login">login</a><span
+          class="ftype">::Object</span>, classAlias<span class="ftype">::String</span>, filterStr<span class="ftype">::String</span>,
+          orderStr<span class="ftype">::String</span>)<span
+          class="ftype">::Array</span></td>
+      </tr>
+      <tr>
+        <td>
+          <p class="fdesc">Loads data from a database table.<br>
+            <span class="retpar">classAlias</span>: <span class="fdesc">
+              a registered class name</span><br>
+            <span class="retpar">filterStr</span>: <span class="fdesc">
+              the valid sql having where string</span><br>
+            <span class="retpar">orderStr</span>: <span class="fdesc">
+              Optional. The valid sql orderby string. Default value: ""</span>
+          </p>
+          <p>The result a Typed Object (class instance).</p>
+          
+          <p class="exblock"><b><u><i>Examples:</i></u></b><br><br>
+            <b><i>ActionScript and 
+              <a href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/mx/rpc/remoting/mxml/RemoteObject.html">
+                RemoteObject</a>:</i></b><br>
+            ro = (...)<br>
+            var op:AbstractOperation = ro.getOperation('loadTable_amf');<br>
+            op.addEventListener(ResultEvent.RESULT, getCustomer); op.addEventListener(FaultEvent.FAULT, connectFault);<br>
+            op.send({database: "localdemo", username: "admin", password: null}, "models.customer", "id=1", null);<br>
+            <br>
+            <b><i>Python and <a href="http://www.pyamf.org/index.html">PyAMF</a>:</i></b><br>
+            service = RemotingService("http://127.0.0.1:8000/nerva2py/npi/call/amfrpc3").getService("default")<br>
+            result = service.loadTable_amf({"database": "localdemo", "username": "admin", "password": None}, 
+              "models.customer", "id=1", None)<br>
+          </p>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="loadDataSet_amf" class="fname">loadDataSet_amf</a>(<a href="#login">login</a><span
+          class="ftype">::Object</span>, dataSetInfo<span class="ftype">::Array</span>)<span
+          class="ftype">::Array</span></td>
+      </tr>
+      <tr>
+        <td>
+          <p class="fdesc">In a group, any number can be sent loadTable_amf, loadView_amf, executeSql_amf and callFunction_amf requests.<br>
+            <span class="retpar">dataSetInfo</span>: <span class="fdesc">
+              the list of <a href="#recordSetInfo">recordSetInfo</a> objects</span>
+          </p>
+          <p>The result value a list of <a href="#infoSet">infoSet</a> objects.</p>
+          
+          <p class="exblock"><b><u><i>Examples:</i></u></b><br><br>
+            <b><i>ActionScript and 
+              <a href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/mx/rpc/remoting/mxml/RemoteObject.html">
+                RemoteObject</a>:</i></b><br>
+            ro = (...)<br>
+            var dataSetInfo:ArrayCollection = new ArrayCollection;<br>
+            var paramList:ArrayCollection;<br><br>
+            
+            dataSetInfo.list.addItem({infoName:"groups", infoType:"table", classAlias:"models.groups",<br>
+            &nbsp;&nbsp;filterStr:"deleted=0 and groupname in ('customer', 'nervatype', 'fieldtype', 'logstate', 'custtype')",<br>
+            &nbsp;&nbsp;orderStr:"groupname, groupvalue" });<br>
+            dataSetInfo.list.addItem({infoName:"deffield", infoType:"table", classAlias:"models.deffield",<br>
+            &nbsp;&nbsp;filterStr:"deleted=0 and nervatype = (select id from groups where groupname = 'nervatype' and groupvalue = 'customer')",<br> 
+            &nbsp;&nbsp;orderStr:"description" });<br>
+            paramList = new ArrayCollection;<br>
+            paramList.addItem({name:"@customer_id", value:1, wheretype:"in", type:"integer"});<br>
+            dataSetInfo.list.addItem({infoName:"calendar_view", infoType:"view", sqlKey:"fCustomer_getCalendarView",<br>
+            &nbsp;&nbsp;sqlStr:null, whereStr:"", havingStr:"", paramList:paramList});<br>
+            dataSetInfo.list.addItem({infoName:"custnumber", infoType:"function", functionName:"nextNumber",<br>
+            &nbsp;&nbsp;paramList:{id:"custnumber", step:false}});<br>
+              
+            <br>
+            var op:AbstractOperation = ro.getOperation('loadDataSet_amf');<br>
+            op.addEventListener(ResultEvent.RESULT, getDataSet); op.addEventListener(FaultEvent.FAULT, connectFault);<br>
+            op.send({database: "localdemo", username: "admin", password: null}, dataSetInfo);<br>
+            <br>
+            <b><i>Python and <a href="http://www.pyamf.org/index.html">PyAMF</a>:</i></b><br>
+            service = RemotingService("http://127.0.0.1:8000/nerva2py/npi/call/amfrpc3").getService("default")<br>
+            dataSetInfo = []<br><br>
+            
+            dataSetInfo.append({"infoName":"groups", "infoType":"table", "classAlias":"models.groups",<br>
+            &nbsp;&nbsp;"filterStr":"deleted=0 and groupname in ('customer', 'nervatype', 'fieldtype', 'logstate', 'custtype')",<br>
+            &nbsp;&nbsp;"orderStr":"groupname, groupvalue" })<br>
+            dataSetInfo.append({"infoName":"deffield", "infoType":"table", "classAlias":"models.deffield",<br>
+            &nbsp;&nbsp;"filterStr":"deleted=0 and nervatype = (select id from groups where groupname = 'nervatype' and groupvalue = 'customer')",<br> 
+            &nbsp;&nbsp;"orderStr":"description" })<br>
+            paramList = []<br>
+            paramList.append({"name":"@customer_id", "value":1, "wheretype":"in", "type":"integer"})<br>
+            dataSetInfo.append({"infoName":"calendar_view", "infoType":"view", "sqlKey":"fCustomer_getCalendarView",<br>
+            &nbsp;&nbsp;"sqlStr":null, "whereStr":"", "havingStr":"", "paramList":paramList})<br>
+            dataSetInfo.append({"infoName":"custnumber", "infoType":"function", "functionName":"nextNumber",<br>
+            &nbsp;&nbsp;"paramList":{id:"custnumber", step:false}})<br>
+            <br>
+            result = service.loadDataSet_amf({"database": "localdemo", "username": "admin", "password": None}, dataSetInfo)<br>
+          </p>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="saveRecord_amf" class="fname">saveRecord_amf</a>(<a href="#login">login</a>
+          <span class="ftype">::Object</span>, record<span class="ftype">::Typed Object</span>,
+          validate<span class="ftype">::Boolean</span><span class="defvalue">=False</span>)<span
+          class="ftype">::Typed Object</span></td>
+      </tr>
+      <tr>
+        <td>
+          <p class="fdesc">Insert or update a data row. A new <span class="retpar">record</span>, set the returned <b>id</b>.<br>
+          <span class="retpar">validate:</span> if True, it calls the DAL validators for the fields before performing the update or insert
+          </p>
+          <p>The result value of the input <span class="retpar">record</span> object.</p>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="saveRecordSet_amf" class="fname">saveRecordSet_amf</a>(<a href="#login">login</a>
+          <span class="ftype">::Object</span>, recordSet<span class="ftype">::Array</span>,
+          validate<span class="ftype">::Boolean</span><span class="defvalue">=False</span>)<span
+          class="ftype">::Array</span></td>
+      </tr>
+      <tr>
+        <td>
+          <p class="fdesc">Insert or update multiple rows of data.<br>
+          <span class="retpar">recordSet</span>: <span class="fdesc">
+              the list of <span class="retpar">record</span> objects.
+              A new <span class="retpar">record</span>, set the returned <b>id</b>.</span><br>
+          <span class="retpar">validate:</span> if True, it calls the DAL validators for the fields before performing the update or insert
+          </p>
+          <p>The result value of the input <span class="retpar">recordSet</span> list.</p>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="deleteRecord_amf" class="fname">deleteRecord_amf</a>(<a href="#login">login</a>
+          <span class="ftype">::Object</span>, record<span class="ftype">::Typed Object</span>)<span
+          class="ftype">::Boolean</span></td>
+      </tr>
+      <tr>
+        <td>
+          <p class="fdesc">Delete a data row.
+          </p>
+          <p>True value if the deletion is successful.</p>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="deleteRecordSet_amf" class="fname">deleteRecordSet_amf</a>(<a href="#login">login</a>
+          <span class="ftype">::Object</span>, recordSet<span class="ftype">::Array</span>)<span
+          class="ftype">::Boolean</span></td>
+      </tr>
+      <tr>
+        <td>
+          <p class="fdesc">Delete multiple rows of data.<br>
+          <span class="retpar">recordSet</span>: <span class="fdesc">
+              the list of <span class="retpar">record</span> objects.</span>
+          </p>
+          <p>True value if the all deletion is successful.</p>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="saveDataSet_amf" class="fname">saveDataSet_amf</a>(<a href="#login">login</a><span
+          class="ftype">::Object</span>, dataSetInfo<span class="ftype">::Array</span>)<span
+          class="ftype">::Array</span></td>
+      </tr>
+      <tr>
+        <td>
+          <p class="fdesc">In a group, any number can be sent saveRecordSet_amf, deleteRecordSet_amf and callFunction_amf requests.<br>
+            <span class="retpar">dataSetInfo</span>: <span class="fdesc">
+              the list of <a href="#updateSetInfo">updateSetInfo</a> objects</span>
+          </p>
+          <p>The result value of the input <span class="retpar">dataSetInfo</span> list (with returned new id).</p>
+        </td>
+      </tr>
+		</tbody>
+	</table>
+    
+  <p>
+    <b>Object Properties</b>
+  </p>
+  
+  <table
+    style="border-width: 1px; border-style: solid; border-collapse: collapse;"
+    border="1" cellpadding="2" cellspacing="0" width="100%">
+    <tbody>
+      <tr class="fhead">
+        <td><a name="validator" class="fname">validator</a>
+          {valid<span class="ftype">::Boolean</span>, message<span class="ftype">::String</span>, 
+          employee<span class="ftype">::Object</span><span class="defvalue">=null</span>,
+          audit<span class="ftype">::Array</span><span class="defvalue">=null</span>,
+          groupinput<span class="ftype">::Array</span><span class="defvalue">=null</span>,
+          transfilter<span class="ftype">::int</span><span class="defvalue">=null</span>,
+          groups<span class="ftype">::Array</span><span class="defvalue">=null</span>,
+          menucmd<span class="ftype">::Array</span><span class="defvalue">=null</span>,
+          menufields<span class="ftype">::Array</span><span class="defvalue">=null</span>,
+          userlogin<span class="ftype">::String</span><span class="defvalue">=null</span>}
+        </td>
+        <tr>
+        <td>
+          <span class="retpar">valid</span>: <span class="fdesc">
+            True or False</span><br>
+          <span class="retpar">message</span>: <span class="fdesc">
+            'OK' or error message</span><br><br>
+          <u>If validdata==True:</u><br>
+          <span class="retpar">employee</span>: <span class="fdesc">
+            Login user employee data</span><br>
+          <span class="retpar">audit</span>: <span class="fdesc">
+            Login user audit data</span><br>
+          <span class="retpar">groupinput</span>: <span class="fdesc">
+            Login user ui_groupinput data</span><br>
+          <span class="retpar">transfilter</span>: <span class="fdesc">
+            Login user transfilter data or null</span><br>
+          <span class="retpar">groups</span>: <span class="fdesc">
+            All groups values: usergroup, nervatype, transtype, inputfilter, transfilter, department, logstate, fieldtype</span><br>
+          <span class="retpar">menucmd</span>: <span class="fdesc">
+            All ui_menu data</span><br>
+          <span class="retpar">menufields</span>: <span class="fdesc">
+            All ui_menufields</span><br>
+          <span class="retpar">userlogin</span>: <span class="fdesc">
+            'true' or 'false' from database settings</span>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="login" class="fname">login</a>{database<span
+          class="ftype">::String</span>, username<span class="ftype">::String</span>,
+          password<span class="ftype">::String</span>, appl<span
+          class="ftype">::String</span><span class="defvalue">='nflex'</span>}</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="retpar">database</span>: <span class="fdesc">
+              an <b>NAS</b> alias set for a database</span><br>
+          <span class="retpar">username, password</span>: <span class="fdesc">
+              valid username and password for the database</span><br>
+          <span class="retpar">appl</span>: <span class="fdesc">
+              database table name for sqlKey. Optional, default value: nflex.</span>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="param" class="fname">param</a>{name<span
+          class="ftype">::String</span>, value<span class="ftype">::Object</span>,
+          wheretype<span class="ftype">::String</span>, type<span
+          class="ftype">::String</span>}</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="retpar">name</span>: <span class="fdesc">
+              the replacement name</span><br>
+          <span class="retpar">value</span>: <span class="fdesc">
+              replacement value of the variable</span><br>
+          <span class="retpar">wheretype</span>: <span class="fdesc">
+              specifies which part replace the variable. Valid values: where, having, in.</span><br>
+          <span class="retpar">type</span>: <span class="fdesc">
+              set up the correct sql syntax. Valid values: string, date, integer, number, boolean.</span>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="recordSetInfo" class="fname">recordSetInfo</a>{infoName<span class="ftype">::String</span>,
+          infoType<span class="ftype">::String</span>, 
+          classAlias<span class="ftype">::String</span><span class="defvalue">=null</span>,
+          filterStr<span class="ftype">::String</span><span class="defvalue">=null</span>, 
+          orderStr<span class="ftype">::String</span><span class="defvalue">=null</span>, 
+          sqlKey<span class="ftype">::String</span><span class="defvalue">=null</span>,
+          sqlStr<span class="ftype">::String</span><span class="defvalue">=null</span>, 
+          whereStr<span class="ftype">::String</span><span class="defvalue">=null</span>,
+          havingStr<span class="ftype">::String</span><span class="defvalue">=null</span>, 
+          paramList<span class="ftype">::Array</span><span class="defvalue">=null</span>,
+          functionName<span class="ftype">::String</span><span class="defvalue">=null</span>}</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="retpar">infoName</span>: <span class="fdesc">
+              required. unique request identifier name</span><br>
+          <span class="retpar">infoType</span>: <span class="fdesc">
+              required. Valid values: table, view, execute, function</span><br>
+          <span class="retpar">functionName</span>: <span class="fdesc">
+              only if infoType = function, else null</span><br>
+          <span class="retpar">classAlias</span>: <span class="fdesc">
+              only if infoType = table, else null</span><br>
+          <span class="retpar">filterStr</span>: <span class="fdesc">
+              only if infoType = table, else null</span><br>
+          <span class="retpar">orderStr</span>: <span class="fdesc">
+              only if infoType = table, else null</span><br>
+          <span class="retpar">sqlKey</span>: <span class="fdesc">
+              only if infoType = view or execute, else null</span><br>
+          <span class="retpar">sqlStr</span>: <span class="fdesc">
+              only if infoType = view or execute, else null</span><br>
+          <span class="retpar">whereStr</span>: <span class="fdesc">
+              only if infoType = view, else null</span><br>
+          <span class="retpar">havingStr</span>: <span class="fdesc">
+              only if infoType = view, else null</span><br>
+          <span class="retpar">paramList</span>: <span class="fdesc">
+              only if infoType = view, execute or function, else null</span><br>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="infoSet" class="fname">infoSet</a>{infoName<span class="ftype">::String</span>, 
+          recordSet<span class="ftype">::Array</span>}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="retpar">infoName</span>: <span class="fdesc">
+              request recordSetInfo.infoName</span><br>
+          <span class="retpar">recordSet</span>: <span class="fdesc">
+              recordSetInfo result value</span>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="updateSetInfo" class="fname">updateSetInfo</a>{updateType<span class="ftype">::String</span>,
+          tableName<span class="ftype">::String</span><span class="defvalue">=null</span>,
+          recordSet<span class="ftype">::Array</span><span class="defvalue">=null</span>,
+          functionName<span class="ftype">::String</span><span class="defvalue">=null</span>,
+          paramList<span class="ftype">::Array</span><span class="defvalue">=null</span>,
+          value<span class="ftype">::Array</span><span class="defvalue">=null</span>}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="retpar">updateType</span>: <span class="fdesc">
+              required. Valid values: update, delete, function</span><br>
+          <span class="retpar">tableName</span>: <span class="fdesc">
+              only if updateType = update or delete, else null</span><br>
+          <span class="retpar">recordSet</span>: <span class="fdesc">
+              only if updateType = update or delete, else null</span><br>
+          <span class="retpar">functionName</span>: <span class="fdesc">
+              only if infoType = function, else null</span><br>
+          <span class="retpar">paramList</span>: <span class="fdesc">
+              only if infoType = function, else null</span><br>
+          <span class="retpar">value</span>: <span class="fdesc">
+              result value if infoType = function, else null</span><br>
+        </td>
+      </tr>
+      
+    </tbody>
+  </table>
+</body>
+</html>

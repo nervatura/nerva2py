@@ -1,0 +1,169 @@
+{{left_sidebar_enabled,right_sidebar_enabled=False,False}}
+{{extend 'layout.html'}}
+
+<style>
+.main {
+  padding: 0px;
+}
+</style>
+
+<h4><u>Class description</u></h4>
+
+<ul>
+  <li>
+    <i>Report(orientation='P',unit='mm',format='A4')</i><br>
+    Class constructor. See <a href="http://code.google.com/p/pyfpdf/wiki/FPDF">FPDF</a> constructor description.
+  </li>
+  <li>
+    <i>loadDefinition(data)</i><br>
+    Load report XML definition.<br>
+    data = valid XML string
+  </li>
+  <li>
+    <i>databind</i><br>
+    Dictonary data interface. The stored values are replaced. The referenced values ​​={{ signal to begin.<br>
+    The final tags of the } } signal.<br>
+    Possible values ​​are:<br>
+    - dictonary in list (table) -> table.row.fieldname e.g. customer.0.custnumber<br>
+    - dictonary -> key.fieldname e.g. labels.custnumber<br>
+    - simple string<br>
+    Special values:<br>
+    - pages and page
+  </li>
+  <li><i>images_folder</i><br>
+      Optional
+  </li>
+  <li>
+    <i>createReport()</i><br>
+    The XML string processing, databind replacement.<br>
+  </li>
+  <li>
+    <i>save2Html(details=False)</i><br>
+    Show HTML Preview.<br>
+    details = only details section, no page header and footer
+  </li>
+  <li>
+    <i>save2Pdf()</i><br>
+    Create PDF output.<br>
+  </li>
+  <li>
+    <i>save2PdfFile(path)</i><br>
+    Save to PDF fájl.<br>
+    path = full filename and path
+  </li>
+  <li>
+    <i>save2Xml()</i><br>
+    Create XML output. Only the values ​​of cells and datagrid rows from header and details. The node name of the cell name (except when name="label"), or datagrid name/column fieldname.<br>
+  </li>
+</ul>
+
+<h4><u>XML template</u></h4>
+
+<ul>
+  <li>
+    <i>report</i><br>
+    General report information.<br>
+    <u>Attributes</u>:<br>
+    - autor, creator, subject, title<br> 
+    - left-margin, right-margin, top-margin<br>
+    - font-family: courier,times,helvetica - default times<br>
+    - font-style: if missing regular, or B(bold); I(italic); U(underline) or any combination<br>
+    - font-size: default 12<br>
+    - color, border-color, background-color<br>
+    - decode, encode: only PDF output, default value utf-8 and latin_1
+  </li>
+  <li>
+    <i>header, details and footer</i><br>
+    Page header and footer: on every page<br>
+  </li>
+  <li>
+    <i>row</i><br>
+    Horizontal logical group. The last element width extends up to the right margin.<br>
+    <u>Attributes</u>:<br>
+    - height<br>
+    - hgap: default gap between these two elements
+    <ul>
+      <li>
+        <i>cell</i><br>
+        <u>Attributes</u>:<br>
+        - name: XML output node name (only details section, default "head" and except when name="label")<br>
+        - value: static text or databind value<br>
+        - width: if missing or 0, the automatic<br>
+        - border: 0(no border, default) and 1(frame) or some or all of the following characters:  L(left); T(top); R(right); B(bottom)<br>
+        - align: L(left, default value); R(right); C(center); J(justification, only multiline)<br>
+        - multiline: if true, print text with line breaks (default false)<br>
+        - link: URL<br>
+        - font-family: default arial<br>
+        - font-style: if missing regular, or B(bold); I(italic); U(underline) or any combination<br>
+        - font-size: default 12<br>
+        - color, border-color, background-color
+      </li>
+      <li>
+        <i>image</i><br>
+        <u>Attributes</u>:<br>
+        - file: path or URL of the image<br>
+        - width: if missing or 0, the automatic<br>
+        - link: URL<br>
+      </li>
+      <li>
+        <i>separator</i><br>
+        Vertical separator line<br>
+        <u>Attributes</u>:<br>
+        - gap: greater than 0 = double line
+      </li>
+    </ul>
+  </li>
+  <li>
+    <i>hline</i><br>
+    Horizontal line.<br>
+    <u>Attributes</u>:<br>
+    - width: if missing or 0, then extends up to the right margin<br>
+    - gap: greater than 0 = double line
+  </li>
+  <li>
+    <i>vgap</i><br>
+    Vertical gap<br>
+    <u>Attributes</u>:<br>
+    - height
+  </li>
+  <li>
+    <i>html</i><br>
+    See <a href="http://code.google.com/p/pyfpdf/wiki/WriteHTML">simple HTML rendering for reports</a> introduction
+  </li>
+  <li>
+    <i>datagrid</i><br>
+    Create a HTML table from python list (dictonary items)<br>
+    <u>Attributes</u>:<br>
+    - width<br>
+    - name: XML output node name (only details section, default "items")<br>
+    - databind: table data source name<br>
+    - border: 0(no border) or 1(frame, default)<br>
+    - color, border-color<br>
+    - font-size
+    <ul>
+      <li>
+        <i>header</i><br>
+        Opens each page<br>
+        <u>Attributes</u>:<br>
+        - background-color
+      </li>
+      <li>
+        <i>footer</i><br>
+        Closes each page<br>
+        <u>Attributes</u>:<br>
+        - background-color
+      </li>
+      <li>
+        <i>columns/column</i><br>
+        <u>Attributes</u>:<br>
+        - fieldname: dictonary key (special value: counter)
+        - width: value in percent<br>
+        - label: column caption<br>
+        - align: L(left, default value); R(right); C(center); J(justify)<br>
+        - thousands: character, only number format<br>
+        - digit: number, only number format<br>
+        - footer: static text or databind value
+      </li>
+    </ul>
+  </li>
+</ul>

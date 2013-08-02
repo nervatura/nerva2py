@@ -1,0 +1,387 @@
+{{left_sidebar_enabled=right_sidebar_enabled=False}}
+{{extend 'nwc/layout.html'}}
+{{footer_enabled=False}}
+
+<style>
+body  {
+background: #808080;
+margin: 0;
+}
+.main {
+  padding: 10px 0 10px 0;
+}
+#frm_head {
+  background-color: #F2F2F2;
+  border-style: solid;
+  border-width: 5px;
+  width: 700px;
+{{if form.formname!='event/create':}}
+  border-bottom: none;
+{{pass}}
+}
+#tabs {
+  width: 695px;
+  background-color: #F2F2F2;
+  border-style: solid;
+  border-width: 5px;
+  border-top: none;
+  border-color: #444444;
+}
+td {
+  vertical-align: middle;
+}
+.label {
+  font-weight: bold;
+  padding: 5px;
+  background-color: #DBDBDB;
+  width: 100% !important;
+}
+.td_label {
+  vertical-align: middle;
+  padding: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.label_disabled {
+  padding: 5px;
+  background-color: #FFFFFF;
+  height: 18px;
+  border: 1px solid #CCC;
+}
+.label_error {
+  padding: 5px;
+  background-color: #FF0000;
+  color: #FFFFFF;
+  width: 97%;
+  height: 18px;
+  border: 1px solid #CCC;
+}
+.td_label_nf {
+  vertical-align: middle;
+  padding: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-size: 12px;  
+}
+.tab_label {
+  font-weight: bold;
+  font-size: small;
+}
+.ui-tabs-panel {
+  padding: 0px !important;
+}
+#tabs .web2py_console {
+  visibility:hidden;
+  padding: 0px;
+  height: 0px !important;
+  min-height: 0px !important;
+}
+#tabs .web2py_search_actions {
+  visibility:hidden;
+  height: 0px !important;
+  min-height: 0px !important;
+}
+#tabs .web2py_counter {
+  visibility:hidden;
+  height: 0px !important;
+  min-height: 0px !important;
+}
+#tabs .web2py_table {
+  font-size: small;
+}    
+#tabs .web2py_grid {
+  background-color: #FFFFFF;
+}
+#tabs .web2py_grid tbody td {
+  height:34px;
+  border-bottom: 1px solid #DDDDDD;
+  border-right: 1px solid #DDDDDD;
+}
+div.el-rte.ui-resizable {
+  height: 100% !important;
+  width: 100% !important;
+}
+div.workzone {
+  height: 100% !important;
+  width: 100% !important;
+}
+#menu input[type="submit"] {
+  height: 25px !important;
+  padding-top: 2px !important;
+  color: #008B00;
+  width: 100%;
+}
+#event_calnumber {
+  width: 100%;
+}
+#event_eventgroup {
+  height: 30px;
+  width: 100%;
+}
+#event_fromdate {
+  width: 100%;
+}
+#event_todate {
+  width: 100%;
+}
+#event_subject {
+  width: 100%;
+}
+#event_place {
+  width: 100%;
+}
+#event_description {
+  width: 99%;
+}
+#frm_head_field {
+  background-color: #F2F2F2;
+  border-style: solid;
+  border-width: 5px;
+}
+#cmb_fields {
+  width: 100%;
+  height: 30px;
+}
+#cmd_field_submit {
+  height: 25px !important;
+  padding-top: 2px !important;
+  color: #008B00;
+  width: 100%;
+}
+#fieldvalue_value {
+  width: 100%;
+}
+#fieldvalue_notes {
+  width: 100%;
+  height: 80px;
+}
+</style>
+
+<script>
+$(function() {
+  $("#tabs").tabs();
+});
+
+var ms_err_field_new = "{{=T('Missing Additional data name!')}}";
+var ms_err_field_update = "{{=T('Read-only data!')}}";
+</script>
+
+<div align="center">
+{{=form.custom.begin}}
+<div id="frm_head">
+<div class="topbar">
+  <div class="container">    
+    <div class="sixteen columns" style="width: 700px;">
+      {{is_mobile=request.user_agent().is_mobile}}
+      <div id="menu">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td>
+              <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.titleicon}}" />
+              <span style="vertical-align: middle;color: #FFD700;font-weight: bold;">{{=response.subtitle}}</span>
+              <span style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;">&nbsp;
+                {{=response.from_title[:25]}}</span>
+            </td>
+            <td>
+              {{=response.cmd_update}}
+            </td>
+            <td>
+              {{=response.cmd_export}}
+            </td>
+            <td style="text-align: right;padding-right: 20px;">
+              {{=response.cmd_new}}
+              {{=response.cmd_help}}
+	          {{=response.cmd_back}}
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div><!-- topbar -->
+<div id="nwc_input">    	  
+  <table style="border-style: solid;border-width: 1px;border-color: #CCCCCC;border-top: none;" 
+    width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td style="padding: 0px;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="width:120px;padding-top: 15px;" class="td_label"><div class="label">{{=form.custom.label.calnumber}}</div></td>
+            <td style="padding-top: 12px;width: 220px;">{{=form.custom.widget.calnumber}}</td>
+            <td style="width:120px;padding-top: 15px;" class="td_label"><div class="label">{{=form.custom.label.eventgroup}}</div></td>
+            <td style="width:100px;padding-right: 0px;padding-top: 12px;padding-right: 10px;">{{=form.custom.widget.eventgroup}}</td>
+            {{if response.cmd_groups:}}
+              <td style="padding-left: 0px;padding-top: 12px;width: 16px;">{{=response.cmd_groups}}</td>
+            {{pass}}
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 0px;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="width:120px;padding-top: 5px;" class="td_label"><div class="label">{{=form.custom.label.fromdate}}</div></td>
+            <td style="padding-top: 2px;padding-right: 5px;">{{=form.custom.widget.fromdate}}</td>
+            <td style="width:120px;padding-top: 5px;" class="td_label"><div class="label">{{=form.custom.label.todate}}</div></td>
+            <td style="padding-top: 2px;padding-right: 20px;">{{=form.custom.widget.todate}}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 0px;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="width:120px;vertical-align: top;padding-top: 5px;" class="td_label"><div class="label">{{=form.custom.label.subject}}</div></td>
+            <td style="padding-top: 2px;padding-right: 20px;">{{=form.custom.widget.subject}}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 0px;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="width:120px;vertical-align: top;padding-top: 5px;" class="td_label"><div class="label">{{=form.custom.label.place}}</div></td>
+            <td style="padding-top: 5px;padding-bottom: 12px;padding-right: 20px;">{{=form.custom.widget.place}}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</div></div>
+{{=form.custom.end}}
+
+{{if form.formname!='event/create':}}
+  <div id="tabs">
+    <ul>
+      <li><a class="tab_label" href="#tabs-1">
+      {{=response.icon_note}}
+	    {{=T('Description')}}</a>
+	  </li>
+	  <li><a class="tab_label" href="#tabs-2">
+	    {{=response.icon_deffield}}
+	    {{=T('Additional Data')}}{{=response.cmd_fieldvalue_new}}</a>
+	  </li>
+	</ul>
+	
+	<div id="tabs-1">
+	  {{=form.custom.widget.description}}
+	</div>
+	<div id="tabs-2" style="overflow: auto;">
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td style="padding: 0px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="border-style: solid;border-top:none;border-width: 5px;border-color: #CCCCCC;">
+            <tr>
+              {{if response.cmd_fields:}}
+              <td style="width: 16px;padding-right: 0px;padding-top: 7px;">
+                  {{=response.cmd_fields}}</td>
+              {{pass}}
+              <td style="width: 150px;padding-left: 3px;padding-right: 5px;" class="td_label">
+                {{if response.cmb_fields:}}
+                <div class="label" style="width: 150px;padding-right: 0px;font-size: small;" class="label">
+                  {{=T('Additional Data')}}</div>
+                {{else:}}
+                <div style="height: 30px;"></div>
+                {{pass}}
+              </td>
+              <td>
+                  {{=response.cmb_fields}}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top; padding: 0px;">
+          <div id="edit_fieldvalue"
+            style="display: none;border-style: solid;border-width: 7px;border-color: #CCCCCC;padding: 8px;padding-bottom: 3px;border-top-width: 2px;" >
+            {{=response.fieldvalue_form.custom.begin}}
+            <div id="frm_head_field">
+              <table width="100%" style="background-color: #2B2B2B;" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding-left: 10px;">
+                    <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.fieldvalue_icon}}" />
+                    <span style="vertical-align: middle;color: #FFD700;font-weight: bold;padding-right: 10px;">{{=T('FIELD')}}</span>
+                    <span id="title_item" 
+                      style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;">
+                      {{=form.custom.inpval.calnumber}}</span>
+                  </td>
+                  <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
+                    {{=response.cmd_fieldvalue_submit}}
+                  </td>
+                  <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
+                    {{=response.cmd_help}}{{=response.cmd_fieldvalue_cancel}}
+                  </td>
+                </tr>
+              </table>
+              <table style="border-style: solid;border-width: 1px;border-color: #CCCCCC;border-top: none;" 
+                width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="width: 200px;vertical-align: top;padding-top: 11px;padding-right: 10px;" class="td_label">
+                    <div id="fieldvalue_description" class="label" style="width: 100%;" ></div>
+                  </td>
+                  <td style="padding-top: 10px;vertical-align: middle;padding-right: 20px;">
+                    <div id="fieldvalue_value_controls">
+                      <input id="fieldvalue_value" type="hidden" name="value" value="">
+                      <input id="fieldvalue_value_bool" 
+                        type="checkbox" name="value_bool" class="boolean" value="true" checked="checked" style="display: none;width: 100%;">
+                      <input id="fieldvalue_value_integer" 
+                        type="text" name="value_integer" class="integer" value="" style="display: none;width: 100%;text-align: right;" >
+                      <input id="fieldvalue_value_float" 
+                        type="text" name="value_float" class="double" value="" style="display: none;width: 100%;text-align: right;" >
+                      <input id="fieldvalue_value_date" 
+                        type="text" name="value_date" class="date" value="" style="display: none;width: 100%;text-align: center;" >
+                      <input id="fieldvalue_value_password" 
+                        type="password" name="value_password" value="" style="display: none;width: 100%;" >
+                      <input id="fieldvalue_value_text" 
+                        type="text" name="value_text" value="" style="display: none;width: 100%;" >
+                      <select id="fieldvalue_value_valuelist" 
+                        name="value_valuelist" class="generic-widget" style="width: 100%;height: 30px;display: none;"></select>
+                      <textarea id="fieldvalue_value_notes" 
+                        name="value_notes" class="text" style="width: 100%;height:auto;min-height:90px;display: none;"></textarea>
+                      {{=response.fieldvalue_customer_selector}}
+                      {{=response.fieldvalue_tool_selector}}
+                      {{=response.fieldvalue_product_selector}}
+                      {{=response.fieldvalue_transitem_selector}}
+                      {{=response.fieldvalue_transpayment_selector}}
+                      {{=response.fieldvalue_transmovement_selector}}
+                      {{=response.fieldvalue_project_selector}}
+                      {{=response.fieldvalue_employee_selector}}
+                      {{=response.fieldvalue_place_selector}}
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2" style="vertical-align: top;padding-right: 20px;" class="td_label">
+                    <div class="label">{{=response.fieldvalue_form.custom.label.notes}}</div></td>
+                </tr>
+                <tr>
+                  <td colspan="2" style="padding: 10px;padding-top: 0px;padding-right: 20px;">
+                    {{=response.fieldvalue_form.custom.widget.notes}}</td>
+                </tr>
+              </table>
+            </div>
+            {{=response.fieldvalue_id}}
+            {{=response.fieldvalue_ref_id}}
+            {{=response.fieldvalue_fieldname}}
+            {{=response.fieldvalue_fieldtype}}
+            {{=response.fieldvalue_readonly}}
+            {{=response.fieldvalue_form.custom.end}}
+          </div>
+          {{=response.view_fields}}
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  </div>
+{{pass}}
+</div>
+
+<script language="javascript">
+<!--
+ jQuery("#nwc_input input:visible:enabled:first").focus();
+//-->
+</script>

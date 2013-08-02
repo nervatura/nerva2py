@@ -1,0 +1,908 @@
+{{left_sidebar_enabled=right_sidebar_enabled=False}}
+{{extend 'nwc/layout.html'}}
+{{footer_enabled=False}}
+
+<style>
+body  {
+  background: #808080;
+  margin: 0;
+}
+.main {
+  padding: 10px 0 10px 0;
+}
+#frm_head {
+  background-color: #F2F2F2;
+  border-style: solid;
+  border-width: 5px;
+{{if form.formname!='trans/create':}}
+  border-bottom: none;
+{{pass}}
+}
+#tabs {
+  background-color: #F2F2F2;
+  border-style: solid;
+  border-width: 5px;
+  border-top: none;
+  border-color: #444444;
+}
+td {
+  vertical-align: middle;
+}
+.label {
+  font-weight: bold;
+  padding: 5px;
+  background-color: #DBDBDB;
+  width: 100% !important;
+}
+.td_label {
+  vertical-align: middle;
+  padding: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  width: 100px;
+}
+.label_disabled {
+  padding: 5px;
+  background-color: #FFFFFF;
+  width: 97%;
+  height: 18px;
+  border: 1px solid #CCC;
+}
+.label_error {
+  padding: 5px;
+  background-color: #FF0000;
+  color: #FFFFFF;
+  width: 97%;
+  height: 18px;
+  border: 1px solid #CCC;
+}
+.td_label_nf {
+  vertical-align: middle;
+  padding: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-size: 12px;  
+}
+.tab_label {
+  font-weight: bold;
+  font-size: small;
+}
+.ui-tabs-panel {
+  padding: 0px !important;
+}
+#tabs .web2py_console {
+  visibility:hidden;
+  padding: 0px;
+  height: 0px !important;
+  min-height: 0px !important;
+}
+#tabs .web2py_search_actions {
+  visibility:hidden;
+  height: 0px !important;
+  min-height: 0px !important;
+}
+#tabs .web2py_counter {
+  visibility:hidden;
+  height: 0px !important;
+  min-height: 0px !important;
+}
+#tabs .web2py_table {
+  font-size: small;
+}
+
+#tabs .web2py_grid {
+  background-color: #FFFFFF;
+}
+#tabs .web2py_grid tbody td {
+  height:34px;
+  border-bottom: 1px solid #DDDDDD;
+  border-right: 1px solid #DDDDDD;
+}
+#menu input[type="submit"] {
+  height: 25px !important;
+  padding-top: 2px !important;
+  color: #008B00;
+  width: 100%;
+}
+div.el-rte.ui-resizable {
+  height: 100% !important;
+  width: 100% !important;
+}
+div.workzone {
+  height: 100% !important;
+  width: 100% !important;
+}
+#trans_transnumber {
+  width: 94%;
+}
+#trans_ref_transnumber {
+  width: 96%;
+}
+#fld_trans_transnumber {
+  width: 96%;
+}
+#crdate {
+  width: 100%;
+  text-align: center;
+  vertical-align: middle;
+}
+#trans_crdate {
+  width: 100%;
+  text-align: center;
+  vertical-align: middle;
+}
+#cmb_reftype {
+  width: 95%;
+  height: 29px;
+}
+#trans_direction {
+  width: 95%;
+  height: 29px;
+}
+#trans_transtate {
+  width: 100%;
+  height: 29px;
+}
+#trans_notes {
+  width: 100%;
+}
+#trans_intnotes {
+  width: 100%;
+}
+#trans_fnote {
+  width: 100%;
+  height: 100%;
+}
+.detail_count {
+  background-color: #DBDBDB;
+  color: #555555;
+  text-align: center;
+  font-weight: bold;
+  padding-top: 0px;
+  padding-bottom: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+#trans_transdate {
+  width: 100%;
+  text-align: center;
+  vertical-align: middle;
+}
+#trans_duedate {
+  width: 100%;
+  text-align: center;
+  vertical-align: middle;
+}
+#frm_head_movement {
+  background-color: #F2F2F2;
+  border-style: solid;
+  border-width: 5px;
+}
+#cmd_movement_submit {
+  height: 25px !important;
+  padding-top: 2px !important;
+  color: #008B00;
+  width: 100%;
+}
+#movement_shippingdate {
+{{if response.movement_tool_id:}}
+  width: 140px;
+{{else:}}
+  width: 90px;
+{{pass}}
+  text-align: center;
+  vertical-align: middle;
+}
+#movement_notes {
+  width: 100%;
+{{if response.movement_tool_id:}}
+  height: 70px;
+{{pass}}
+}
+#movement_qty {
+  width: 100%;;
+  text-align: right;
+}
+#frm_head_field {
+  background-color: #F2F2F2;
+  border-style: solid;
+  border-width: 5px;
+}
+#cmb_fields {
+  width: 100%;
+  height: 25px;
+}
+#cmd_field_submit {
+  height: 25px !important;
+  padding-top: 2px !important;
+  color: #008B00;
+  width: 100%;
+}
+#fieldvalue_value {
+  width: 100%;
+}
+#fieldvalue_notes {
+  width: 100%;
+  height: 80px;
+}
+#trans_acrate {
+  width: 60px;;
+  text-align: right;
+}
+</style>
+
+<script>
+$(function() {
+  $("#tabs").tabs();
+});
+
+var ms_err_field_new = "{{=T('Missing Additional data name!')}}";
+var ms_err_field_update = "{{=T('Read-only data!')}}";
+var ms_err_movement_tool = "{{=T('Missing Tool!')}}"
+var ms_err_movement_product = "{{=T('Missing Product!')}}"
+var ms_err_movement_warehouse = "{{=T('Missing warehouse!')}}"
+var ms_err_movement_target_warehouse = "{{=T('Missing target warehouse!')}}"
+var ms_err_movement_diff_warehouse = "{{=T('The warehouse and the target warehouse not be the same!')}}"
+var ms_err_movement_shipping = "{{=T('Missing Shipping Date!')}}"
+var ms_err_movement_save = "{{=T('Changed the product! To do this, the changes must be saved!')}}"
+var ms_err_movement_formula = "{{=T('Missing selected Formula template!')}}"
+var ms_err_movement_load_formula = "{{=T('Will delete all the items, and reload the basis of the formula. The operation can not be undone! Are you sure you want to continue?!')}}"
+var ms_err_movement_load_formula_err = "{{=T('Error while processing the data!')}}";
+</script>
+    
+{{=form.custom.begin}}
+<div id="frm_head" style="display: block;">
+<div class="topbar">
+  <div class="container">    
+    <div class="sixteen columns">
+      {{is_mobile=request.user_agent().is_mobile}}
+      <div id="menu">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td>
+              <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.titleicon}}" />
+              <span style="vertical-align: middle;color: #FFD700;font-weight: bold;">{{=response.subtitle}}</span>
+              <span style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;">&nbsp;
+                {{=response.transnumber}}</span>
+            </td>
+            <td>
+              {{=form.custom.submit}}
+            </td>
+            <td>
+              {{=response.cmd_report}}
+            </td>
+            <td style="width: 90px;">
+              {{=response.cmd_more}}
+            </td>
+            <td style="text-align: right;padding-right: 20px;">
+              {{=response.cmd_help}}
+	          {{=response.cmd_back}}
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div><!-- topbar -->
+<div id="dv_more" style="display: none;border-style: solid;border-width: 7px;border-color: #CCCCCC;padding: 8px;padding-bottom: 3px;" align="center" >
+  <table style="padding: 0px;margin: 0px;" cellpadding="0" cellspacing="0">
+    <tr>
+      <td>{{=response.cmd_fnote}}</td>
+      {{if response.closed==0:}}
+        <td>{{=response.cmd_close}}</td>
+      {{pass}}
+      {{if response.deleted==0 and response.transtype_name!="delivery" and response.transtype_name!="inventory":}}
+        <td>{{=response.cmd_delete}}</td>
+      {{pass}}
+      {{if response.transcast=="normal" and response.transtype_name in("delivery","inventory"):}}
+        <td>{{=response.cmd_cancellation}}</td>
+      {{pass}}
+      {{if response.transcast=="normal" and not response.direction:}}
+      <td>{{=response.cmd_copy}}</td>
+      {{pass}}
+    </tr>
+  </table>    	  
+</div>
+<div id="nwc_input">
+  <table style="border-style: solid;border-width: 1px;border-color: #CCCCCC;border-top: none;" 
+    width="100%" cellpadding="0" cellspacing="0">
+    {{if response.transtype_name=="waybill":}}
+    <tr>
+      <td style="padding-left:0px; padding-right: 5px;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="padding-top: 0px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td width="40px;" style="padding-left: 5px;padding-top: 12px;padding-right: 0px;">
+                    {{=response.state_ico}}
+                  </td>
+                  <td style="padding-top: 15px;padding-left: 0px;" class="td_label"><div class="label">{{=form.custom.label.transnumber}}</div></td>
+                  <td style="padding-top: 12px;padding-right: 0px;">{{=form.custom.widget.transnumber}}</td>
+                  <td style="padding-top: 15px;padding-left: 0px;" class="td_label"><div class="label">{{=form.custom.label.crdate}}</div></td>
+                  <td style="padding-top: 12px;width: 90px;padding-right: 10px;">{{=form.custom.widget.crdate}}{{=response.crdate}}{{=response.transdate}}</td>
+                  <td style="padding-top: 15px;padding-left: 10px;" class="td_label"><div class="label">{{=form.custom.label.direction}}</div></td>
+                  <td width="60px" style="padding-top: 12px;">{{=form.custom.widget.direction}}{{=response.direction_id}}</td>
+                </tr>
+                <tr>
+                  <td colspan="7" style="padding: 0px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" style="padding: 0px;">
+                      <tr>
+                        <td class="td_label" style="padding-left: 5px;"><div class="label">{{=T('Ref. type')}}</div></td>
+                        <td width="120px" >{{=response.reftype}}{{=response.refnumber_type}}</td>
+                        <td style="padding-left: 0px;" class="td_label"><div class="label">{{=T('Reference')}}</div></td>
+                        <td style="padding-top: 0px;padding-left: 5px;">
+                          {{=response.trans_id}}{{=response.trans_transnumber}}
+                          {{=response.customer_id}}{{=response.customer_custname}}
+                          {{=response.employee_id}}{{=response.employee_empnumber}}
+                        </td>
+                        <td style="padding-left: 0px;" class="td_label"><div class="label">{{=form.custom.label.transtate}}</div></td>
+                        <td width="60px" style="padding-right: 10px;">{{=form.custom.widget.transtate}}{{=response.transtype}}{{=response.cruser_id}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+            <td style="width: 20px;padding: 0px;">
+              <table width="100%;" cellpadding="0" cellspacing="0">
+                <tr><td style="padding: 0px;padding-top: 10px;">
+                  {{=response.cmd_next}}
+                </td></tr>
+                <tr><td style="padding: 0px;padding-top: 5px;">
+                  {{=response.cmd_prev}}
+                </td></tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>  
+    </tr>
+    {{elif response.transtype_name in("production","formula"):}}
+    <tr>
+      <td style="padding-left:0px; padding-right: 5px;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="padding-top: 0px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td width="40px;" style="padding-left: 5px;padding-top: 12px;padding-right: 0px;">
+                    {{=response.state_ico}}
+                  </td>
+                  <td style="padding-top: 15px;padding-left: 0px;width: 70px;" class="td_label"><div class="label">{{=form.custom.label.transnumber}}</div></td>
+                  <td style="padding-top: 12px;width: 180px;">{{=form.custom.widget.transnumber}}</td>
+                  <td style="padding-top: 15px;padding-left: 0px;width: 70px;" class="td_label"><div class="label">{{=form.custom.label.ref_transnumber}}</div></td>
+                  <td style="padding-top: 10px;padding-right: 10px;">
+                    {{=response.trans_transnumber}}{{=response.ref_transnumber}}{{=response.trans_id}}
+                  </td>
+                  <td style="padding-top: 12px;padding-left: 0px;padding-right: 0px;width: 20px;">
+                    {{=response.transref_change}}
+                  </td>
+                  <td style="padding-top: 15px;padding-left: 0px;width: 70px;" class="td_label"><div class="label">{{=form.custom.label.transtate}}</div></td>
+                  <td width="60px" style="padding-top: 12px;padding-right: 0px;">{{=form.custom.widget.transtate}}{{=response.transtype}}{{=response.cruser_id}}{{=response.direction_id}}</td>
+                </tr>
+                <tr>
+                  <td colspan="8" style="padding: 0px;">
+                    {{if response.transtype_name =="production":}}
+                    <table width="100%" cellpadding="0" cellspacing="0" style="padding: 0px;">
+                      <tr>
+                        <td style="width: 75px;padding-left: 5px;" class="td_label"><div class="label">{{=form.custom.label.crdate}}</div></td>
+                        <td style="width: 75px;padding-right: 10px;">{{=form.custom.widget.crdate}}{{=response.crdate}}</td>
+                        <td style="width: 75px;padding-left: 5px;" class="td_label"><div class="label">{{=form.custom.label.transdate}}</div></td>
+                        <td style="width: 75px;padding-right: 10px;">{{=form.custom.widget.transdate}}</td>
+                        <td style="width: 75px;padding-left: 5px;" class="td_label"><div class="label">{{=form.custom.label.duedate}}</div></td>
+                        <td style="width: 125px;padding-right: 10px;">{{=form.custom.widget.duedate}}</td>
+                        <td style="width: 75px;padding-left: 5px;" class="td_label"><div class="label">{{=T("Formula")}}</div></td>
+                        <td style="padding-right: 3px;">{{=response.cmb_formula}}</td>
+                        <td style="padding-top: 8px;padding-left: 0px;padding-right: 0px;width: 20px;">
+                          {{=response.load_formula}}{{=response.production_id}}
+                        </td>
+                      </tr>
+                    </table>
+                    {{else:}}
+                    <table width="100%" cellpadding="0" cellspacing="0" style="padding: 0px;">
+                      <tr>
+                        <td style="width: 90px;padding-left: 5px;" class="td_label"><div class="label">{{=form.custom.label.crdate}}</div></td>
+                        <td style="width: 80px;padding-right: 10px;">{{=form.custom.widget.crdate}}{{=response.crdate}}{{=response.transdate}}</td>
+                        <td style="padding-left: 5px;width: 70px;" class="td_label"><div class="label">{{=response.trans_production_qty_label}}</div></td>
+                        <td style="width: 70px;padding-right: 10px;">{{=response.trans_production_qty_data}}</td>
+                        <td style="padding-left: 5px;width: 90px;" class="td_label"><div class="label">{{=T("Product")}}</div></td>
+                        <td style="padding-right: 10px;">{{=response.production_product_selector}}{{=response.production_product_id}}</td>
+                      </tr>
+                    </table>
+                    {{pass}}
+                  </td>
+                </tr>
+              </table>
+            </td>
+            <td style="width: 20px;padding: 0px;">
+              <table width="100%;" cellpadding="0" cellspacing="0">
+                <tr><td style="padding: 0px;padding-top: 10px;">
+                  {{=response.cmd_next}}
+                </td></tr>
+                <tr><td style="padding: 0px;padding-top: 5px;">
+                  {{=response.cmd_prev}}
+                </td></tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>  
+    </tr>
+    {{else:}}
+    <tr>
+      <td style="padding-left:0px; padding-right: 5px;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="padding-top: 0px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td width="40px;" style="padding-left: 5px;padding-top: 12px;padding-right: 0px;">
+                    {{=response.state_ico}}
+                  </td>
+                  <td style="padding-top: 15px;padding-left: 0px;width: 70px;" class="td_label"><div class="label">{{=form.custom.label.transnumber}}</div></td>
+                  <td style="padding-top: 12px;width: 180px;">{{=form.custom.widget.transnumber}}</td>
+                  <td style="padding-top: 15px;padding-left: 0px;width: 70px;" class="td_label"><div class="label">{{=form.custom.label.ref_transnumber}}</div></td>
+                  <td style="padding-top: 10px;padding-right: 10px;">
+                    {{=response.trans_transnumber}}{{=response.ref_transnumber}}{{=response.trans_id}}
+                  </td>
+                  {{if not response.direction:}}
+                  <td style="padding-top: 12px;padding-left: 0px;padding-right: 0px;width: 20px;">
+                    {{=response.transref_change}}
+                  </td>
+                  {{pass}}
+                  <td style="padding-top: 15px;padding-left: 0px;width: 70px;" class="td_label"><div class="label">{{=form.custom.label.transtate}}</div></td>
+                  <td width="60px" style="padding-top: 12px;padding-right: 0px;">{{=form.custom.widget.transtate}}{{=response.transtype}}{{=response.cruser_id}}{{=response.direction_id}}</td>
+                </tr>
+                <tr>
+                  <td colspan="8" style="padding: 0px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" style="padding: 0px;">
+                      <tr>
+                        <td style="padding-left: 5px;" class="td_label"><div class="label">{{=form.custom.label.crdate}}</div></td>
+                        <td style="width: 90px;padding-right: 10px;">{{=form.custom.widget.crdate}}{{=response.crdate}}</td>
+                        <td style="padding-left: 5px;" class="td_label"><div class="label">{{=form.custom.label.transdate}}</div></td>
+                        <td style="width: 80px;padding-right: 10px;">{{=form.custom.widget.transdate}}{{=response.transdate}}</td>
+                        <td style="padding-left: 5px;" class="td_label"><div class="label">{{=form.custom.label.place_id}}</div></td>
+                        <td style="padding-right: 0px;padding-top: 5px;">
+                          <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td style="padding-top: 0px;padding-left: 0px;padding-right: 10px;">{{=response.place_control}}{{=response.place_id}}</td>
+                              {{if response.cmd_place:}}
+                              <td width="20px;" style="padding-right: 0px;padding-left: 0px;">{{=response.cmd_place}}</td>
+                              {{pass}}
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+            <td style="width: 20px;padding: 0px;">
+              <table width="100%;" cellpadding="0" cellspacing="0">
+                <tr><td style="padding: 0px;padding-top: 10px;">
+                  {{=response.cmd_next}}
+                </td></tr>
+                <tr><td style="padding: 0px;padding-top: 5px;">
+                  {{=response.cmd_prev}}
+                </td></tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>  
+    </tr>
+    {{pass}}
+    <tr>
+      <td style="padding-left:10px; padding-right: 10px;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-style: solid;border-width: 4px;border-color: #191970;">
+          <tr>
+            {{if response.transtype_name=="production":}}
+            <td style="padding-left: 5px;" class="td_label"><div class="label">{{=form.custom.label.place_id}}</div></td>
+            <td style="padding-right: 10px;width: 220px;">{{=response.production_place_selector}}{{=response.production_place_id}}</td>
+            <td style="padding-left: 5px;width: 70px;" class="td_label"><div class="label">{{=response.trans_production_qty_label}}</div></td>
+            <td style="width: 70px;padding-right: 10px;">{{=response.trans_production_qty_data}}</td>
+            <td style="padding-left: 5px;width: 90px;" class="td_label"><div class="label">{{=T("Product")}}</div></td>
+            <td style="padding-right: 15px;">{{=response.production_product_selector}}{{=response.production_product_id}}</td>
+            {{else:}}
+            <td style="height: 0px;background-color: #FFFFFF;"></td>
+            {{pass}}
+          </tr>
+        </table>
+      </td>  
+    </tr>
+    <tr>
+      <td style="padding-left:0px; padding-right: 10px;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            {{if response.transtype_name=="production":}}
+            <td width="220px;" style="padding-right: 10px;" class="td_label_nf">
+              <div class="label">{{=form.custom.label.notes}}</div>
+            </td>
+            <td style="" class="td_label"><div class="label">{{=response.trans_production_batch_label}}</div></td>
+            <td style="padding-right: 10px;">{{=response.trans_production_batch_data}}</td>
+            <td width="220px;" style="padding-right: 15px;" class="td_label_nf">
+              <div class="label" style="text-align: right;padding-right: 10px;" >{{=form.custom.label.intnotes}}</div>
+            </td>
+            {{else:}}
+            <td width="50%;" style="padding-right: 10px;" class="td_label_nf">
+              <div class="label">{{=form.custom.label.notes}}</div>
+            </td>
+            <td width="50%;" style="padding-right: 15px;" class="td_label_nf">
+              <div class="label" style="text-align: right;padding-right: 10px;" >{{=form.custom.label.intnotes}}</div>
+            </td>
+            {{pass}}
+          </tr>
+        </table>
+      </td>  
+    </tr>
+    <tr>
+      <td style="padding-left:0px; padding-right: 10px;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="vertical-align: top; padding-right: 10px; padding-top: 0px; padding-left: 10px;padding-bottom: 10px;">
+            {{=form.custom.widget.notes}}
+            </td>
+            <td style="vertical-align: top; padding-right: 10px; padding-top: 0px; padding-left: 10px;padding-bottom: 10px;">
+            {{=form.custom.widget.intnotes}}
+            </td>
+          </tr>
+        </table>
+      </td>  
+    </tr>
+  </table>
+</div></div>
+{{=form.custom.end}}
+
+{{if form.formname!='trans/create':}}
+  <div id="tabs" style="background-color: #FFFFFF;">
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td style="padding: 0px;width: 100%;"><ul>
+        <li>
+          <a class="tab_label" href="#tabs-1">
+            {{=response.icon_corrected}}
+            {{=T('Items')}}
+            {{=response.cmd_movement_new}}
+          </a>
+        </li>     
+		    <li>
+		    <a class="tab_label" href="#tabs-2">
+		      {{=response.icon_deffield}}
+			    {{=T('Additional Data')}}
+			    {{=response.cmd_fieldvalue_new}}
+			  </a>
+	      </li>
+	    </ul></td>
+      </tr>
+    </table>
+	
+	<div id="tabs-1">
+	  {{if not response.direction and response.transtype_name=="delivery":}}
+	  <table width="100%" cellpadding="0" cellspacing="0" 
+      style="border-style: solid;border-top:none;border-width: 5px;border-color: #CCCCCC;">
+        <tr>
+          <td style="padding-left: 5px;width: 150px;" class="td_label"><div class="label">{{=T('Target warehouse')}}</div></td>
+          <td style="padding-right: 10px;">{{=response.target_place_control}}</td>
+        </tr>
+      </table>
+    {{pass}}
+    {{=response.movement_form.custom.begin}}
+    {{=response.target_place_id}}
+    {{=response.movement_movetype}}
+    <div id="edit_movement"
+        style="display: none;border-style: solid;border-width: 7px;border-color: #CCCCCC;padding: 8px;border-top-width: 2px;padding-bottom: 4px;" >
+      <div id="frm_head_movement">
+        <table width="100%" style="background-color: #2B2B2B;" 
+            cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="padding-left: 10px;">
+              <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.movement_icon}}" />
+              <span style="vertical-align: middle;color: #FFD700;font-weight: bold;padding-right: 10px;">{{=T('ITEM')}}</span>
+              <span id="title_item" 
+                   style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;">
+                   {{=response.transnumber}}</span>
+            </td>
+            <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
+                 {{=response.cmd_movement_submit}}
+            </td>
+            <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
+                 {{=response.cmd_help}}{{=response.cmd_movement_cancel}}
+            </td>
+          </tr>
+        </table>
+        {{if response.movement_tool_id:}}
+        <table style="border-style: solid;border-width: 1px;border-color: #CCCCCC;border-top: none;" 
+          width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="width: 100px;padding-top: 10px;" class="td_label">
+              <div class="label" style="text-align: center;">
+              <span id="label_movement_id">000000</span>{{=response.movement_id}}{{=response.movement_trans_id}}{{=response.movement_qty}}</div>
+            </td>
+            <td style="padding-top: 10px;width: 150px;padding-left: 5px;" class="td_label">
+              <div class="label">{{=response.movement_form.custom.label.shippingdate}}</div></td>
+            <td style="padding: 0px;padding-top: 5px;padding-left: 5px;">{{=response.movement_form.custom.widget.shippingdate}}</td>
+          </tr> 
+          <tr>
+            <td style="width: 100px;" class="td_label">
+              <div class="label">{{=response.movement_form.custom.label.tool_id}}</div></td>
+            <td colspan="2" style="padding: 0px;vertical-align: middle;padding-left: 5px; padding-right: 20px;">
+              {{=response.movement_tool_id}}{{=response.movement_serial}}
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3" style="vertical-align: top;padding-right: 20px;" class="td_label">
+              <div style="" class="label">{{=response.movement_form.custom.label.notes}}</div></td>
+          </tr>
+          <tr>
+            <td colspan="3" style="padding: 10px;padding-top: 0px;padding-right: 20px;">{{=response.movement_form.custom.widget.notes}}</td>
+          </tr>
+        </table>
+        {{else:}}
+        <table style="border-style: solid;border-width: 1px;border-color: #CCCCCC;border-top: none;" 
+          width="100%" cellpadding="0" cellspacing="0">
+          {{if response.transtype_name=="formula":}}
+          <tr>
+            <td style="padding: 0px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="width: 100px;padding-top: 10px;" class="td_label">
+                    <div class="label" style="text-align: center;">
+                    <span id="label_movement_id">000000</span>{{=response.movement_id}}{{=response.movement_trans_id}}</div>
+                  </td>
+                  <td style="padding: 5px;padding-left: 5px;padding-top: 10px;padding-right: 10px;width: 100px;padding-bottom: 5px;" class="td_label">
+                    <div class="label" style="width: 100%;vertical-align: middle;">{{=response.movement_form.custom.label.product_id}}</div></td>
+                  <td style="padding: 5px;vertical-align: middle;padding-right: 10px;padding-bottom: 5px;padding-top: 10px;">
+                    {{=response.movement_product_id}}{{=response.movement_product_control}}{{=response.movement_shippingdate}}
+                  </td>
+                  <td style="width: 80px;padding: 5px;padding-top: 10px;padding-right: 5px;padding-bottom: 5px;" class="td_label">
+                    <div class="label" style="width: 100%;padding: 5px;vertical-align: middle;">{{=response.movement_form.custom.label.qty}}</div></td>
+                  <td style="padding: 10px;padding-top: 10px;padding-right: 5px;width: 100px;padding-bottom: 5px;">{{=response.movement_form.custom.widget.qty}}</td>
+                  <td style="padding: 5px;padding-left: 10px;padding-top: 10px;padding-right: 10px;width: 100px;padding-bottom: 5px;" class="td_label">
+                    <div class="label" style="width: 100%;vertical-align: middle;">{{=response.movement_form.custom.label.shared}}</div></td>
+                  <td style="width: 20px;;padding: 5px;vertical-align: middle;padding-right: 5px;padding-bottom: 5px;">
+                    {{=response.movement_form.custom.widget.shared}}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding: 5px;padding-left: 10px;padding-top: 6px;padding-right: 5px;width: 100px;padding-bottom: 10px;" class="td_label">
+                    <div class="label" style="width: 100%;padding: 5px;vertical-align: middle;">{{=T("Warehouse")}}</div></td>
+                  <td style="padding: 10px;padding-top: 7px;padding-right: 5px;width: 235px;padding-bottom: 10px;">{{=response.movement_place_control}}{{=response.movement_place_id}}</td>
+                  <td style="padding: 5px;padding-left: 10px;padding-top: 6px;padding-right: 10px;width: 100px;padding-bottom: 10px;" class="td_label">
+                    <div class="label" style="width: 100%;vertical-align: middle;">{{=response.movement_form.custom.label.notes}}</div></td>
+                  <td style="padding: 5px;vertical-align: middle;padding-right: 20px;padding-bottom: 10px;">
+                    {{=response.movement_form.custom.widget.notes}}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          {{elif response.transtype_name=="production":}}
+          <tr>
+            <td style="padding: 0px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="width: 100px;padding-top: 10px;" class="td_label">
+                    <div class="label" style="text-align: center;">
+                    <span id="label_movement_id">000000</span>{{=response.movement_id}}{{=response.movement_trans_id}}</div>
+                  </td>
+                  <td style="padding: 5px;padding-left: 5px;padding-top: 10px;padding-right: 5px;width: 130px;padding-bottom: 5px;" class="td_label">
+                    <div class="label" style="width: 100%;padding: 5px;vertical-align: middle;">{{=response.movement_form.custom.label.shippingdate}}</div></td>
+                  <td style="padding: 10px;padding-top: 10px;padding-right: 10px;width: 130px;padding-bottom: 5px;">{{=response.movement_shippingdate_enabled}}</td>
+                  <td style="padding: 5px;padding-left: 5px;padding-top: 10px;padding-right: 10px;width: 100px;padding-bottom: 5px;" class="td_label">
+                    <div class="label" style="width: 100%;vertical-align: middle;">{{=response.movement_form.custom.label.product_id}}</div></td>
+                  <td style="padding: 5px;vertical-align: middle;padding-right: 20px;padding-bottom: 5px;padding-top: 10px;">
+                    {{=response.movement_product_id}}{{=response.movement_product_control}}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding: 5px;padding-left: 10px;padding-top: 6px;padding-right: 5px;width: 100px;padding-bottom: 10px;" class="td_label">
+                    <div class="label" style="width: 100%;padding: 5px;vertical-align: middle;">{{=T("Warehouse")}}</div></td>
+                  <td style="padding: 10px;padding-top: 7px;padding-right: 5px;width: 235px;padding-bottom: 10px;">{{=response.movement_place_control}}{{=response.movement_place_id}}</td>
+                  <td style="padding: 5px;padding-left: 10px;padding-top: 6px;padding-right: 5px;width: 100px;padding-bottom: 10px;" class="td_label">
+                    <div class="label" style="width: 100%;padding: 5px;vertical-align: middle;">{{=response.movement_form.custom.label.qty}}</div></td>
+                  <td style="padding: 10px;padding-top: 7px;padding-right: 5px;width: 90px;padding-bottom: 10px;">{{=response.movement_form.custom.widget.qty}}</td>
+                  <td style="padding: 5px;padding-left: 10px;padding-top: 6px;padding-right: 10px;width: 100px;padding-bottom: 10px;" class="td_label">
+                    <div class="label" style="width: 100%;vertical-align: middle;">{{=response.movement_form.custom.label.notes}}</div></td>
+                  <td style="padding: 5px;vertical-align: middle;padding-right: 20px;padding-bottom: 10px;">
+                    {{=response.movement_form.custom.widget.notes}}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          {{else:}}
+          <tr>
+            <td style="padding: 0px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="width: 100px;padding-top: 10px;" class="td_label">
+                    <div class="label" style="text-align: center;">
+                    <span id="label_movement_id">000000</span>{{=response.movement_id}}{{=response.movement_trans_id}}</div>
+                  </td>
+                  <td style="padding: 5px;padding-left: 5px;padding-top: 10px;padding-right: 5px;width: 130px;padding-bottom: 5px;" class="td_label">
+                    <div class="label" style="width: 100%;padding: 5px;vertical-align: middle;">{{=response.movement_form.custom.label.shippingdate}}</div></td>
+                  <td style="padding: 10px;padding-top: 10px;padding-right: 0px;width: 100px;padding-bottom: 5px;">{{=response.movement_shippingdate_disabled}}{{=response.movement_shippingdate}}</td>
+                  <td style="padding: 5px;padding-left: 5px;padding-top: 10px;padding-right: 10px;width: 100px;padding-bottom: 5px;" class="td_label">
+                    <div class="label" style="width: 100%;vertical-align: middle;">{{=response.movement_form.custom.label.product_id}}</div></td>
+                  <td style="padding: 5px;vertical-align: middle;padding-right: 20px;padding-bottom: 5px;padding-top: 10px;">
+                    {{=response.movement_product_id}}{{=response.movement_product_control}}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding: 5px;padding-left: 10px;padding-top: 6px;padding-right: 5px;width: 100px;padding-bottom: 10px;" class="td_label">
+                    <div class="label" style="width: 100%;padding: 5px;vertical-align: middle;">{{=T("Warehouse")}}</div></td>
+                  <td style="padding: 10px;padding-top: 7px;padding-right: 5px;width: 235px;padding-bottom: 10px;">{{=response.movement_place_planumber}}{{=response.movement_place_id}}</td>
+                  <td style="padding: 5px;padding-left: 10px;padding-top: 6px;padding-right: 5px;width: 100px;padding-bottom: 10px;" class="td_label">
+                    <div class="label" style="width: 100%;padding: 5px;vertical-align: middle;">{{=response.movement_form.custom.label.qty}}</div></td>
+                  <td style="padding: 10px;padding-top: 7px;padding-right: 5px;width: 90px;padding-bottom: 10px;">{{=response.movement_form.custom.widget.qty}}</td>
+                  <td style="padding: 5px;padding-left: 10px;padding-top: 6px;padding-right: 10px;width: 100px;padding-bottom: 10px;" class="td_label">
+                    <div class="label" style="width: 100%;vertical-align: middle;">{{=response.movement_form.custom.label.notes}}</div></td>
+                  <td style="padding: 5px;vertical-align: middle;padding-right: 20px;padding-bottom: 10px;">
+                    {{=response.movement_form.custom.widget.notes}}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          {{pass}}
+        </table>
+        
+        {{pass}}
+      </div>
+    </div>
+    {{=response.view_movement}}
+    {{=response.movement_form.custom.end}}
+  </div>
+	<div id="tabs-2" style="overflow: auto;">
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td style="padding: 0px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="border-style: solid;border-top:none;border-width: 5px;border-color: #CCCCCC;">
+            <tr>
+              {{if response.cmd_fields:}}
+              <td style="width: 16px;padding-right: 0px;padding-top: 7px;">
+                  {{=response.cmd_fields}}</td>
+              {{pass}}
+              <td style="width: 150px;padding-left: 3px;padding-right: 5px;" class="td_label">
+                {{if response.cmb_fields:}}
+                <div class="label" style="width: 150px;padding-right: 0px;font-size: small;" class="label">
+                  {{=T('Additional Data')}}</div>
+                {{else:}}
+                <div style="height: 30px;"></div>
+                {{pass}}
+              </td>
+              <td>
+                  {{=response.cmb_fields}}</td>
+            </tr>
+          </table>
+        </td>
+        <td width="25%" style="padding-right: 10px;padding-left: 5px;text-align: left;" class="td_label_nf">
+          <div class="label" style="padding-bottom:  0px;font-size: small;min-height: 28px;">
+            {{=response.cmd_groups_add}}
+            {{=response.cmd_groups}}
+            {{=T('Transaction Groups')}}
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td style="vertical-align: top; padding: 0px;">
+          <div id="edit_fieldvalue"
+            style="display: none;border-style: solid;border-width: 7px;border-color: #CCCCCC;padding: 8px;padding-bottom: 3px;border-top-width: 2px;" >
+            {{=response.fieldvalue_form.custom.begin}}
+            <div id="frm_head_field">
+              <table width="100%" style="background-color: #2B2B2B;" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding-left: 10px;">
+                    <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.fieldvalue_icon}}" />
+                    <span style="vertical-align: middle;color: #FFD700;font-weight: bold;padding-right: 10px;">{{=T('FIELD')}}</span>
+                    <span id="title_item" 
+                      style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;">
+                      {{=response.transnumber}}</span>
+                  </td>
+                  <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
+                    {{=response.cmd_fieldvalue_submit}}
+                  </td>
+                  <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
+                    {{=response.cmd_help}}{{=response.cmd_fieldvalue_cancel}}
+                  </td>
+                </tr>
+              </table>
+              <table style="border-style: solid;border-width: 1px;border-color: #CCCCCC;border-top: none;" 
+                width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="width: 200px;vertical-align: top;padding-top: 11px;padding-right: 10px;" class="td_label">
+                    <div id="fieldvalue_description" class="label" style="width: 100%;" ></div>
+                  </td>
+                  <td style="padding-top: 10px;vertical-align: middle;padding-right: 20px;">
+                    <div id="fieldvalue_value_controls">
+                      <input id="fieldvalue_value" type="hidden" name="value" value="">
+                      <input id="fieldvalue_value_bool" 
+                        type="checkbox" name="value_bool" class="boolean" value="true" checked="checked" style="display: none;width: 100%;">
+                      <input id="fieldvalue_value_integer" 
+                        type="text" name="value_integer" class="integer" value="" style="display: none;width: 100%;text-align: right;" >
+                      <input id="fieldvalue_value_float" 
+                        type="text" name="value_float" class="double" value="" style="display: none;width: 100%;text-align: right;" >
+                      <input id="fieldvalue_value_date" 
+                        type="text" name="value_date" class="date" value="" style="display: none;width: 100%;text-align: center;" >
+                      <input id="fieldvalue_value_password" 
+                        type="password" name="value_password" value="" style="display: none;width: 100%;" >
+                      <input id="fieldvalue_value_text" 
+                        type="text" name="value_text" value="" style="display: none;width: 100%;" >
+                      <select id="fieldvalue_value_valuelist" 
+                        name="value_valuelist" class="generic-widget" style="width: 100%;height: 30px;display: none;"></select>
+                      <textarea id="fieldvalue_value_notes" 
+                        name="value_notes" class="text" style="width: 100%;height:auto;min-height:90px;display: none;"></textarea>
+                      {{=response.fieldvalue_customer_selector}}
+                      {{=response.fieldvalue_tool_selector}}
+                      {{=response.fieldvalue_product_selector}}
+                      {{=response.fieldvalue_transitem_selector}}
+                      {{=response.fieldvalue_transpayment_selector}}
+                      {{=response.fieldvalue_transmovement_selector}}
+                      {{=response.fieldvalue_project_selector}}
+                      {{=response.fieldvalue_employee_selector}}
+                      {{=response.fieldvalue_place_selector}}
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="2" style="vertical-align: top;padding-right: 20px;" class="td_label">
+                    <div class="label">{{=response.fieldvalue_form.custom.label.notes}}</div></td>
+                </tr>
+                <tr>
+                  <td colspan="2" style="padding: 10px;padding-top: 0px;padding-right: 20px;">
+                    {{=response.fieldvalue_form.custom.widget.notes}}</td>
+                </tr>
+              </table>
+            </div>
+            {{=response.fieldvalue_id}}
+            {{=response.fieldvalue_ref_id}}
+            {{=response.fieldvalue_fieldname}}
+            {{=response.fieldvalue_fieldtype}}
+            {{=response.fieldvalue_readonly}}
+            {{=response.fieldvalue_form.custom.end}}
+          </div>
+          {{=response.view_fields}}
+        </td>
+        <td style="vertical-align: top;padding-top: 0px; padding-right: 0px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="padding: 0px;height: 100%;" >
+            <tr>
+              <td style="vertical-align:top; padding: 0px;padding-right: 0px;">{{=response.cmb_groups}}</td>
+            </tr>
+            <tr>
+              <td style="vertical-align: top; padding: 0px;">
+                {{=response.view_trans_groups}}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
+  </div>
+{{pass}}
+
+<script language="javascript">
+<!--
+ jQuery("#nwc_input input:visible:enabled:first").focus();
+//-->
+</script>

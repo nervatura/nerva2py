@@ -1,0 +1,122 @@
+<template>
+  <report title="CUSTOMER DATASHEET" left-margin="15" top-margin="15" right-margin="15" decode="utf-8" encode="latin_1" />
+  <header>
+    <row height="10">
+      <image file="http://nervatura.com/welcome/static/images/icon24_ntura.png" link="http://www.nervatura.com"/>
+      <cell value="CUSTOMER DATASHEET" font-style="BI" font-size="26" color="14212058"/>
+      <cell value="={{head.0.custnumber}}" align="R" font-style="B" />
+    </row>
+    <hline border-color="14212058"/>
+    <vgap height="2"/>
+  </header>
+  <details>
+    <vgap height="2"/>
+    <row hgap="2">
+      <cell name="label" value="Customer No." font-style="B" background-color="14212058"/>
+      <cell name="custnumber" value="={{head.0.custnumber}}" border="1" border-color="14212058"/>
+      <cell name="label" value="Name" font-style="B" background-color="14212058"/>
+      <cell name="custname" value="={{head.0.custname}}" border="1" border-color="14212058"/>
+    </row>
+    <vgap height="2"/>
+    <row hgap="2">
+      <cell name="label" value="Customer type" font-style="B" background-color="14212058"/>
+      <cell name="custtype" value="={{head.0.custtype}}" border="1" border-color="14212058"/>
+      <cell name="label" value="Taxnumber" font-style="B" background-color="14212058"/>
+      <cell name="taxnumber" value="={{head.0.taxnumber}}" border="1" border-color="14212058"/>
+    </row>
+    <vgap height="2"/>
+    <row hgap="2">
+      <cell name="label" value="Tax free" font-style="B" background-color="14212058"/>
+      <cell name="notax" value="={{head.0.notax}}" border="1" border-color="14212058"/>
+      <cell name="label" value="Inactive" font-style="B" background-color="14212058"/>
+      <cell name="inactive" value="={{head.0.inactive}}" border="1" border-color="14212058"/>
+      <cell name="label" value="Account" font-style="B" background-color="14212058"/>
+      <cell name="account" value="={{head.0.account}}" border="1" border-color="14212058"/>
+    </row>
+    <vgap height="2"/>
+    <row hgap="2">
+      <cell name="label" value="Due Date (day)" font-style="B" background-color="14212058"/>
+      <cell name="terms" align="R" value="={{head.0.terms}}" border="1" border-color="14212058"/>
+      <cell name="label" value="Discount(%)" font-style="B" background-color="14212058"/>
+      <cell name="discount" align="R" value="={{head.0.discount}}" border="1" border-color="14212058"/>
+      <cell name="label" value="Credit limit" font-style="B" background-color="14212058"/>
+      <cell name="creditlimit" align="R" value="={{head.0.creditlimit}}" border="1" border-color="14212058"/>
+    </row>
+    <vgap height="2"/>
+    <row hgap="2">
+      <cell name="label" value="Notes" font-style="B" background-color="14212058"/>
+      <cell name="notes" multiline="true" value="={{head.0.notes}}" border="1" border-color="14212058"/>
+    </row>
+    <vgap height="2"/>
+    <hline border-color="14212058"/>
+    <vgap height="2"/>
+    <row>
+      <cell name="label" value="Additional data" align="C" font-style="B" background-color="14212058"/>
+    </row>
+    <datagrid name="fieldvalue" databind="fieldvalue" border="1" border-color="14212058">
+      <header background-color="14212058"/>
+      <columns>
+        <column width="4%" fieldname="counter" align="R" label="No."/>
+        <column width="25%" fieldname="fielddef" label="Description"/>
+        <column width="32%" fieldname="value" label="Value"/>
+        <column width="40%" fieldname="notes" label="Comment"/>
+      </columns>  
+    </datagrid>
+    <vgap height="5"/>
+    <row>
+      <cell name="label" value="Address details" align="C" font-style="B" background-color="14212058"/>
+    </row>
+    <datagrid name="address" databind="address" border="1" border-color="14212058">
+      <header background-color="14212058"/>
+      <columns>
+        <column width="4%" fieldname="counter" align="R" label="No."/>
+        <column width="10%" fieldname="zipcode" label="Zipcode"/>
+        <column width="20%" fieldname="city" label="City"/>
+        <column width="27%" fieldname="street" label="Street"/>
+        <column width="40%" fieldname="notes" label="Notes"/>
+      </columns>  
+    </datagrid>
+    <vgap height="5"/>
+    <row>
+      <cell name="label" value="Contact details" align="C" font-style="B" background-color="14212058"/>
+    </row>
+    <datagrid name="contact" databind="contact" border="1" border-color="14212058">
+      <header background-color="14212058"/>
+      <columns>
+        <column width="4%" fieldname="counter" align="R" label="No."/>
+        <column width="12%" fieldname="firstname" label="Firstname"/>
+        <column width="12%" fieldname="surname" label="Surname"/>
+        <column width="6%" fieldname="status" label="Status"/>
+        <column width="11%" fieldname="phone" label="Phone"/>
+        <column width="11%" fieldname="fax" label="Fax"/>
+        <column width="11%" fieldname="mobil" label="Mobil"/>
+        <column width="20%" fieldname="email" label="Email"/>
+        <column width="14%" fieldname="notes" label="Notes"/>
+      </columns>  
+    </datagrid>
+    <vgap height="5"/>
+    <row>
+      <cell name="label" value="Events" align="C" font-style="B" background-color="14212058"/>
+    </row>
+    <datagrid name="event" databind="event" border="1" border-color="14212058">
+      <header background-color="14212058"/>
+      <columns>
+        <column width="4%" fieldname="counter" align="R" label="No."/>
+        <column width="18%" fieldname="calnumber" label="Event No."/>
+        <column width="15%" fieldname="eventgroup" label="Group"/>
+        <column width="12%" align="C" fieldname="fromdate" label="Date From"/>
+        <column width="12%" align="C" fieldname="todate" label="Date To"/>
+        <column width="20%" fieldname="subject" label="Subject"/>
+        <column width="20%" fieldname="description" label="Description"/>
+      </columns>  
+    </datagrid>
+  </details>
+  <footer>
+    <vgap height="2"/>
+    <hline border-color="14212058"/>
+    <row height="10">
+      <cell value="www.nervatura.com" link="http://nervatura.com" font-style="BI" color="2162943"/>
+      <cell value="{{pages}}/{{page}}" align="R" font-style="B"/>
+    </row>
+  </footer>
+</template>

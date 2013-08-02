@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+import os
+
+import sys
+os.chdir(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'wsgi', 'nerva2py'))
+sys.path.append(os.path.join(os.environ['OPENSHIFT_REPO_DIR'], 'wsgi', 'nerva2py'))
+
+from gluon.main import wsgibase as application
+
+if __name__ == '__main__':
+	from wsgiref.simple_server import make_server
+	httpd = make_server('localhost', 8051, application)
+	# Wait for a single request, serve it and quit.
+	httpd.handle_request()

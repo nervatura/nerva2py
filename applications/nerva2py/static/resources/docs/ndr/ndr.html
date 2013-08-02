@@ -1,0 +1,407 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Nervatura Data Representation</title>
+<link rel="shortcut icon" href="{{=URL('static','favicon.ico')}}">
+<style type="text/css">
+.body {
+  background-color: #ffffff;
+  padding: 20pt 42.5pt 42.5pt 42.5pt;
+  font-family: sans-serif;
+  color: #444444;
+}
+a {
+    text-decoration: none;
+    color: #3B7687;
+}
+th,td {
+  padding: 5px;
+}
+.fhead {
+  background-color: #E5E5E5;
+  font-weight: bold;
+  color: #8B2500;
+}
+.fdesc {
+  font-style: italic;
+}
+.fname {
+  color: red;
+  background-color: #FFE7BA;
+}
+.ftype {
+  color: #000000;
+  font-weight: normal;
+}
+.defvalue {
+  color: #0F0F0F;
+  font-weight: normal;
+  font-style: italic;
+}
+.retpar {
+  font-weight: bold;
+  color: #8B2500;
+}
+.exblock {
+  background-color: #F5F5F5;
+  padding: 5px;
+}
+</style>
+</head>
+<body class="body">
+  <h1 align="center" style="margin-bottom: 0px;">
+    Nervatura Data Representation 
+  </h1>
+  <p align="center"><b><i>Ver.No: {{=response.verNo}}</i></b></p>
+  
+  <p>
+    <b>Function Overview</b>
+  </p>
+  
+  <table
+    style="border-width: 1px; border-style: solid; border-collapse: collapse;"
+    border="1" cellpadding="2" cellspacing="0" width="100%">
+    <tbody>
+      <tr bgcolor="#E5E5E5">
+        <th>Name</th>
+        <th>Return type</th>
+        <th>Parameters in encoding</th>
+        <th width="100%">Parameters</th>
+      </tr>
+      <tr>
+        <td><a href="#getAppl">getAppl</a></td>
+        <td>Any type</td>
+        <td>No</td>
+        <td>appl</td>
+      </tr>
+      <tr>
+        <td><a href="#getHelp">getHelp</a></td>
+        <td>text/html</td>
+        <td>No</td>
+        <td>appl, page, lang, title, subtitle</td>
+      </tr>
+      <tr>
+        <td><a href="#getResource">getResource</a></td>
+        <td>Any type</td>
+        <td>No</td>
+        <td>file_name, lang, file_type, content</td>
+      </tr>
+      <tr>
+        <td><a href="#exportToExcel">exportToExcel</a></td>
+        <td>application/vnd.ms-excel</td>
+        <td>Optional: amf or base64</td>
+        <td>code, sheet, view</td>
+      </tr>
+      <tr>
+        <td><a href="#exportToICalendar">exportToICalendar</a></td>
+        <td>text/ics</td>
+        <td>Optional: no or base64</td>
+        <td>code, database, username, password, calnumber, alldata</td>
+      </tr>
+      <tr>
+        <td><a href="#exportToReport">exportToReport</a></td>
+        <td>Optional</td>
+        <td>Optional: no or base64</td>
+        <td>code, database, username, password, reportcode, filters, output, orientation, size, printername, copies</td>
+      </tr>
+      <tr>
+        <td><a href="#createDataBackup">createDataBackup</a></td>
+        <td>Optional</td>
+        <td>Optional: no or base64</td>
+        <td>code, database, username, password, btype, bformat, lst_nom, filename</td>
+      </tr>
+      <tr>
+        <td><a href="#restoreDataBackup">restoreDataBackup</a></td>
+        <td>text/html</td>
+        <td>Optional: no or base64</td>
+        <td>code, database, username, password, filename, bfile</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <p>
+    <b>Function Details</b>
+  </p>
+      
+  <table
+    style="border-width: 1px; border-style: solid; border-collapse: collapse;"
+    border="1" cellpadding="2" cellspacing="0" width="100%">
+    <tbody>
+    <tr class="fhead">
+        <td><a name="getAppl" class="fname">getAppl</a>(appl<span class="ftype">::String</span>)
+          <span class="ftype">::Any type</span></td>
+      </tr>
+      <tr>
+        <td>
+          <p class="fdesc">Redirect to the 
+            static/resources/application/<span class="retpar">appl</span> file.
+          </p>
+          <p class="exblock"><b><u><i>Example:</i></u></b><br><br>
+            http://localhost:8000/nerva2py/ndr/getAppl?appl=nflex/nervex.html
+          </p>
+          <p>The result is the redirected file.</p>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="getHelp" class="fname">getHelp</a>(appl<span class="ftype">::String</span>, 
+          page<span class="ftype">::String</span>,
+          lang<span class="ftype">::String</span><span class="defvalue">=en</span>,
+          title<span class="ftype">::String</span><span class="defvalue">=''</span>,
+          subtitle<span class="ftype">::String</span><span class="defvalue">=''</span>)
+          <span class="ftype">::text/html</span></td>
+      </tr>
+      <tr>
+        <td>
+          <p class="fdesc">Returns the 
+            static/resources/application/<span class="retpar">appl</span>/help/<span class="retpar">
+              lang</span>/<span class="retpar">page</span>.html file. If <span class="retpar">page</span> 
+              does not exist, the index.html is returned.<br>
+              The <span class="retpar">title</span> 
+              and <span class="retpar">subtitle</span> variables are passed to the file.<br>
+          </p>
+          <p>The result is an html file.</p>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="getResource" class="fname">getResource</a>(file_name<span class="ftype">::String</span>, 
+          lang<span class="ftype">::String</span><span class="defvalue">=''</span>,
+          file_type<span class="ftype">::String</span><span class="defvalue">='html'</span>,
+          content<span class="ftype">::String</span><span class="defvalue">=''</span>)
+          <span class="ftype">::Any type</span></td>
+      </tr>
+      <tr>
+        <td>
+          <p class="fdesc">Returns the 
+            static/resources/<span class="retpar">file_name</span>_<span class="retpar">
+              lang</span>.<span class="retpar">file_type</span> file.<br>
+						The file path is limited to the [resources/download/...] or
+						[resources/docs/...] or [resources/report/...] directories.<br>
+            <span class="retpar">lang</span>: optional, else 
+            <span class="retpar">file_name</span>.<span class="retpar">file_type</span><br>
+            <span class="retpar">file_type</span>: optional. Default value: html.<br>
+            <span class="retpar">content</span>: optional. Valid value:
+						view or a html Content-Type. In this case, if the <span class="retpar">file_type</span>
+						are set, the result Content-Disposition = 'attachment;filename='.
+					</p>
+					<p class="exblock"><b><u><i>Example:</i></u></b><br><br>
+            http://localhost:8000/nerva2py/ndr/getResource?file_name=docs/nom/nom&content=view&lang=auto
+          </p>
+          <p>The result is the requested file.</p>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="exportToExcel" class="fname">exportToExcel</a>(code<span class="ftype">::String</span>,
+          sheet<span class="ftype">::Object</span>,
+          view<span class="ftype">::Object</span>)<span class="ftype">::application/vnd.ms-excel</span></td>
+      </tr>
+      <tr>
+        <td>
+          <p><b>Is not supported. Only compatibility.</b></p>
+          <p><b><i>Use the <a href="{{=URL( 'ndr', 'getResource')+'?file_name=docs/ndi/ndi&content=view&lang=auto#structure'}} target="_blank"">
+            getData function of NDI</a> (output=excel)!</i></b></p>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="exportToICalendar" class="fname">exportToICalendar</a>(code<span class="ftype">::String</span>,
+          database<span class="ftype">::String</span>, 
+          username<span class="ftype">::String</span>,
+          password<span class="ftype">::String</span>,
+          calnumber<span class="ftype">::String</span>,
+          alldata<span class="ftype">::String</span><span class="defvalue">=''</span>)
+          <span class="ftype">::text/ics</span></td>
+      </tr>
+      <tr>
+        <td>
+          <p class="fdesc">
+						<span class="retpar">code</span>: base64 or none or
+						missing. If the value is "base64", all other parameters are encoded in base64.<br>
+						<span class="retpar">database</span>:
+              an <b>NAS</b> alias set for a database<br>
+            <span class="retpar">username</span>:
+              valid username for the database<br>
+            <span class="retpar">password</span>:
+              MD5 encoded user password (or an empty string if not set)<br>
+            <span class="retpar">calnumber</span>:
+              an valid Event No.<br>
+            <span class="retpar">alldata</span>:
+              Optional. All additional data will be exported. Default: no export (missing).
+				  </p>
+				  <p><b>Only to be used if the database (and the user) NDI or NPI access enabled!</b></p>
+          <p class="exblock"><b><u><i>Example:</i></u></b><br><br>
+            http://localhost:8000/nerva2py/ndr/exportToICalendar?code=none&database=demo&username=demo&password=&calnumber=DMEVT/00001
+          </p>
+          <p>The result is an <a href="http://en.wikipedia.org/wiki/ICalendar">iCalendar</a> file.</p>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="exportToReport" class="fname">exportToReport</a>(code<span class="ftype">::String</span>,
+          database<span class="ftype">::String</span>, 
+          username<span class="ftype">::String</span>,
+          password<span class="ftype">::String</span>,
+          reportcode<span class="ftype">::String</span>,
+          filters<span class="ftype">::String</span>,
+          output<span class="ftype">::String</span><span class="defvalue">='html'</span>,
+          orientation<span class="ftype">::String</span><span class="defvalue">='P'</span>,
+          size<span class="ftype">::String</span><span class="defvalue">='A4'</span>,
+          printername<span class="ftype">::String</span><span class="defvalue">=''</span>,
+          copies<span class="ftype">::Integer</span><span class="defvalue">=1</span>)
+          <span class="ftype">::Optional</span></td>
+      </tr>
+      <tr>
+        <td>
+          <p class="fdesc">
+            <span class="retpar">code</span>: base64 or none or
+            missing. If the value is "base64", all other parameters are encoded in base64.<br>
+            <span class="retpar">database</span>:
+              an <b>NAS</b> alias set for a database<br>
+            <span class="retpar">username</span>:
+              valid username for the database<br>
+            <span class="retpar">password</span>:
+              MD5 encoded user password (or an empty string if not set)<br>
+            <span class="retpar">reportcode</span>:
+              an valid reportkey from ui_report table<br>
+            <span class="retpar">filters</span>:
+              report parameter fieldname = value pairs, the pairs | separated. The fields are defined in the ui_reportfields table.<br>
+              For example: fieldname1=value1|fieldname2=value2|fieldname3=value3<br><br>
+            Additional parameters (Nervatura Report):<br>
+            <span class="retpar">output</span>:
+              optional. Valid values: html,xml,pdf,printer. Default value: html.<br>
+            <span class="retpar">orientation</span>:
+              optional. Valid values: P (Portrait) or L (Landscape). Default value: P.<br>
+            <span class="retpar">size</span>:
+              optional. Valid values: A3,A4,A5,Letter,Legal. Default value: A4.<br>
+            <span class="retpar">printername</span>:
+              optional. Required for the "printer" output. Valid values: server side local or network printer, or a Cloud Printer<br>
+            <span class="retpar">copies</span>:
+              optional. Default value: 1.
+          </p>
+          <p><b>Only to be used if the database (and the user) NDI or NPI access enabled!</b></p>
+          <p class="exblock"><b><u><i>Example:</i></u></b><br><br>
+            <i>HTML Preview:</i><br>
+            http://localhost:8000/nerva2py/ndr/exportToReport?code=none&database=demo&username=demo&password=&reportcode=fpdf_customer_sheet_en&filters=@id=2
+            <br><br><i>Server-side printing:</i><br>
+            http://localhost:8000/nerva2py/ndr/exportToReport?code=none&database=demo&username=demo&password=&reportcode=fpdf_customer_sheet_en&filters=@id=2&output=printer&printername=HP-Deskjet&copies=2
+          </p>
+          <p>The result is a
+            <ul>
+              <li>HTML Report</li>
+              <li>PDF file</li>
+              <li>XLS file</li>
+              <li>XML file</li>
+              <li>server-side printing</li>
+            </ul>
+          </p>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="createDataBackup" class="fname">createDataBackup</a>(code<span class="ftype">::String</span>,
+          database<span class="ftype">::String</span>, 
+          username<span class="ftype">::String</span>,
+          password<span class="ftype">::String</span>,
+          bformat<span class="ftype">::String</span><span class="defvalue">='backup'</span>,
+          lst_nom<span class="ftype">::String</span><span class="defvalue">=''</span>,
+          filename<span class="ftype">::String</span><span class="defvalue">=''</span>)
+          <span class="ftype">::Optional</span></td>
+      </tr>
+      <tr>
+        <td>
+          <p class="fdesc">
+						Creates a customer data backup, and returns a process report or
+						the backup file. Independent of the database type and version of
+						the NAS server..<br> <br> 
+						
+						<span class="retpar"">customer</span> <b>backup type:</b><br> 
+						<span style="color: green; font-weight: bold;">NOM objects: </span>
+						address, barcode, contact, currency, customer,
+						deffield, employee, event, groups, item, link, movement,
+						numberdef, pattern, payment, place, price, product, project, rate,
+						tax, tool, trans, setting<br> 
+						<span style="color: red; font-weight: bold;">Not included: </span>
+						log, user interface objects (starting
+						with the ui_) and deleted rows (deleted flag)<br> <br> 
+						
+						
+						<span class="retpar"">settings</span> <b>backup type:</b><br> 
+						<span style="color: green; font-weight: bold;">Settings objects: </span>
+						ui_audit, ui_applview, ui_filter, ui_groupinput,
+						ui_language, ui_locale, ui_menu, ui_menufields, ui_message,
+						ui_numtotext, ui_report, ui_reportfields,
+						ui_reportsources, ui_userconfig,
+						ui_viewfields, ui_zipcatalog<br> 
+						<span style="color: red; font-weight: bold;">Not included: </span>
+						ui_printqueue and other NOM objects<br> <br> 
+						
+						<span class="retpar">code</span>: base64 or none or
+            missing. If the value is "base64", all other parameters are encoded in base64.<br>
+            <span class="retpar">database</span>:
+              an <b>NAS</b> alias set for a database<br>
+            <span class="retpar">username</span>:
+              valid username for the database<br>
+            <span class="retpar">password</span>:
+              MD5 encoded user password (or an empty string if not set)<br>
+            <span class="retpar">btype</span>:
+              backup type. Valid values: customer,settings.<br>
+            <span class="retpar">bformat</span>:
+              optional. Valid values: backup,xml. Default value: backup.<br>
+            <span class="retpar">lst_nom</span>:
+              optional. Valid values: empty (all) or a comma separeted object list. Default value: all.
+              The setting is set, the backup only when all objects are allowed!<br>
+            <span class="retpar">filename</span>:
+              optional. Valid values: empty (database name), download (direct result) or a custom filename. 
+              Default value: database name. 
+          </p>
+          <p><b>Only to be used if the database (and the user) NDI or NPI access enabled!</b></p>
+          <p class="exblock"><b><u><i>Example:</i></u></b><br><br>
+            http://localhost:8000/nerva2py/ndr/createDataBackup?code=none&database=demo&username=demo&password=&btype=customer&bformat=&lst_nom=&filename=
+          </p>
+          <p>The result is a process report or the backup (XML) file.</p>
+        </td>
+      </tr>
+      
+      <tr class="fhead">
+        <td><a name="restoreDataBackup" class="fname">restoreDataBackup</a>(code<span class="ftype">::String</span>,
+          database<span class="ftype">::String</span>, 
+          username<span class="ftype">::String</span>,
+          password<span class="ftype">::String</span>,
+          filename<span class="ftype">::String</span><span class="defvalue">=''</span>,
+          bfile<span class="ftype">::file</span><span class="defvalue">=''</span>)
+          <span class="ftype">::text/html</span></td>
+      </tr>
+      <tr>
+        <td>
+          <p class="fdesc">
+            Restores a customer backup or xml file. It is recommended to create the database before restoring!<br>
+                  
+            <span class="retpar">code</span>: base64 or none or
+            missing. If the value is "base64", all other parameters are encoded in base64.<br>
+            <span class="retpar">database</span>:
+              an <b>NAS</b> alias set for a database<br>
+            <span class="retpar">username</span>:
+              valid username for the database<br>
+            <span class="retpar">password</span>:
+              MD5 encoded user password (or an empty string if not set)<br>
+            <span class="retpar">filename</span>:
+              optional. A backup or XML filename (with extension) in the server backup directory.<br>
+            <span class="retpar">bfile</span>:
+              optional. An upload backup or XML file.
+          </p>
+          <p><b>Only to be used if the database (and the user) NDI or NPI access enabled!</b></p>
+          <p class="exblock"><b><u><i>Example:</i></u></b><br><br>
+            http://localhost:8000/nerva2py/ndr/restoreDataBackup?code=none&database=demo&username=demo&password=&filename=demo_customer.backup
+          </p>
+          <p>The result is a process report.</p>
+        </td>
+      </tr>
+      
+    </tbody>
+  </table>
+    
+</body>
+</html>
