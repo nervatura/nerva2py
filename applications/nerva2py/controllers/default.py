@@ -15,20 +15,24 @@ if 0:
   import gluon.languages.translator as T
 
 from gluon.html import URL
+from gluon.http import redirect
 import os
 
 response.title='Nervatura Framework'
 response.menu = [
-    (T('HOME'), False, URL('default','index'), []),
+    (T('HOME'), False, URL('default','startpage'), []),
     (T('DOCUMENTATION & RESOURCES'), False, URL('default','ndoc'), []),
     (T('ABOUT'), False, URL('default','about'), []),
     (T('NAS ADMIN'), False, URL('nas','index'), [])
     ]
 
 def index():
+  redirect(URL('nas','index'))
+
+def start():
   response.subtitle=T('Welcome')
   if session._language:
-    view='default/index_'+str(session._language)+'.html'
+    view='default/start_'+str(session._language)+'.html'
     folder = request.folder
     filename = os.path.join(folder, 'views', view)
     if os.path.exists(filename):

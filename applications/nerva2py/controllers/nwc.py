@@ -453,7 +453,7 @@ def setLogtable(logstate, inikey=None, nervatype=None, log_id=None):
   return True
   
 if request.user_agent().is_mobile:
-  redirect(URL(a='nerva2py', c='nmc', f='index'))
+  redirect(URL(a=request.application, c='nmc', f='index'))
 response.title=T('Nervatura Web Client')
 ns = NervaStore(request, T, db)
 dbfu = NervaTools()
