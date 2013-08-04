@@ -32,7 +32,7 @@ if not request.env.web2py_runtime_gae:
     request.data_folder = os.path.join('..','databases')
 
   ename="sqlite"
-  db = DAL('sqlite://storage.sqlite', migrate=False, fake_migrate=False, folder=response.data_folder) 
+  db = DAL('sqlite://storage.sqlite', migrate=False, fake_migrate=False, folder=request.data_folder) 
   session_db = DAL('sqlite://session.sqlite', folder=request.data_folder)
   session.connect(request, response, db = session_db)
   reload(sys)
