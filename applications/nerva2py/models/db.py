@@ -21,9 +21,19 @@ from gluon.validators import IS_IN_DB
 response.google_analytics_id = None
   
 if not request.env.web2py_runtime_gae:
+  request.data_folder = None
+  if os.path.isdir(os.path.join('..','..','data')):
+    request.data_folder = os.path.join('..','..','data')
+  elif os.path.isdir(os.path.join('..','..','databases')):
+    request.data_folder = os.path.join('..','..','databases')
+  elif os.path.isdir(os.path.join('..','data')):
+    request.data_folder = os.path.join('..','data')
+  elif os.path.isdir(os.path.join('..','databases')):
+    request.data_folder = os.path.join('..','databases')
+
   ename="sqlite"
-  db = DAL('sqlite://storage.sqlite', migrate=False, fake_migrate=False) 
-  session_db = DAL('sqlite://session.sqlite')
+  db = DAL('sqlite://storage.sqlite', migrate=False, fake_migrate=False, folder=response.data_folder) 
+  session_db = DAL('sqlite://session.sqlite', folder=request.data_folder)
   session.connect(request, response, db = session_db)
   reload(sys)
   sys.setdefaultencoding("utf-8")#@UndefinedVariable

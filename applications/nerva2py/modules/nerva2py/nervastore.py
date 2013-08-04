@@ -165,7 +165,7 @@ class NervaStore(object):
   
   def setConnect(self, uri, pool_size=0):
     try:
-      self.db = DAL(uri=uri, pool_size=pool_size)
+      self.db = DAL(uri=uri, pool_size=pool_size, folder=self.request.data_folder)
     except Exception, err:
       self.error_message = err
       self.db = None

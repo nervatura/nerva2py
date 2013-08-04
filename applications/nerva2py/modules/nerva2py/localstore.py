@@ -53,7 +53,6 @@ def setEngine(ns, database, check_ndi=False, created=False):
       conStr = conStr.replace("localhost", arows[0].host)
     else:
       conStr = conStr.replace("localhost", arows[0].host+":"+str(arows[0].port))
-  print "Connect to "+conStr
   ns.setConnect(uri=conStr, pool_size=0)
   if ns.db!=None:
     if ns.defineTable(create=created)==False:
