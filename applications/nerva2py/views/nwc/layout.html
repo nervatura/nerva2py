@@ -1,0 +1,193 @@
+{{footer_enabled=True}}
+<!DOCTYPE html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]><html class="ie ie6 ie-lte9 ie-lte8 ie-lte7 no-js" lang="{{=T.accepted_language or 'en'}}"> <![endif]-->
+<!--[if IE 7]><html class="ie ie7 ie-lte9 ie-lte8 ie-lte7 no-js" lang="{{=T.accepted_language or 'en'}}"> <![endif]-->
+<!--[if IE 8]><html class="ie ie8 ie-lte9 ie-lte8 no-js" lang="{{=T.accepted_language or 'en'}}"> <![endif]-->
+<!--[if IE 9]><html class="ie9 ie-lte9 no-js" lang="{{=T.accepted_language or 'en'}}"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js" lang="{{=T.accepted_language or 'en'}}"> <!--<![endif]-->
+
+<style>
+/* .container{ */
+/*   margin: 0px !important; */
+/*   width: auto !important; */
+/* } */
+.vernum {
+  background-color: #444444;
+  color: #FFFFFF;
+  font-weight: bold;
+  padding: 2px;
+  font-family: sans-serif;
+  font-size: 12px;
+  font-style: italic;
+  vertical-align: middle;
+}
+.tab_label, .label, .web2py_grid  {
+  font-family: Arial, Helvetica,  sans-serif;
+  font-size: 14px !important;
+}
+</style>
+<head>
+  <meta charset="utf-8" />
+  <!-- www.phpied.com/conditional-comments-block-downloads/ -->
+  <!-- Always force latest IE rendering engine
+	   (even in intranet) & Chrome Frame
+	   Remove this if you use the .htaccess -->
+  <!--[if IE]>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge{{=not request.is_local and ',chrome=1' or ''}}">
+  <![endif]-->
+  
+  <title>{{=response.title or request.application}} {{=response.subtitle}}</title>
+  
+  <!-- http://dev.w3.org/html5/markup/meta.name.html -->
+  <meta name="application-name" content="{{=request.application}}" />
+  
+  <!-- Speaking of Google, don't forget to set your site up:
+	   http://google.com/webmasters -->
+  <meta name="google-site-verification" content="" />
+
+  <!--  Mobile Viewport Fix
+	  j.mp/mobileviewport & davidbcalhoun.com/2010/viewport-metatag
+	  device-width: Occupy full width of the screen in its current orientation
+	  initial-scale = 1.0 retains dimensions instead of zooming out if page height > device height
+	  user-scalable = yes allows the user to zoom in -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  
+  <!-- Place favicon.ico and apple-touch-icon.png in the root of your domain and delete these references -->
+  <link rel="shortcut icon" href="{{=URL('static','favicon.ico')}}" type="image/x-icon">
+  <link rel="apple-touch-icon" href="{{=URL('static','favicon.png')}}">
+  
+  <script src="{{=URL('static','js/nwc.js')}}"></script>
+
+  <!-- All JavaScript at the bottom, except for Modernizr which enables 
+	   HTML5 elements & feature detects -->
+  <script src="{{=URL('static','js/modernizr.custom.js')}}"></script>  
+ 
+  <!-- include stylesheets -->
+  {{
+  response.files.append(URL('static','css/base.css'))
+  response.files.append(URL('static','css/skeleton.css'))
+  response.files.append(URL('static','css/web2py.css'))
+  response.files.append(URL('static','css/superfish.css'))
+  response.files.append(URL('static','js/superfish.js'))
+  response.files.append(URL('static','css/nerva2py.css'))
+  }}
+
+  {{include 'web2py_ajax.html'}}
+  
+  <script type="text/javascript">
+    jQuery(function(){ jQuery('ul.sf-menu').supersubs({minWidth:12,maxWidth:30,extraWidth:3}).superfish(); });
+  </script>
+
+  {{
+  # using sidebars need to know what sidebar you want to use
+  left_sidebar_enabled = globals().get('left_sidebar_enabled',False)
+  right_sidebar_enabled = globals().get('right_sidebar_enabled',False)
+  middle_columns = {0:'sixteen',1:'twelve',2:'eight'}[
+     (left_sidebar_enabled and 1 or 0)+(right_sidebar_enabled and 1 or 0)]
+  }}
+
+  <!-- uncomment here to load jquery-ui
+  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/base/jquery-ui.css" type="text/css" media="all" />
+  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
+  uncomment to load jquery-ui //-->
+  
+  <style>
+    input[type="submit"] {
+      padding: 0px 5px 6px 5px !important;
+    }
+    input[type="button"] {
+      padding: 0px 5px 6px 5px !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="appl_url" class="{{=response.appl_url}}"></div>
+  <div class="wrapper"><!-- for sticky footer -->
+  
+    <div class="topbar">
+      <div class="container" style="margin: 0px;">    
+        <div class="sixteen columns">
+          {{is_mobile=request.user_agent().is_mobile}}
+          <div id="menu">{{=MENU(response.ns_menu, _class='mobile-menu' if is_mobile else 'sf-menu',mobile=is_mobile)}}
+          </div>
+        </div>
+      </div>
+    </div><!-- topbar -->
+    
+    <div class="flash">{{=response.flash or ''}}</div>
+    
+    <div class="header">
+      <div class="container">
+        
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="container">                 
+        {{if left_sidebar_enabled:}}
+        <div class="four columns left-sidebar">
+          {{block left_sidebar}}
+          <h3>Left Sidebar</h3>
+          <p></p>
+          {{end}}
+        </div>
+        {{pass}}
+        
+        <div class="{{=middle_columns}} columns center">
+          {{block center}}
+          {{include}}
+          {{end}}
+        </div>
+        
+        {{if right_sidebar_enabled:}}
+        <div class="four columns">
+          {{block right_sidebar}}
+          <h3>Right Sidebar</h3>
+          <p></p>
+          {{end}}
+        </div>    
+        {{pass}}
+        
+      </div><!-- container -->
+    </div><!-- main -->
+    
+    <div class="push"></div>
+  </div><!-- wrapper -->
+{{if footer_enabled:}}
+  <div class="footer">
+    <div class="container">    
+      <div class="sixteen columns">
+        {{block footer}} <!-- this is default footer -->
+        <div class="footer-content clearfix">
+          <div style="float: left;">
+            <span class="vernum">Ver.No: {{=response.verNo}}</span>&nbsp;
+            <a href="http://www.nervatura.com" target="_blank" title="Nervatura" 
+             style="font-weight: bold;">
+             <img style="vertical-align: middle;" src="{{=URL('static/images','icon24_ntura.png')}}"/>
+             <span style="vertical-align: bottom;">©2011-2013 Nervatura Project</span>
+            </a>
+          </div>
+          <div style="float: right;">
+            {{=response.icon_user}}
+		        {{=response.username}}&nbsp;
+		        {{=response.icon_address}}
+		        {{=response.alias}}&nbsp;&nbsp;
+		        <a href="http://www.web2py.com/">
+              <img style="vertical-align: middle;padding-bottom: 0;" src="{{=URL('static','images/poweredby.png')}}"/>
+            </a>
+          </div>
+        </div>
+        {{end}}	
+      </div>
+    </div><!-- container -->
+  </div><!-- footer -->
+{{pass}}
+  <!--[if lt IE 7 ]>
+	<script src="{{=URL('static','js/dd_belatedpng.js')}}"></script>
+	<script> DD_belatedPNG.fix('img, .png_bg'); //fix any <img> or .png_bg background-images </script>
+	<![endif]-->
+  {{if response.google_analytics_id:}}<script type="text/javascript"> var _gaq = _gaq || []; _gaq.push(['_setAccount', '{{=response.google_analytics_id}}']); _gaq.push(['_trackPageview']); (function() { var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s); })(); </script> {{pass}}
+</body>
+</html>
+

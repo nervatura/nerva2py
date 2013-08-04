@@ -1,0 +1,123 @@
+{{left_sidebar_enabled=right_sidebar_enabled=False}}
+{{extend 'nwc/layout.html'}}
+{{footer_enabled=False}}
+
+<style>
+body  {
+background: #808080;
+margin: 0;
+}
+.web2py_grid {
+  background-color: #FFFFFF;
+}
+.web2py_grid tbody td {
+  height:34px;
+  border-bottom: 1px solid #DDDDDD;
+  border-right: 1px solid #DDDDDD;
+}
+.main {
+  padding: 10px 0 10px 0;
+}
+#frm_head {
+  background-color: #F2F2F2;
+  border-style: solid;
+  border-width: 5px;
+{{if response.description:}}
+  width: 550px;
+{{pass}}
+}
+.head_td {
+  background-color: #2B2B2B;
+  color: #FFFFFF;
+  padding-top: 4px;
+  padding-bottom:  4px;
+  padding-left: 15px;
+  padding-right: 5px;
+  vertical-align: middle;
+}
+#frm_title input[type="submit"] {
+  height: 25px !important;
+  padding-top: 2px !important;
+  color: #008B00;
+  width: 100%;
+}
+select {
+  height: 29px;
+}
+
+td.w2p_fw {
+    width: 300px;
+}
+td.w2p_fc {
+    width: 20px;
+}
+</style>
+
+<div align="center" style="margin-top: 20px;"> 
+<div id="frm_head">
+{{if response.description:}}
+  {{=form.custom.begin}}
+{{pass}}
+<div id="frm_title">
+<table class="head" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td class="head_td" style="padding-left: 10px;">
+      <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.titleicon}}" />
+      <span style="vertical-align: middle;color: #FFD700;font-weight: bold;">{{=T("REPORTS")}}</span>
+    </td>
+    {{if response.description:}}
+      <td class="head_td" style="padding-top: 6px;padding-bottom: 2px;width: 150px;">
+        {{=response.cmd_preview}}
+      </td>
+    {{pass}}
+      <td class="head_td" width="15px" align="right" style="padding-top: 6px;padding-bottom: 2px;padding-right: 0px;">
+        {{=response.cmd_help}}
+      </td>
+    <td class="head_td" style="padding-top: 6px;padding-bottom: 2px;width: 15px;padding-left: 0px;">
+      {{=response.cmd_back}}
+    </td>
+  </tr>
+  {{if response.description:}}
+  <tr>
+    <td style="text-align: center;padding-top: 10px;padding-bottom: 2px;background-color: #DBDBDB;" colspan="4">
+      <span style="vertical-align: middle;font-style: italic;font-weight: bold;">{{=response.subtitle}}</span>
+    </td>
+  </tr>
+  <tr>
+    <td style="padding-top: 0px;padding-bottom: 10px;background-color: #DBDBDB;text-align: justify;padding-left: 10px;padding-right: 10px;" colspan="4">
+      <span style="vertical-align: middle;font-style: italic;">{{=response.description}}</span>
+    </td>
+  </tr>
+  {{pass}}
+</table>
+</div>
+
+{{if response.description:}}
+<div id="nwc_input">
+  <table style="border-style: solid;border-width: 1px;border-color: #CCCCCC;border-top: none;" width="100%" cellpadding="0" cellspacing="0">
+    {{if response.rtable:}}
+    <tr>
+      <td>
+        {{=response.rtable}}
+      </td>
+    </tr>
+    {{pass}}
+    <tr>
+      <td style="padding-top: 20px;">
+        {{=form[0]}}
+      </td>
+    </tr>
+  </table>
+  {{=form.custom.end}}
+</div>
+{{else:}}
+  {{=form}}
+{{pass}}
+</div>
+</div>
+
+<script language="javascript">
+<!--
+ jQuery("#nwc_input input:visible:enabled:first").focus();
+//-->
+</script>

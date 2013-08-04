@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>
+   {{=response.title or request.application}}
+  </title>
+  <link rel="shortcut icon" href="{{=URL('static','favicon.ico')}}">
+  {{response.files.append(URL('static','css/base.css'))}}
+  {{response.files.append(URL('static','css/superfish.css'))}}
+  {{response.files.append(URL(request.application,'static','plugin_layouts/layouts/KeepitSimple/css/style.css'))}}
+  {{response.files.append(URL('static','plugin_layouts/superfish.js'))}}
+  {{include 'web2py_ajax.html'}}
+  <style>
+ul.web2py-menu-vertical { width: 150px; position: relative; top:1em; left:1em;  z-index:30; border:0; margin:0; padding: 0; list-style: none; text-decoration: none;}
+ul.web2py-menu-vertical li { margin:0; padding:0; border:0; width: 150px; background: black; text-align:left;}
+ul.web2py-menu-vertical li a { margin:0; padding: 1px 3px 1px 3px; border:0; width: 144px; color: white; font-size:12px;}
+div.flash { position: fixed; float: right; padding: 10px; top: 10px; right: 30px; opacity: 0.75; margin: 10px 10px 10px 10px; text-align: center; clear: both; color: #fff; font-size: 11pt; text-align: center; vertical-align: middle; cursor: pointer; background: black; border: 2px solid #fff; -moz-border-radius: 5px; -webkit-border-radius: 5px; z-index: 2; }
+div.error { background-color: red; color: white; padding: 3px; }
+.auth_navbar { text-align:right; z-index:20; position: absolute; top: 2px; right:30px; border:0; padding:0 }
+input[type="submit"] {
+  font-weight: bold !important;
+}
+.nervalabel {
+  font-weight: bold;
+  color: #3B7687;
+  font-variant: small-caps;
+  font-size: xx-large;
+  font-family: sans-serif;
+}
+.vernum {
+  background-color: #3B7687;
+  color: #FFFFFF;
+  font-weight: bold;
+  padding: 3px;
+  font-family: sans-serif;
+  font-size: 12px;
+  font-style: italic;
+  vertical-align: top;
+}
+#translate {
+  margin-top: 0px;
+  width: 120px;
+  border-color: #3B7687;
+}
+  </style>
+  <!--[if lt IE 7 ]>
+    <script src="{{=URL('static','js/dd_belatedpng.js')}}"></script>
+    <script> DD_belatedPNG.fix('img, .png_bg'); //fix any <img> or .png_bg background-images </script>
+    <![endif]-->
+  {{if response.google_analytics_id:}}<script type="text/javascript"> var _gaq = _gaq || []; _gaq.push(['_setAccount', '{{=response.google_analytics_id}}']); _gaq.push(['_trackPageview']); (function() { var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s); })(); </script> {{pass}}
+ </head>
+ <body>
+  <!-- start header -->
+  <div id="container">
+		<div id="header">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0">
+				<tr>
+					<td><img src="{{=URL('static','images/icon24_ntura.png')}}" />
+						<a href="http://www.nervatura.com"><span class="nervalabel">Nervatura</span></a>
+					</td>
+					<td align="center" style="padding-top: 0px;" >{{=translate()}}</td>
+					<td align="right" style="padding-right: 0px;"><span
+						class="vernum">Ver.No: {{=response.verNo}}</span></td>
+				</tr>
+			</table>
+		</div>
+		<div id="menu" style="font-weight: bold;text-align: left;">
+     <a href={{=response.menu[0][2]}}>{{=response.menu[0][0]}}</a> 
+     <a style="padding-left: 40px;" href={{=response.menu[1][2]}}>{{=response.menu[1][0]}}</a>  
+     <a style="padding-left: 40px;" href={{=response.menu[2][2]}}>{{=response.menu[2][0]}}</a>
+     <a style="padding-right: 40px;float: right;" href={{=response.menu[3][2]}}>{{=response.menu[3][0]}}</a>
+   </div>
+   <div id="sidebar">
+    <h1>
+     {{=response.subtitle or request.application}}
+    </h1>
+   </div>
+   <div id="main">
+    <div class="flash">{{=response.flash or ''}}</div>
+    {{include}}
+   </div>
+   <div id="footer" style="font-size: x-small;">
+     <a href="http://www.nervatura.com" target="_blank" title="Nervatura" 
+             style="float: left;padding-top: 0px;padding-left: 0px;font-weight: bold;">
+             <img style="vertical-align: middle;" src="{{=URL('static/images','icon24_ntura.png')}}"/>
+             <span style="vertical-align: bottom;">©2011-2013 Nervatura Project</span>
+          </a>
+    <a href="http://www.web2py.com/" target="_blank">
+      <img style="vertical-align: middle;" src="{{=URL('static','images/poweredby.png')}}"/>
+    </a>
+    <a href="http://www.web2py.com/layouts/static/plugin_layouts/layouts/KeepitSimple/index.html" 
+      target="_blank" title="Layout design by" style="float: right;padding-top: 0px;padding-left: 10px;">
+     Layout: Keep it Simple
+    </a>
+   </div>
+  </div>
+ </body>
+</html>

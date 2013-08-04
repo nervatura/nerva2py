@@ -1,0 +1,400 @@
+{{extend 'ndi_demo/layout.html'}}
+
+<style>
+.vernum {
+  background-color: #444444;
+  color: #FFFFFF;
+  font-weight: bold;
+  padding: 2px;
+  font-family: sans-serif;
+  font-size: 12px;
+  font-style: italic;
+  vertical-align: middle;
+}
+.td_panel {
+  padding: 3px;
+  border-color: #ECECEC;
+  border-width: 2px;
+  border-style: solid;
+}
+#tabs {
+  border-width: 0px;
+  border-color: #ECECEC;
+  padding: 0px;
+  font: inherit;
+}
+.tab_label {
+  font-weight: bolder;
+}
+.ui-tabs-panel {
+  padding: 0px !important;
+}
+.rs_div {
+  width: 100%;
+  padding: 5px;
+  font-weight: bold;
+  background-color: #F5F5F5;
+}
+.td_label {
+  padding: 6px;
+  width: 90px;
+}
+.td_input {
+  width: 90px;
+  padding: 5px;
+  padding-right:10px;
+}
+.div_label {
+  background-color: #8B8B83;
+  color: #FFFFFF;
+  text-align: left;
+  padding: 4px;
+  width: 100%;
+}
+#tabs select {
+  width: 100%;
+  height: 30px;
+}
+#tabs input[type="text"] {
+  width: 100%;
+}
+#tabs input[class="double"] {
+  width: 100%;
+  text-align: right;
+}
+#tabs input[class="integer"] {
+  width: 100%;
+  text-align: right;
+}
+#tabs input[class="date"] {
+  width: 100%;
+  text-align: center;
+}
+</style>
+
+<script src="{{=URL('static','js/ndi_demo.js')}}"></script>
+<script src="{{=URL('static','js/jquery.base64.min.js')}}"></script>
+
+<script type="text/javascript">
+$(function() {
+  $("#tabs").tabs();
+});
+var ms_missing = "{{=T('Missing required field!')}}"
+</script>
+
+<table style="width: 100%;height: 100%;" cellpadding="0" cellspacing="0" border="0">
+  <tr>
+    <td colspan="2" style="background-color: #ECECEC;padding: 20px;padding-bottom: 15px;">
+      <div>
+        <div style="float: left;">
+          <span style="vertical-align: bottom;font-weight: bold;font-size: 44px;color: #8B8B83;">{{=response.subtitle}}</span>
+        </div>
+        <div style="float: right;">
+          <a href="http://www.nervatura.com" target="_blank" title="Nervatura" 
+             style="font-weight: bold;">
+             <img style="vertical-align: middle;" src="{{=URL('static/images','icon24_ntura.png')}}"/>
+             <span style="vertical-align: bottom;">©2011-2013 Nervatura Project</span>
+          </a>
+          &nbsp;<span class="vernum">Ver.No: {{=response.verNo}}</span>
+        </div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td class="td_panel" style="width: 150px;padding-right: 13px;padding-top: 5px;">
+      <div style="width: 100%; background-color: #8B8B83; font-weight: bold;font-style:italic;color: #FFFFFF;text-align: center;padding: 5px;color: #FFD700;">
+        {{=T('NOM OBJECT')}}</div>
+      <div style="width: 100%;padding: 5px;">
+        {{=response.lst_nom}}
+      </div>
+      <div style="width: 100%; background-color: #8B8B83; font-weight: bold;font-style:italic;color: #FFFFFF;text-align: center;padding: 5px;color: #FFD700;">
+        {{=T('MORE NDI DEMO')}}</div>
+      <div style="width: 100%;padding: 5px;">
+        <a href="{{=URL( 'ndr', 'show_codefile')+'?fname=demo.py'}}" 
+          title="{{=T('Server side sample program using NDI. Insert (or update) DEMO data to selected database.')}}"
+          target="_blank" style="font-weight: bold;">{{=T('Server side DEMO')}}</a>
+      </div>
+      <div style="width: 100%;padding: 5px;">
+        <a href="{{=URL( 'ndr', 'getResource')+'?file_name=download/vba_demo&content=application/zip&file_type=zip'}}"
+          title="{{=T('Sample MS Excel VBA functions using NDI.')}}"
+          target="_blank" style="font-weight: bold;">{{=T('MS Excel Loader')}}</a>
+      </div>
+      <div style="width: 100%;padding: 5px;">
+        <a href="https://docs.google.com/spreadsheet/ccc?key=0Av_B8qcKt_8pdDNhRVZYNzM0VVVrMHJzSURLWlhXY3c#gid=0"
+          title="{{=T('Sample Google Apps Script functions using NDI.')}}"
+          target="_blank" style="font-weight: bold;">{{=T('Google Spreadsheet')}}</a>
+      </div>
+    </td>
+    <td style="padding-top: 5px;">
+      <table style="width: 100%;" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="td_panel" style="padding: 5px;padding-left: 8px;padding-right: 10px;">
+            <span style="background-color: #8B8B83; font-weight: bold;font-style:italic;color: #FFD700;text-align: left;padding: 3px;padding-right: 20px;padding-left: 4px;">
+              {{=T('MORE HELP')}}</span>   
+              <a id="help_label" href="" target="_blank" style="font-weight: bold;"></a>
+              <a href="{{=URL('ndr','getResource')}}?file_name=docs/ndi/ndi&content=view&lang=auto#structure" 
+                target="_blank" style="font-weight: bold;float: right;">{{=T('The Structure and Function Types')}}</a>
+              <div style="width: 200px;float: right;">&nbsp;</div>
+              <a href="{{=URL('ndr','getResource')}}?file_name=docs/ndi/ndi&content=view&lang=auto#datatype_values" 
+                target="_blank" style="font-weight: bold;float: right;">{{=T('The datatype values')}}</a>
+          </td>
+        </tr>
+        <tr>
+          <td class="td_panel">
+            <table style="width: 100%;" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="width: 100px;">
+                  <div style="background-color: #8B8B83; font-weight: bold;font-style:italic;color: #FFD700;text-align: left;padding: 3px;width: 100px;">
+                    {{=T('NDI URL')}}</div>
+                  <div style="height: 8px;width: 100%"></div>
+                  <a class="w2p_trap buttontext button" style="height: 20px;" 
+                    href="#" onclick="sendToServer();" title="{{=T('Send the URL of the server')}}">
+                           <span style="vertical-align: middle;" class="icon rightarrow"></span>
+                           <span style="font-weight: bold;vertical-align: middle;">{{=T('Send')}}</span>
+                  </a>
+                </td>
+                <td style="padding-right: 15px;">
+                  <textarea id="rs_url" rows="3" style="width: 100%;"></textarea>
+                </td>
+              </tr>
+              <tr>
+                <td style="width: 100px;">
+                  <div style="background-color: #8B8B83; font-weight: bold;font-style:italic;color: #FFD700;text-align: left;padding: 3px;width: 100px;">
+                    {{=T('SERVER SIDE')}}</div>
+                  <div style="height: 8px;width: 100%"></div>
+                </td>
+                <td style="padding-right: 15px;">
+                  <textarea id="rs_server" rows="3" style="width: 100%;"></textarea>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td class="td_panel" style="padding: 0px;padding-top: 0px;">
+            <table style="width: 100%;background-color: #F5F5F5;font-weight: bold;" cellpadding="0" cellspacing="0">
+              <tr>
+                <td class="td_label">
+                  <div class="div_label">
+                    {{=T('code')}}</div>
+                </td>
+                <td class="td_input" style="padding-right: 0px;">
+                  <select id="code" style="width: 100%;height: 30px;" value="">
+                    <option></option>
+                    <option>base64</option>
+                    <option>base64all</option>
+                  </select>
+                </td>
+                <td class="td_label">
+                  <div class="div_label">
+                    {{=T('database')}}</div>
+                </td>
+                <td class="td_input">
+                  <input id="database" type="text" style="width: 100%" value="demo" />
+                </td>
+                <td class="td_label">
+                  <div class="div_label">
+                    {{=T('username')}}</div>
+                </td>
+                <td class="td_input">
+                  <input id="username" type="text" style="width: 100%;" value="demo" />
+                </td>
+                <td class="td_label">
+                  <div class="div_label">
+                    {{=T('password')}}</div>
+                </td>
+                <td class="td_input">
+                  <input id="password" type="password" style="width: 100%;" value="" />
+                </td>
+                <td class="td_label">
+                  <div class="div_label">
+                    {{=T('datatype')}}</div>
+                </td>
+                <td class="td_input" style="padding-right: 15px;">
+                  <input id="datatype" type="text" style="width: 100%;" disabled="disabled" value="" />
+                </td>
+              </tr>
+              <tr>
+                <td colspan="10" style="padding-left: 5px;">
+                  {{=T('Other NAS settings:')}} <i>MD5 password - NO; Encrypt data - NO; URL filter: NO</i>
+                </td>
+              </tr>
+            </table>
+            
+            <div id="tabs" style="background-color: #FFFFFF;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding: 0px;width: 100%;">
+                    <ul>     
+                      <li style="padding-top: 5px;">
+                      <a class="tab_label" style="padding-top: 3px;" href="#tabs-1">
+                        <img style="vertical-align: top;"  height="16px" width="16px" src="{{=URL('static','resources/application/ndi_demo/images/icon16_browser.png')}}" />
+                          {{=T('VIEW')}}</a>
+                      <a id="cmd_create_view" class="w2p_trap buttontext button" title="Create a URL" 
+                        style="cursor: pointer;height: 14px;padding-top: 0px;" href="#" onclick="createView();">
+                           <span style="vertical-align: middle;" class="icon check"></span>
+                           <span style="font-weight: bold;">{{=T('Create')}}</span>
+                         </a>
+                      </li>
+                      <li style="padding-top: 5px;">
+                      <a class="tab_label" style="padding-top: 3px;" href="#tabs-2">
+                        <img style="vertical-align: top;"  height="16px" width="16px" src="{{=URL('static','resources/application/ndi_demo/images/icon16_save.png')}}" />
+                          {{=T('INSERT/UPDATE')}}</a>
+                      <a class="w2p_trap buttontext button" title="Create a URL" style="cursor: pointer;height: 14px;padding-top: 0px;" href="#" onclick="createUpdate();">
+                           <span style="vertical-align: middle;" class="icon check"></span>
+                           <span style="font-weight: bold;">{{=T('Create')}}</span>
+                         </a>
+                      </li>
+                      <li style="padding-top: 5px;">
+                      <a class="tab_label" style="padding-top: 3px;" href="#tabs-3">
+                        <img style="vertical-align: top;"  height="16px" width="16px" src="{{=URL('static','resources/application/ndi_demo/images/icon16_delete.png')}}" />
+                          {{=T('DELETE')}}</a>
+                      <a class="w2p_trap buttontext button" title="Create a URL" style="cursor: pointer;height: 14px;padding-top: 0px;" href="#" onclick="createDelete();">
+                           <span style="vertical-align: middle;" class="icon check"></span>
+                           <span style="font-weight: bold;">{{=T('Create')}}</span>
+                         </a>
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+              </table>
+              
+              <div id="tabs-1" style="overflow: auto;">
+                <table style="width: 100%;" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="padding-right: 13px;">
+                      <div id="rs_nosql" class="rs_div" style="display:block;">
+                        <table style="width: 100%;background-color: #F5F5F5;font-weight: bold;" cellpadding="0" cellspacing="0">
+				                  <tr>
+				                    <td colspan="6" style="padding: 0px;">
+				                      <div id="rs_view"></div>
+				                    </td>
+				                  </tr>
+				                  <tr>
+				                    <td class="td_label">
+				                      <div class="div_label">
+				                           {{=T('output')}}</div>
+				                    </td>
+				                    <td class="td_input" style="padding-right: 0px;width: 70px;">
+				                      <select id="output" style="width: 100%;height: 30px;">
+				                        <option>text</option>
+				                        <option selected="selected">html</option>
+				                        <option>xml</option>
+				                        <option>excel</option>
+				                      </select>
+				                    </td>
+				                    <td class="td_label">
+                              <div class="div_label">
+                                {{=T('where')}}</div>
+                            </td>
+                            <td class="td_input" style="width: auto;">
+                              <input id="where" type="text" style="width: 100%;" value="" />
+                            </td>
+                            <td class="td_label">
+                              <div class="div_label">
+                                {{=T('orderby')}}</div>
+                            </td>
+                            <td class="td_input" style="width: auto;">
+                              <input id="orderby" type="text" style="width: 100%;" value="" />
+                            </td>
+				                  </tr>
+				                  <tr>
+				                    <td class="td_label">
+				                      <div class="div_label">
+				                           {{=T('show_id')}}</div>
+				                    </td>
+				                    <td class="td_input" style="width: 20px;">
+				                      <input id="show_id" type="checkbox" />
+				                    </td>
+				                    <td class="td_label">
+                              <div class="div_label">
+                                {{=T('header')}}</div>
+                            </td>
+                            <td class="td_input" style="width: auto;">
+                              <input id="header" type="text" style="width: 100%;" value="" />
+                            </td>
+                            <td class="td_label">
+                              <div class="div_label">
+                                {{=T('columns')}}</div>
+                            </td>
+                            <td class="td_input" style="width: auto;">
+                              <input id="columns" type="text" style="width: 100%;" value="" />
+                            </td>
+				                  </tr>
+				                </table>
+                      </div>
+                      <div id="rs_sql" class="rs_div" style="display: none;">
+                        <table style="width: 100%;background-color: #F5F5F5;font-weight: bold;" cellpadding="0" cellspacing="0">
+                          <tr> 
+                            <td class="td_label">
+                              <div class="div_label">
+                                   {{=T('output')}}</div>
+                            </td>
+                            <td class="td_input" style="padding-right: 0px;width: 70px;">
+                              <select id="output_sql" style="width: 100%;height: 30px;">
+                                <option>text</option>
+                                <option selected="selected">html</option>
+                                <option>xml</option>
+                                <option>excel</option>
+                              </select>
+                            </td>
+                            <td class="td_label">
+                              <div class="div_label">
+                                {{=T('sql')}}</div>
+                            </td>
+                            <td class="td_input" style="width: auto;">
+                              <textarea id="sql" rows="4" style="width: 100%;"></textarea>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <div id="tabs-2" style="overflow: auto;">
+                <table style="width: 100%;background-color: #F5F5F5;font-weight: bold;" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td class="td_label">
+                      <div class="div_label">
+                           {{=T('insert_row')}}</div>
+                    </td>
+                    <td class="td_input" style="width: 20px;">
+                      <input id="insert_row" type="checkbox" checked="checked" />
+                    </td>
+                    <td class="td_label">
+                      <div class="div_label">
+                           {{=T('insert_field')}}</div>
+                    </td>
+                    <td class="td_input" style="width: 20px;">
+                      <input id="insert_field" type="checkbox" checked="checked" />
+                    </td>
+                    <td></td>
+                  </tr>
+                </table>
+                <table style="width: 100%;" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="padding-right: 13px;">
+                      <div id="rs_update" class="rs_div"></div>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <div id="tabs-3" style="overflow: auto;">
+                <table style="width: 100%;" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="padding-right: 13px;">
+                      <div id="rs_delete" class="rs_div"></div>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+

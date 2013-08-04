@@ -1,0 +1,215 @@
+{{left_sidebar_enabled=right_sidebar_enabled=False}}
+{{extend 'nwc/layout.html'}}
+{{footer_enabled=False}}
+
+<style>
+body  {
+  background: #808080;
+  margin: 0;
+}
+.main {
+  padding: 10px 0 10px 0;
+}
+.label {
+  font-weight: bold;
+  padding: 5px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  background-color: #DBDBDB;
+}
+.label_disabled {
+  padding: 4px;
+  background-color: #FFFFFF;
+  height: 17px;
+  border: 1px solid #CCC;
+}
+.td_label {
+  vertical-align: middle;
+  padding: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+#filter_div select {
+  width: 100%;
+  height: 27px;
+}
+#filter_div input[type="submit"] {
+  height: 25px !important;
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+  color: #008B00;
+  width: 100%; 
+}
+#filter_div input[type="text"] {
+  height: 13px !important;
+  width: 100%;
+}
+#frm_head {
+  background-color: #F2F2F2;
+  border-style: solid;
+  border-width: 5px;
+}
+.web2py_grid {
+  background-color: #FFFFFF;
+  font-size: 100%;
+}
+.web2py_grid tbody td {
+  height:34px;
+  border-bottom: 1px solid #DDDDDD;
+  border-right: 1px solid #DDDDDD;
+}
+.head_td {
+  padding-top: 4px;
+  padding-bottom:  4px;
+  padding-left: 15px;
+  padding-right: 5px;
+  vertical-align: middle;
+}
+ .container{ 
+  margin: 0px;  
+} 
+.container .sixteen.columns {
+  width: auto;
+  padding-right: 10px;
+}
+.web2py_search_actions {
+  width: auto;
+}
+.web2py_counter {
+  float: left;
+  text-align: left;
+  padding-left: 10px;
+}
+{{if response.filter_form or response.edit_form:}}
+.web2py_console {
+    min-height: 27px;
+}
+{{pass}}
+
+#frm_head_edit {
+  background-color: #F2F2F2;
+  border-style: solid;
+  border-width: 5px;
+}
+#cmd_edit_submit {
+  height: 25px !important;
+  padding-top: 2px !important;
+  color: #008B00;
+  width: 100%;
+}
+#edit_form select {
+  width: 100%;
+  height: 27px;
+}
+#edit_form input[type="text"] {
+  width: 100%;
+}
+#edit_form input[class="double"] {
+  width: 100%;
+  text-align: right;
+}
+#edit_form input[class="date"] {
+  width: 100%;
+  text-align: center;
+}
+
+</style>
+
+<script>
+var ms_err_rate_missing_ratetype = "{{=T('Missing type value!')}}";
+var ms_err_rate_missing_ratedate = "{{=T('Missing date value!')}}";
+
+var ms_err_price_missing_validfrom = "{{=T('Missing Start Date!')}}";
+var ms_err_price_missing_calcmode = "{{=T('Missing calculation mode!')}}";
+var ms_err_price_no_list = "{{=T('The relationship between a customer and a group can not be set at once. List price both left blank!')}}";
+
+var ms_err_missing_curr = "{{=T('Missing currency value!')}}";
+</script>
+
+<div id="frm_head"> 
+<div class="topbar">
+  <div class="container">    
+    <div class="sixteen columns">
+      {{is_mobile=request.user_agent().is_mobile}}
+      <div id="menu" align="center" >
+        <table cellpadding="0" cellspacing="0">
+          <tr>
+            <td >
+              <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.titleicon}}" />
+              <span style="vertical-align: middle;color: #FFD700;font-weight: bold;">{{=response.browsertype}}</span>
+              <span style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;">&nbsp;
+                {{=response.subtitle[:50]}}</span>
+            </td>
+            <td style="padding-left: 50px;padding-right: 50px;">
+              {{=MENU(response.lo_menu, _class='mobile-menu' if is_mobile else 'sf-menu',mobile=is_mobile)}}
+            </td>
+            
+            <td style="padding-left:0px;padding-right: 0px;">
+              <a style="text-align:center; height: 19px;padding-top: 2px; padding-bottom: 2px;" 
+	              class="w2p_trap buttontext button" href="{{=response.export_excel}}" 
+	              target="_blank" title="{{=T('Export to Excel')}}">
+	            <span style="font-weight: bold;">{{=T('Excel')}}</span></a>
+            </td>
+            <td style="padding-left:0px;padding-right: 0px;">
+              <a style="text-align:center; height: 19px;padding-top: 2px; padding-bottom: 2px;" 
+	              class="w2p_trap buttontext button" href="{{=response.export_csv}}"
+	              target="_blank" title="{{=T('Export to csv fájl')}}">
+	            <span style="font-weight: bold;">{{=T('CSV')}}</span></a>
+            </td>
+            
+            <td style="width: 16px;padding-left:30px;padding-right: 0px;">
+              <a style="height: 15px;" class="w2p_trap buttontext button" href="{{=URL('w2help?page=browser')}}" 
+	            target="_blank" title="{{=T('Help')}}">
+	              {{=response.icon_help}}</a>
+            </td>
+            <td style="padding-left:0px;padding-right: 0px;">
+              {{if response.cmd_back:}}
+	            {{=response.cmd_back}}
+	          {{else:}}
+	            <a style="height: 15px; padding-top: 2px; padding-bottom: 6px;" class="w2p_trap buttontext button" href="{{=URL('index')}}" title="{{=T('Back')}}">
+                  <span class="icon home"></span></a>
+	          {{pass}}
+            </td>
+            {{if response.cmd_edit_new:}}
+            <td>
+              {{=response.cmd_edit_new}}
+            </td>
+            {{pass}}
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div><!-- topbar -->
+{{if response.filter_form:}}
+  {{=response.filter_form}}
+{{pass}}
+{{if response.edit_form:}}
+  <div id="edit_form"
+      style="display: none;border-style: solid;border-width: 7px;border-color: #CCCCCC;padding: 8px;padding-bottom: 3px;" >
+      {{=response.edit_form.custom.begin}}
+      <div id="frm_head_edit">
+        <table width="100%" style="background-color: #2B2B2B;" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="padding-left: 10px;vertical-align: middle;">
+              <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.edit_icon}}" />
+              <span style="vertical-align: middle;color: #FFD700;font-weight: bold;padding-right: 10px;">{{=response.edit_title}}</span>
+              <span id="title_item" 
+                style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;"></span>
+            </td>
+            <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
+              {{=response.cmd_edit_submit}}
+            </td>
+            <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
+                {{=response.cmd_edit_cancel}}
+            </td>
+          </tr>
+        </table>
+        {{=response.edit_items}}
+      </div>
+      {{=response.edit_id}}
+      {{=response.edit_form.custom.end}}
+  </div>
+{{pass}}
+{{=form}}
+</div>

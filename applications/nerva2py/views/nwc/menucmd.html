@@ -1,0 +1,224 @@
+{{left_sidebar_enabled=right_sidebar_enabled=False}}
+{{extend 'nwc/layout.html'}}
+{{footer_enabled=False}}
+
+<style>
+body  {
+background: #808080;
+margin: 0;
+}
+.main {
+  padding: 10px 0 10px 0;
+}
+#frm_head {
+{{if not response.prm_input:}}
+  width: 700px;
+{{else:}}
+  width: 500px;
+{{pass}}
+  background-color: #F2F2F2;
+  border-style: solid;
+  border-width: 5px;
+}
+td {
+  vertical-align: middle;
+}
+.web2py_grid {
+  background-color: #FFFFFF;
+}
+.web2py_grid tbody td {
+  height:34px;
+  border-bottom: 1px solid #DDDDDD;
+  border-right: 1px solid #DDDDDD;
+}
+.label {
+  font-weight: bold;
+  padding: 5px;
+  background-color: #DBDBDB;
+}
+.td_label {
+  vertical-align: middle;
+  padding: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.label_disabled {
+  padding: 5px;
+  background-color: #FFFFFF;
+  width: 97%;
+  height: 18px;
+  border: 1px solid #CCC;
+}
+.label_error {
+  padding: 5px;
+  background-color: #FF0000;
+  color: #FFFFFF;
+  width: 100%;
+  height: 18px;
+  border: 1px solid #CCC;
+}
+.td_label_nf {
+  vertical-align: middle;
+  padding: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-size: 12px;  
+}
+.web2py_console {
+  padding: 0px;
+  padding-left:10px;
+  padding-right:10px;
+  min-height: 0px !important;
+{{if not response.prm_input:}}
+  visibility:hidden;
+  height: 0px !important;
+{{pass}}  
+}
+.web2py_search_actions {
+  min-height: 0px !important;
+{{if not response.prm_input:}}
+  visibility:hidden;
+  height: 0px !important;
+{{pass}}
+}
+{{if not response.prm_input:}}
+.web2py_counter {
+  visibility:hidden;
+  height: 0px !important;
+  min-height: 0px !important;
+}
+{{pass}}
+.web2py_table {
+  font-size: small;
+}
+.web2py_grid tbody td {
+  padding-left: 4px;
+  padding-right: 6px;
+}
+input[type="submit"] {
+  height: 25px !important;
+  padding-top: 2px !important;
+  color: #008B00;
+  width: 100%;
+}
+input[type="checkbox"] {
+  vertical-align: middle;
+  margin-left: 5px;
+  margin-right: 5px;  
+}
+
+#ui_menu_menukey {
+  width: 150px;
+}
+#ui_menu_description {
+  width: 95%;
+}
+#ui_menu_funcname {
+  width: 96%;
+}
+#ui_menu_modul {
+  width: 90px;
+}
+#ui_menu_icon {
+  width: 90px;
+}
+#ui_menu_address {
+  width: 97%;
+}
+#ui_menufields_fieldname {
+  width: 150px;
+}
+#ui_menufields_description {
+  width: 95%;
+}
+#ui_menufields_fieldtype {
+  width: 100px;
+  height: 29px;
+}
+#ui_menufields_orderby {
+  width: 40px;;
+  text-align: right;
+}
+</style>
+
+<div align="center" style="margin-top: 50px;">    
+{{=form.custom.begin}}
+<div id="frm_head">
+<table width="100%" style="background-color: #2B2B2B;" 
+    cellpadding="0" cellspacing="0">
+     <tr>
+       <td style="padding-left: 10px;">
+         <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.titleicon}}" />
+         <span style="vertical-align: middle;color: #FFD700;font-weight: bold;">{{=response.title}}</span>
+         <span style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;">&nbsp;
+                {{=response.subtitle}}</span>
+       </td>
+       <td style="padding-bottom: 0px;padding-top: 4px;">
+          {{=form.custom.submit}}
+       </td>
+       <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
+         {{=response.cmd_help}}
+	     {{=response.cmd_back}}
+       </td>
+     </tr>
+   </table>
+  
+  {{if not response.prm_input:}}  	  
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td style="width:100px;padding-top: 15px;padding-bottom: 10px;padding-right: 5px;" class="td_label"><div class="label">{{=form.custom.label.menukey}}</div></td>
+      <td style="width:150px;padding-top: 15px;padding-bottom: 10px;padding-left: 0px;padding-right: 10px;">{{=form.custom.widget.menukey}}</td>
+      <td style="width:100px;padding-top: 15px;padding-bottom: 10px;padding-left: 5px;padding-right: 5px;" class="td_label"><div class="label">{{=form.custom.label.description}}</div></td>
+      <td style="padding-top: 16px;padding-bottom: 10px;padding-left: 0px;">{{=form.custom.widget.description}}</td> 
+    </tr>
+  </table>
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td style="width:100px;padding-bottom: 10px;padding-right: 5px;" class="td_label"><div class="label">{{=form.custom.label.funcname}}</div></td>
+      <td style="padding-top: 6px;padding-bottom: 10px;padding-left: 0px;padding-right: 5px;">{{=form.custom.widget.funcname}}</td>
+      <td style="width:80px;padding-bottom: 10px;padding-right: 5px;padding-left: 5px;" class="td_label"><div class="label">{{=form.custom.label.modul}}</div></td>
+      <td style="width:90px;padding-top: 6px;padding-bottom: 10px;padding-left: 0px;padding-right: 10px;">{{=form.custom.widget.modul}}</td>
+      <td style="width:80px;padding-bottom: 10px;padding-left: 5px;padding-right: 5px;" class="td_label"><div class="label">{{=form.custom.label.icon}}</div></td>
+      <td style="width:90px;padding-top: 6px;padding-bottom: 10px;padding-left: 0px;padding-right: 20px;">{{=form.custom.widget.icon}}</td>
+    </tr>
+  </table>
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td style="width:100px;padding-bottom: 15px;padding-right: 5px;" class="td_label"><div class="label">{{=form.custom.label.address}}</div></td>
+      <td style="width:100%;padding-top: 6px;padding-bottom: 15px;padding-left: 0px;padding-right: 5px;">{{=form.custom.widget.address}}</td>
+      <td style="padding-bottom: 15px;padding-left: 0px;padding-right: 0px;" class="td_label"><div class="label">{{=form.custom.label.url}}</div></td>
+      <td style="vertical-align: top;;padding-top: 9px;width: 20px;padding-left: 0px;padding-right: 7px;" >{{=form.custom.widget.url}}</td>
+    </tr>
+    <tr>
+      <td colspan="4" style="width:100%;padding-bottom: 0px;padding-right: 10px;" class="td_label"><div style="text-align: center;padding-bottom: 0px;" class="label">
+        {{=T('Parameters')}}&nbsp;{{=response.cmd_add_field}}</div></td>
+    </tr>
+    <tr>
+      <td colspan="4" style="width:100%;padding-bottom: 15px;padding-right: 10px;padding-left: 10px;" >
+        {{=view_menufields}}
+      </td>
+    </tr>
+  </table>
+  {{else:}}
+  <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+      <td style="width:100px;padding-top: 15px;padding-right: 5px;" class="td_label"><div class="label">{{=form.custom.label.fieldname}}</div></td>
+      <td style="width:150px;padding-top: 15px;padding-left: 0px;padding-right: 0px;">{{=form.custom.widget.fieldname}}</td>
+    </tr>
+    <tr>
+      <td style="padding-top: 10px;padding-left: 10px;padding-right: 5px;" class="td_label"><div class="label">{{=form.custom.label.description}}</div></td>
+      <td style="padding-top: 11px;padding-left: 0px;">{{=form.custom.widget.description}}</td> 
+    </tr>
+    <tr>
+      <td style="padding-top: 10px;padding-left: 10px;padding-right: 5px;" class="td_label"><div class="label">{{=form.custom.label.fieldtype}}</div></td>
+      <td style="padding-top: 11px;padding-left: 0px;">{{=form.custom.widget.fieldtype}}</td> 
+    </tr>
+    <tr>
+      <td style="padding-top: 10px;padding-bottom: 15px;padding-left: 10px;padding-right: 5px;" class="td_label"><div class="label">{{=form.custom.label.orderby}}</div></td>
+      <td style="padding-top: 11px;padding-bottom: 15px;padding-left: 0px;">{{=form.custom.widget.orderby}}</td> 
+    </tr>
+  </table>
+  {{pass}}
+</div>
+{{=form.custom.end}}
+</div>
