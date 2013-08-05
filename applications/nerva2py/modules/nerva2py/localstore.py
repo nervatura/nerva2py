@@ -32,12 +32,12 @@ def setEngine(ns, database, check_ndi=False, created=False):
   erow = ns.lstore(ns.lstore.engine.id == arows[0].engine_id).select()[0]
   conStr = erow.connection
   ns.engine = erow.ename
-  if str(arows[0].host).startswith("$"):
-    if os.environ.has_key(str(arows[0].host)[1:]):
-      arows[0].host = os.environ[str(arows[0].host)[1:]]
-  if str(arows[0].port).startswith("$"):
-    if os.environ.has_key(str(arows[0].port)[1:]):
-      arows[0].port = os.environ[str(arows[0].port)[1:]]
+  
+  for pardata in arows[0]:
+    if str(arows[0][pardata]).startswith("$"):
+      if os.environ.has_key(str(arows[0][pardata])[1:]):
+        arows[0][pardata] = os.environ[str(arows[0][pardata])[1:]]
+  
   if erow.ename in("sqlite"):
     conStr = conStr.replace("database", arows[0].dbname)
   elif erow.ename=="google_sql":
