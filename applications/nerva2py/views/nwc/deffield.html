@@ -1,152 +1,57 @@
-{{left_sidebar_enabled=right_sidebar_enabled=False}}
 {{extend 'nwc/layout.html'}}
-{{footer_enabled=False}}
 
 <style>
-body  {
-background: #808080;
-margin: 0;
+#frm_head {
+  width: 700px;
 }
-.main {
-  padding: 10px 0 10px 0;
-}
-#frm {
-  width: auto;
-  max-width: 700px;
-  background-color: #F2F2F2;
-  border-style: solid;
-  border-width: 5px;
-}
-.web2py_grid {
-  background-color: #FFFFFF;
-}
-.web2py_grid tbody td {
-  height:34px;
-  border-bottom: 1px solid #DDDDDD;
-  border-right: 1px solid #DDDDDD;
-}
-td {
-  vertical-align: middle;
-}
-.label {
-  font-weight: bold;
-  padding: 5px;
-  background-color: #DBDBDB;
-}
-.td_label {
-  vertical-align: middle;
-  padding: 10px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-.label_disabled {
-  padding: 5px;
-  background-color: #FFFFFF;
-  height: 18px;
-  border: 1px solid #CCC;
-}
-.label_error {
-  padding: 5px;
-  background-color: #FF0000;
-  color: #FFFFFF;
-  width: 100%;
-  height: 18px;
-  border: 1px solid #CCC;
-}
-.td_label_nf {
-  vertical-align: middle;
-  padding: 10px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  font-size: 12px;  
-}
-.w2p_fl {
-  width: 475px;
-  padding: 5px;
-  padding-left: 10px;
-  background-color: #CCCCCC;
-}
-.w2p_fw {
-  padding: 0px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  width: 495px;
-}
-.w2p_fc {
-  visibility: hidden;
-  height: 0px !important;
-}
-#frm_head input[type="submit"] {
-  height: 25px !important;
+input[type="submit"] {
   padding-top: 2px !important;
-  color: #008B00;
-  width: 100%;
-}
-input[type="checkbox"] {
-  vertical-align: middle;
-  margin-left: 5px;
-  margin-right: 5px;  
-}
-
-#deffield_fieldname {
-  width: 100%;
-}
-#deffield_fieldtype {
-  width: 50%;
-  height: 29px;
-}
-#deffield_nervatype {
-  width: 100%;
-  height: 29px;
-}
-#deffield_description {
-  width: 100%;
-}
-#deffield_valuelist {
-  width: 100%;
 }
 </style>
 
 <div align="center">
 {{if response.margin_top:}}
-  <div id="frm" align="center" style="margin-top: {{=response.margin_top}};">
+  <div align="center" style="margin-top: {{=response.margin_top}};">
   {{else:}}
-  <div id="frm" align="center" style="margin-top: 50px;">
-{{pass}} 
+  <div align="center" style="margin-top: 50px;">
+{{pass}}     
+<div id="frm_head">
 {{if response.prm_input:}}
   {{=form.custom.begin}}
-{{pass}}    
-<div id="frm_head">
-<table width="100%" style="background-color: #2B2B2B;" 
-    cellpadding="0" cellspacing="0">
+{{pass}}
+  <table width="100%" style="background-color: #2B2B2B;" cellpadding="0" cellspacing="0">
      <tr>
-       <td style="padding-left: 10px;">
-         <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.titleicon}}" />
+       <td style="padding-left: 5px;vertical-align: middle;">
+         <img style="vertical-align: top;"  height="16px" width="16px" src="{{=response.titleicon}}" />
          <span style="vertical-align: middle;color: #FFD700;font-weight: bold;">{{=response.title}}</span>
-         <span style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;">&nbsp;
+         <span style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;padding-left: 5px;">
                 {{=response.subtitle}}</span>
        </td>
        {{if response.prm_input:}}
-       <td style="width: 80px;text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
+       <td style="width: 100px;text-align: right;padding: 4px 5px 0px 0px;">
           {{=form.custom.submit}}
        </td>
-       <td style="width:15px;text-align: left;padding-right: 0px;padding-bottom: 0px;padding-top: 4px;">
+       <td style="width: 100px;text-align: right;padding: 4px 20px 0px 0px;">
+          {{=response.cmd_delete}}
+       </td>
+       <td style="width:45px;text-align: left;padding: 4px 0px 0px 0px;">
          {{=response.cmd_help}}
        </td>
        {{pass}}
-       <td style="text-align: right;padding-right: 5px;width: 20px;padding-bottom: 0px;padding-top: 4px;">
+       <td style="width: 45px;padding: 4px 0px 0px 0px;">
          {{=response.cmd_back}}
        </td>
      </tr>
    </table>
-</div>
   
   {{if response.prm_input:}}
   <div id="nwc_input">  
   <table width="100%" cellpadding="0" cellspacing="0">
     <tr>
-      <td style="width:100px;padding-top: 15px;padding-bottom: 0px;padding-right: 5px;" class="td_label"><div class="label">{{=form.custom.label.fieldname}}</div></td>
-      <td style="padding-top: 16px;padding-bottom: 0px;padding-left: 0px;padding-right: 10px;">
+      <td style="padding: 10px 5px 0px 10px;width: 100px;">
+        <div class="label">{{=form.custom.label.fieldname}}</div>
+      </td>
+      <td style="padding: 10px 20px 0px 10px;">
         {{if form.formname=='deffield/create':}}
           <div class="label_disabled"></div>
         {{else:}}
@@ -157,16 +62,16 @@ input[type="checkbox"] {
   </table>
   <table width="100%" cellpadding="0" cellspacing="0">
     <tr>
-      <td style="width:100px !important;padding-top: 15px;padding-bottom: 0px;padding-right: 5px;" class="td_label">
+      <td style="padding: 10px 5px 0px 10px;width: 100px;">
         <div class="label">{{=form.custom.label.fieldtype}}</div></td>
-      <td style="padding-top: 14px;padding-bottom: 0px;padding-left: 0px;padding-right: 5px;width: 100px;">
+      <td style="padding: 10px 5px 0px 10px;width: 100px;">
         {{if form.formname=='deffield/create':}}
           {{=form.custom.widget.nervatype}}
         {{else:}}
           <div class="label_disabled">{{=form.custom.widget.nervatype}}</div>
         {{pass}}
       </td>
-      <td style="padding-top: 14px;padding-bottom: 0px;padding-left: 0px;padding-right: 20px;">
+      <td style="padding: 10px 20px 0px 10px;">
         {{if form.formname=='deffield/create':}}
           {{=form.custom.widget.fieldtype}}
         {{else:}}
@@ -177,9 +82,9 @@ input[type="checkbox"] {
   </table>
   <table width="100%" cellpadding="0" cellspacing="0">
     <tr>
-      <td style="width:100px;padding-top: 15px;padding-bottom: 0px;padding-right: 5px;" class="td_label">
+      <td style="padding: 10px 5px 0px 10px;width: 100px;">
         <div class="label">{{=form.custom.label.description}}</div></td>
-      <td style="padding-top: 14px;padding-bottom: 0px;padding-left: 0px;padding-right: 20px;">
+      <td style="padding: 10px 20px 0px 10px;">
         {{=form.custom.widget.description}}
       </td> 
     </tr>
@@ -187,11 +92,11 @@ input[type="checkbox"] {
   {{if form.custom.widget.valuelist!=None:}}
   <table width="100%" cellpadding="0" cellspacing="0">
     <tr>
-      <td style="width:100px;padding-top: 15px;padding-bottom: 0px;padding-right: 10px;" class="td_label">
+      <td style="padding: 10px 20px 0px 10px;">
         <div class="label">{{=form.custom.label.valuelist}}</div></td> 
     </tr>
     <tr>
-      <td style="padding-top: 14px;padding-bottom: 0px;padding-left: 10px;padding-right: 20px;">
+      <td style="padding: 5px 20px 0px 10px;">
         {{=form.custom.widget.valuelist}}
       </td> 
     </tr>
@@ -199,17 +104,17 @@ input[type="checkbox"] {
   {{pass}}
   <table width="100%" cellpadding="0" cellspacing="0">
     <tr>
-      <td style="width: 100px;padding-top: 15px;padding-bottom: 10px;padding-right: 10px;" class="td_label">
+      <td style="padding: 5px 5px 10px 10px;width: 100px;">
         <div style="width: 100%;" class="label">{{=form.custom.label.addnew}}</div></td>
-      <td style="vertical-align: top;padding-top: 20px;width: 20px;padding-left: 0px;padding-right: 7px;" >
+      <td style="padding: 7px 0px 0px 5px;width: 20px;vertical-align: top;" >
         {{=form.custom.widget.addnew}}</td>
-      <td style="width:100px;padding-top: 15px;padding-bottom: 10px;padding-right: 10px;" class="td_label">
+      <td style="padding: 10px 5px 10px 10px;width: 100px;">
         <div style="width: 100%;" class="label">{{=form.custom.label.visible}}</div></td>
-      <td style="vertical-align: top;padding-top: 20px;width: 20px;padding-left: 0px;padding-right: 7px;" >
+      <td style="padding: 9px 0px 0px 5px;width: 20px;vertical-align: top;" >
         {{=form.custom.widget.visible}}</td>
-      <td style="width:100px;padding-top: 15px;padding-bottom: 10px;padding-left: 0px;padding-right: 10px;" class="td_label">
+      <td style="padding: 10px 5px 10px 10px;width: 100px;">
         <div style="width: 100%;" class="label">{{=form.custom.label.readonly}}</div></td>
-      <td style="vertical-align: top;padding-top: 20px;width: 20px;padding-left: 0px;padding-right: 0px;" >
+      <td style="padding: 9px 0px 0px 5px;width: 20px;vertical-align: top;" >
         {{=form.custom.widget.readonly}}</td> 
     </tr>
   </table>
@@ -217,18 +122,27 @@ input[type="checkbox"] {
   {{=form.custom.end}}
   {{else:}}
   <table width="100%" cellpadding="0" cellspacing="0">
+    {{if response.sform:}}
     <tr>
-      <td style="width:100%;padding-bottom: 15px;padding-top: 8px;padding-right: 10px;padding-left: 10px;" >
-        {{=form}}
-      </td> 
+      {{if response.cmd_deffield_new:}}
+        <td style="padding: 8px 0px 0px 10px;width: 20px;">{{=response.cmd_deffield_new}}</td>
+      {{pass}}
+      <td style="padding-top: 8px;padding-right: 10px;" >
+        {{=response.sform}}
+      </td>
+    </tr>
+    {{pass}}
+    <tr>
+      <td colspan="2" style="padding: 0px 10px 15px 10px;width: 20px;">{{=form}}</td>
     </tr>
   </table>
   {{pass}}
-
+</div>
 </div></div>
 
 <script language="javascript">
 <!--
  jQuery("#nwc_input input:visible:enabled:first").focus();
+ jQuery("#web2py_keywords").focus();
 //-->
 </script>

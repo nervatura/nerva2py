@@ -1,310 +1,15 @@
-{{left_sidebar_enabled=right_sidebar_enabled=False}}
 {{extend 'nwc/layout.html'}}
-{{footer_enabled=False}}
 
 <style>
-body  {
-  background: #808080;
-  margin: 0;
-}
-.main {
-  padding: 10px 0 10px 0;
-}
 #frm_head {
-  background-color: #F2F2F2;
-  border-style: solid;
-  border-width: 5px;
 {{if form.formname!='trans/create':}}
   border-bottom: none;
 {{pass}}
 }
-#frm_head_item {
-  background-color: #F2F2F2;
-  border-style: solid;
-  border-width: 5px;
-}
-#frm_head_link_invoice {
-  background-color: #F2F2F2;
-  border-style: solid;
-  border-width: 5px;
-}
-#tabs {
-  background-color: #F2F2F2;
-  border-style: solid;
-  border-width: 5px;
-  border-top: none;
-  border-color: #444444;
-}
-td {
-  vertical-align: middle;
-}
-.label {
-  font-weight: bold;
-  padding: 5px;
-  background-color: #DBDBDB;
-  width: 100% !important;
-}
-.td_label {
-  vertical-align: middle;
-  padding: 10px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-.label_disabled {
-  padding: 5px;
-  background-color: #FFFFFF;
-  height: 18px;
-  border: 1px solid #CCC;
-}
-.label_error {
-  padding: 5px;
-  background-color: #FF0000;
-  color: #FFFFFF;
-  width: 97%;
-  height: 18px;
-  border: 1px solid #CCC;
-}
-.td_label_nf {
-  vertical-align: middle;
-  padding: 10px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  font-size: 12px;  
-}
-.tab_label {
-  font-weight: bold;
-  font-size: small;
-}
-.ui-tabs-panel {
-  padding: 0px !important;
-}
-.detail_count {
-  background-color: #DBDBDB;
-  color: #555555;
-  text-align: center;
-  font-weight: bold;
-  padding-top: 0px;
-  padding-bottom: 2px;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-#tabs .web2py_console {
-  visibility:hidden;
-  padding: 0px;
-  height: 0px !important;
-  min-height: 0px !important;
-}
-#tabs .web2py_search_actions {
-  visibility:hidden;
-  height: 0px !important;
-  min-height: 0px !important;
-}
-#tabs .web2py_counter {
-  visibility:hidden;
-  height: 0px !important;
-  min-height: 0px !important;
-}
-#tabs .web2py_table {
-  font-size: small;
-}    
-#tabs .web2py_grid {
-  background-color: #FFFFFF;
-}
-#tabs .web2py_grid tbody td {
-  height:34px;
-  border-bottom: 1px solid #DDDDDD;
-  border-right: 1px solid #DDDDDD;
-}
 #menu input[type="submit"] {
-  height: 25px !important;
   padding-top: 2px !important;
-  color: #008B00;
-  width: 100%;
-}
-#cmd_item_submit {
-  height: 25px !important;
-  padding-top: 2px !important;
-  color: #008B00;
-  width: 100%;
-}
-div.el-rte.ui-resizable {
-  height: 100% !important;
-  width: 100% !important;
-}
-div.workzone {
-  height: 100% !important;
-  width: 100% !important;
-}
-#trans_transnumber {
-  width: 95%;
-}
-#trans_ref_transnumber {
-  width: 95%;
-}
-#trans_acrate {
-  width: 60px;;
-  text-align: right;
-}
-#trans_curr {
-  width: 100%;
-  height: 30px;
-}
-#fld_trans_transnumber {
-  width: 96%;
-}
-#fld_customer_custname {
-  width: 98%;
-}
-#fld_employee_empnumber {
-  width: 200px;
-}
-#trans_department {
-  width: 100%;
-  height: 30px;
-}
-#trans_paidtype {
-  width: 100%;
-  height: 30px;
-}
-#crdate {
-  width: 95%;
-  text-align: center;
-  vertical-align: middle;
-}
-#trans_crdate {
-  width: 95%;
-  text-align: center;
-  vertical-align: middle;
-}
-#trans_transdate {
-  width: 95%;
-  text-align: center;
-  vertical-align: middle;
-}
-#trans_duedate {
-  width: 95%;
-  text-align: center;
-  vertical-align: middle;
-}
-#trans_direction {
-  width: 95%;
-  height: 30px;
-}
-#trans_transtate {
-  width: 95%;
-  height: 30px;
-}
-#trans_notes {
-  width: 100%;
-  height: 100px;
-}
-#trans_intnotes {
-  width: 100%;
-  height: 100px;
-}
-#trans_fnote {
-  width: 100%;
-  height: 100%;
-}
-#trans_wsdistance_data {
-  width: 60px;
-  text-align: right;
-}
-#trans_wsrepair_data {
-  width: 40px;
-  text-align: right;
-}
-#trans_wstotal_data {
-  width: 40px;
-  text-align: right;
-}
-#trans_wsnote_data {
-  width: 98%;
-}
-#trans_reholiday_data {
-  width: 60px;;
-  text-align: right;
-}
-#trans_rebadtool_data {
-  width: 40px;;
-  text-align: right;
-}
-#trans_reother_data {
-  width: 40px;;
-  text-align: right;
-}
-#trans_rentnote_data {
-  width: 98%;
-}
-#item_description {
-  width: 100%;
-  height: 80px;
-}
-#item_qty {
-  width: 100%;;
-  text-align: right;
-}
-#item_fxprice {
-  width: 100%;;
-  text-align: right;
-}
-#item_discount {
-  width: 60px;;
-  text-align: right;
-}
-#item_netamount {
-  width: 100%;;
-  text-align: right;
-}
-#item_amount {
-  width: 100%;;
-  text-align: right;
-}
-#item_unit {
-  width: 100%;
-}
-#item_tax_id {
-  width: 100%;
-  height: 30px;
-}
-#item_ownstock {
-  width: 100%;;
-  text-align: right;
-}
-#cmd_link_invoice_submit {
-  height: 25px !important;
-  padding-top: 2px !important;
-  color: #008B00;
-  width: 100%;
-}
-#link_amount {
-  width: 100%;;
-  text-align: right;
-}
-#link_rate {
-  width: 100%;;
-  text-align: right;
-}
-#frm_head_field {
-  background-color: #F2F2F2;
-  border-style: solid;
-  border-width: 5px;
-}
-#cmb_fields {
-  width: 100%;
-  height: 25px;
-}
-#cmd_field_submit {
-  height: 25px !important;
-  padding-top: 2px !important;
-  color: #008B00;
-  width: 100%;
-}
-#fieldvalue_value {
-  width: 100%;
 }
 #fieldvalue_notes {
-  width: 100%;
   height: 80px;
 }
 </style>
@@ -333,23 +38,24 @@ div.workzone {
         <div id="menu">
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
-              <td>
+              <td style="vertical-align: middle;">
                 <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.titleicon}}" />
                 <span style="vertical-align: middle;color: #FFD700;font-weight: bold;">{{=response.subtitle}}</span>
-                <span style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;">&nbsp;
+                <span style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;padding-left: 5px;">
                   {{=response.transnumber}}</span>
               </td>
-              <td>
-                {{=form.custom.submit}}        
+              <td style="width:120px;padding-right: 5px;">
+                {{=form.custom.submit}}
               </td>
-              <td>
+              <td style="width:120px;padding-right: 5px;">
                 {{=response.cmd_report}}
               </td>
-              <td style="width: 90px;">
+              <td style="width:100px;padding-right: 40px;">
                 {{=response.cmd_more}}
               </td>
-              <td style="text-align: right;padding-right: 20px;">
-                {{=response.cmd_help}}
+              <td style="width:45px;padding-right: 0px;">
+                {{=response.cmd_help}}</td>
+              <td style="width: 45px;padding-right: 20px;">
                 {{=response.cmd_back}}
               </td>
             </tr>
@@ -359,22 +65,22 @@ div.workzone {
     </div>
   </div><!-- topbar -->
   <div id="dv_more" style="display: none;border-style: solid;border-width: 7px;border-color: #CCCCCC;padding: 8px;padding-bottom: 3px;" align="center" >
-    <table style="padding: 0px;margin: 0px;" cellpadding="0" cellspacing="0">
+    <table style="margin: 0px;padding: 0px;" cellpadding="0" cellspacing="0">
       <tr>
-        <td>{{=response.cmd_fnote}}</td>
+        <td style="padding-right: 5px;">{{=response.cmd_fnote}}</td>
         {{if (response.direction=='in' and response.closed==0 and response.transtype_name=='invoice') or (response.transtype_name!='invoice'):}}
-          <td>{{=response.cmd_close}}</td>
+          <td style="padding-right: 5px;">{{=response.cmd_close}}</td>
         {{pass}}
         {{if response.deleted==0:}}
-          <td>{{=response.cmd_delete}}</td>
+          <td style="padding-right: 5px;">{{=response.cmd_delete}}</td>
         {{pass}}
-        <td>{{=response.cmd_copy}}</td>
-        <td>{{=response.cmd_create}}</td>
+        <td style="padding-right: 5px;">{{=response.cmd_copy}}</td>
+        <td style="padding-right: 5px;">{{=response.cmd_create}}</td>
         {{if response.direction=='out' and response.deleted==1 and response.transcast=="normal" and response.transtype_name=='invoice':}}
-          <td>{{=response.cmd_cancellation}}</td>
+          <td style="padding-right: 5px;">{{=response.cmd_cancellation}}</td>
         {{pass}}
         {{if response.direction=='out' and response.deleted==0 and response.transcast=="normal" and response.transtype_name=='invoice':}}
-          <td>{{=response.cmd_corrective}}</td>
+          <td style="padding-right: 5px;">{{=response.cmd_corrective}}</td>
         {{pass}}
       </tr>
     </table>        
@@ -383,23 +89,29 @@ div.workzone {
     <table style="border-style: solid;border-width: 1px;border-color: #CCCCCC;border-top: none;" 
       width="100%" cellpadding="0" cellspacing="0">
       <tr>
-        <td style="padding-left:0px; padding-right: 5px;">
+        <td>
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
               <td>
                 <table width="100%" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td width="40px;" style="padding-left: 10px;padding-top: 12px;padding-right: 0px;">
+                    <td style="padding: 0px 0px 0px 10px;width: 40px;">
                       {{=response.state_ico}}
                     </td>
-                    <td style="padding-top: 15px;padding-left: 0px;width: 120px;" class="td_label"><div class="label">{{=form.custom.label.transnumber}}{{=response.transnumber_post}}</div></td>
-                    <td style="padding-top: 12px;width: 250px;">{{=form.custom.widget.transnumber}}</td>
-                    <td style="padding-top: 15px;padding-left: 0px;width: 100px;" class="td_label"><div class="label">{{=form.custom.label.ref_transnumber}}</div></td>
-                    <td style="padding-top: 10px;padding-right: 0px;">
+                    <td style="padding: 3px 5px 5px 0px;width: 120px;">
+                      <div class="label">{{=form.custom.label.transnumber}}{{=response.transnumber_post}}</div>
+                    </td>
+                    <td style="padding: 2px 5px 5px 10px;">
+                      {{=form.custom.widget.transnumber}}
+                    </td>
+                    <td style="padding: 3px 5px 5px 10px;width: 100px;">
+                      <div class="label">{{=form.custom.label.ref_transnumber}}</div>
+                    </td>
+                    <td style="padding: 3px 5px 5px 10px;">
                       {{=response.trans_transnumber}}{{=response.ref_transnumber}}{{=response.trans_id}}{{=response.direction_id}}{{=response.cruser_id}}
                       {{=response.transtype}}
                     </td>
-                    <td style="padding-top: 12px;padding-left: 0px;padding-right: 0px;width: 20px;">
+                    <td style="padding: 0px 5px 5px 5px;width: 20px;">
                       {{=response.transref_change}}
                     </td>
                   </tr>
@@ -407,27 +119,39 @@ div.workzone {
                     <td colspan="6" style="padding: 0px;">
                       <table width="100%" cellpadding="0" cellspacing="0" style="padding: 0px;">
                         <tr>
-                          <td style="padding-left: 5px;width: 130px;" class="td_label"><div class="label">{{=form.custom.label.crdate}}</div></td>
-                          <td style="width: 90px;padding-right: 10px;">{{=form.custom.widget.crdate}}{{=response.crdate}}</td>
-                          <td style="padding-left: 0px;width: 130px;" class="td_label"><div class="label">{{=form.custom.label.transdate}}</div></td>
-                          <td style="width: 90px;padding-right: 10px;">{{=form.custom.widget.transdate}}</td>
-                          <td style="padding-left: 0px;width: 130px;" class="td_label"><div class="label">{{=form.custom.label.duedate}}</div></td>
-                          <td style="width: 90px;padding-right: 10px;">{{=form.custom.widget.duedate}}</td>
+                          <td style="padding: 5px 5px 0px 10px;">
+                            <div class="label">{{=form.custom.label.crdate}}</div>
+                          </td>
+                          <td style="padding: 5px 10px 0px 10px;width: 90px;">
+                            {{=form.custom.widget.crdate}}{{=response.crdate}}
+                          </td>
+                          <td style="padding: 5px 5px 0px 10px;">
+                            <div class="label">{{=form.custom.label.transdate}}</div>
+                          </td>
+                          <td style="padding: 5px 10px 0px 10px;width: 90px;">
+                            {{=form.custom.widget.transdate}}
+                          </td>
+                          <td style="padding: 5px 5px 0px 10px;">
+                            <div class="label">{{=form.custom.label.duedate}}</div>
+                          </td>
+                          <td style="padding: 5px 20px 0px 10px;width: 90px;">
+                            {{=form.custom.widget.duedate}}
+                          </td>
                         </tr>
                       </table>
                     </td>
                   </tr>
                 </table>
               </td>
-              <td style="width: 20px;padding: 0px;">
+              <td style="padding: 7px 5px 3px 0px;width: 45px;">
                 <table width="100%;" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td style="padding: 0px;padding-top: 10px;">
+                    <td>
                       {{=response.cmd_next}}
                     </td>
                   </tr>
                   <tr>
-                    <td style="padding: 0px;padding-top: 5px;">
+                    <td style="padding-top: 5px;">
                       {{=response.cmd_prev}}
                     </td>
                   </tr>
@@ -442,8 +166,10 @@ div.workzone {
           <table width="100%" cellpadding="0" cellspacing="0" style="border-style: solid;border-width: 4px;border-color: {{=response.tcolor}};">
             <tr>
               {{if response.transtype_name!="receipt":}}
-              <td style="padding-left: 5px;width: 110px;" class="td_label"><div class="label">{{=form.custom.label.customer_id}}</div></td>
-              <td style="padding-right: 0px;">
+              <td style="padding: 5px 10px 5px 5px;width: 110px;">
+                <div class="label">{{=form.custom.label.customer_id}}</div>
+              </td>
+              <td style="padding: 5px 15px 5px 5px;">
                 {{=response.customer_control}}{{=response.customer_id}}
               </td>
 <!--             <td style="padding-left: 0px;width: 100px;" class="td_label_nf"><div class="label">{{=form.custom.label.notax}}</div></td> -->
@@ -457,17 +183,33 @@ div.workzone {
       </tr>
       {{if response.transtype_name=='worksheet':}}
       <tr>
-        <td style="padding-left:10px; padding-right: 11px;">
+        <td style="padding-left:10px; padding-right: 10px;">
           <table width="100%" cellpadding="0" cellspacing="0" style="border-bottom-style: solid;border-bottom-width: 4px;border-bottom-color: #8470FF;">
             <tr>
-              <td style="padding-left: 0px;padding-bottom: 9px;" class="td_label"><div class="label">{{=response.trans_wsdistance_label}}</div></td>
-              <td style="width: 60px;padding-right: 10px;padding-bottom: 6px;">{{=response.trans_wsdistance_data}}</td>
-              <td style="padding-left: 5px;padding-bottom: 9px;" class="td_label"><div class="label">{{=response.trans_wsrepair_label}}</div></td>
-              <td style="width: 40px;padding-right: 10px;padding-bottom: 6px;">{{=response.trans_wsrepair_data}}</td>
-              <td style="padding-left: 5px;padding-bottom: 9px;" class="td_label"><div class="label">{{=response.trans_wstotal_label}}</div></td>
-              <td style="width: 40px;padding-right: 10px;padding-bottom: 6px;">{{=response.trans_wstotal_data}}</td>
-              <td style="padding-left: 5px;padding-bottom: 9px;" class="td_label"><div class="label">{{=response.trans_wsnote_label}}</div></td>
-              <td style="padding-bottom: 6px;padding-right: 10px;">{{=response.trans_wsnote_data}}</td>
+              <td style="padding: 10px 10px 10px 0px;width: 110px;">
+                <div class="label">{{=response.trans_wsdistance_label}}</div>
+              </td>
+              <td style="padding: 10px 10px 10px 5px;width: 60px;">
+                {{=response.trans_wsdistance_data}}
+              </td>
+              <td style="padding: 5px 10px 5px 10px;width: 110px;">
+                <div class="label">{{=response.trans_wsrepair_label}}</div>
+              </td>
+              <td style="padding: 5px 10px 5px 5px;width: 40px;">
+                {{=response.trans_wsrepair_data}}
+              </td>
+              <td style="padding: 5px 10px 5px 10px;width: 110px;">
+                <div class="label">{{=response.trans_wstotal_label}}</div>
+              </td>
+              <td style="padding: 5px 10px 5px 5px;width: 40px;">
+                {{=response.trans_wstotal_data}}
+              </td>
+              <td style="padding: 5px 10px 5px 10px;width: 110px;">
+                <div class="label">{{=response.trans_wsnote_label}}</div>
+              </td>
+              <td style="padding: 5px 10px 5px 5px;">
+                {{=response.trans_wsnote_data}}
+              </td>
             </tr>
           </table>
         </td>  
@@ -478,14 +220,30 @@ div.workzone {
         <td style="padding-left:10px; padding-right: 11px;">
           <table width="100%" cellpadding="0" cellspacing="0" style="border-bottom-style: solid;border-bottom-width: 4px;border-bottom-color: #A52A2A;">
             <tr>
-              <td style="padding-left: 0px;padding-bottom: 9px;" class="td_label"><div class="label">{{=response.trans_reholiday_label}}</div></td>
-              <td style="width: 60px;padding-right: 10px;padding-bottom: 6px;">{{=response.trans_reholiday_data}}</td>
-              <td style="padding-left: 5px;padding-bottom: 9px;" class="td_label"><div class="label">{{=response.trans_rebadtool_label}}</div></td>
-              <td style="width: 40px;padding-right: 10px;padding-bottom: 6px;">{{=response.trans_rebadtool_data}}</td>
-              <td style="padding-left: 5px;padding-bottom: 9px;" class="td_label"><div class="label">{{=response.trans_reother_label}}</div></td>
-              <td style="width: 40px;padding-right: 10px;padding-bottom: 6px;">{{=response.trans_reother_data}}</td>
-              <td style="padding-left: 5px;padding-bottom: 9px;" class="td_label"><div class="label">{{=response.trans_rentnote_label}}</div></td>
-              <td style="padding-bottom: 6px;padding-right: 10px;">{{=response.trans_rentnote_data}}</td>
+              <td style="padding: 5px 10px 5px 0px;width: 110px;">
+                <div class="label">{{=response.trans_reholiday_label}}</div>
+              </td>
+              <td style="padding: 5px 10px 5px 5px;width: 60px;">
+                {{=response.trans_reholiday_data}}
+              </td>
+              <td style="padding: 5px 10px 5px 10px;width: 110px;">
+                <div class="label">{{=response.trans_rebadtool_label}}</div>
+              </td>
+              <td style="padding: 5px 10px 5px 5px;width: 40px;">
+                {{=response.trans_rebadtool_data}}
+              </td>
+              <td style="padding: 5px 10px 5px 10px;width: 110px;">
+                <div class="label">{{=response.trans_reother_label}}</div>
+              </td>
+              <td style="padding: 5px 10px 5px 5px;width: 40px;">
+                {{=response.trans_reother_data}}
+              </td>
+              <td style="padding: 5px 10px 5px 10px;width: 110px;">
+                <div class="label">{{=response.trans_rentnote_label}}</div>
+              </td>
+              <td style="padding: 5px 10px 5px 5px;">
+                {{=response.trans_rentnote_data}}
+              </td>
             </tr>
           </table>
         </td>  
@@ -495,58 +253,88 @@ div.workzone {
         <td style="padding-left:0px; padding-right: 10px;">
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
-              <td class="td_label" style="width: 100px;"><div class="label">{{=form.custom.label.curr}}</div></td>
-              <td style="width: 100px;padding-right: 0px;">
+              <td style="padding: 10px 10px 5px 10px;width: 70px;">
+                <div class="label">{{=form.custom.label.curr}}</div>
+              </td>
+              <td style="width: 100px;padding: 0px 0px 0px 0px;">
                 <table width="100%" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td width="60px;" style="padding-top: 0px;padding-left: 0px;">{{=form.custom.widget.curr}}</td>
+                    <td style="padding: 10px 0px 5px 5px;">
+                      {{=form.custom.widget.curr}}
+                    </td>
                     {{if response.cmd_curr:}}
-                    <td width="20px;" style="padding-right: 0px;padding-left: 0px;">{{=response.cmd_curr}}</td>
+                    <td style="padding: 10px 5px 5px 0px;width: 20px;">
+                      {{=response.cmd_curr}}
+                    </td>
                     {{pass}}
                   </tr>
                 </table>
               </td>
-              <td style="padding-left: 5px;width: 110px;" class="td_label"><div class="label">{{=form.custom.label.acrate}}</div></td>
-              <td style="width: 40px;padding-right: 0px;">{{=form.custom.widget.acrate}}</td>
-              <td class="td_label" style="width: 110px;"><div class="label">{{=form.custom.label.paidtype}}</div></td>
-              <td style="padding-right: 0px;">
+              <td style="padding: 10px 10px 5px 0px;width: 110px;">
+                <div class="label">{{=form.custom.label.acrate}}</div>
+              </td>
+              <td style="padding: 10px 10px 5px 5px;width: 40px;">
+                {{=form.custom.widget.acrate}}
+              </td>
+              <td style="padding: 10px 10px 5px 10px;width: 110px;">
+                <div class="label">{{=form.custom.label.paidtype}}</div>
+              </td>
+              <td sstyle="padding: 0px 0px 0px 0px;">
                 <table width="100%" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td style="padding-top: 0px;padding-left: 0px;">{{=form.custom.widget.paidtype}}</td>
+                    <td style="padding: 10px 0px 5px 5px;">
+                      {{=form.custom.widget.paidtype}}
+                    </td>
                     {{if response.cmd_curr:}}
-                    <td width="20px;" style="padding-right: 0px;padding-left: 0px;">{{=response.cmd_paidtype}}</td>
+                    <td style="padding: 10px 5px 5px 0px;width: 20px;">
+                      {{=response.cmd_paidtype}}
+                    </td>
                     {{pass}}
                   </tr>
                 </table>
               </td>
-              <td style="padding-left: 5px;width: 100px;" class="td_label_nf"><div class="label">{{=form.custom.label.paid}}</div></td>
-              <td style="vertical-align: middle;padding-top: 0px;width: 20px;padding-right: 0px;" >{{=form.custom.widget.paid}}</td>
+              <td style="padding: 10px 5px 5px 0px;width: 110px;">
+                <div class="label">{{=form.custom.label.paid}}</div>
+              </td>
+              <td style="padding: 10px 0px 5px 5px;width: 20px;" >
+                {{=form.custom.widget.paid}}
+              </td>
             </tr>
           </table>
         </td>  
       </tr>
       <tr>
-        <td style="padding-left:0px; padding-right: 10px;">
+        <td style="padding: 0px;">
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
-              <td class="td_label" style="width: 100px;"><div class="label">{{=form.custom.label.department}}</div></td>
-              <td style="width: 130px;padding-right: 0px;">
+              <td style="padding: 5px 10px 5px 10px;width: 90px;">
+                <div class="label">{{=form.custom.label.department}}</div>
+              </td>
+              <td style="width: 130px;padding: 0px 0px 0px 0px;">
                 <table width="100%" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td style="padding-top: 0px;padding-left: 0px;padding-right: 5px;">{{=form.custom.widget.department}}</td>
+                    <td style="padding: 5px 0px 5px 5px;">
+                      {{=form.custom.widget.department}}
+                    </td>
                     {{if response.cmd_department:}}
-                    <td width="20px;" style="padding-right: 0px;padding-left: 0px;">{{=response.cmd_department}}</td>
+                    <td style="padding: 5px 0px 5px 0px;width: 20px;">
+                      {{=response.cmd_department}}
+                    </td>
                     {{pass}}
                   </tr>
                 </table>
               </td>
-              <td style="padding-left: 0px;width: 100px;" class="td_label"><div class="label">{{=form.custom.label.employee_id}}</div></td>
-              <td style="width:200px;padding-right: 0px;">
+              <td style="padding: 5px 10px 5px 5px;width: 90px;">
+                <div class="label">{{=form.custom.label.employee_id}}</div>
+              </td>
+              <td style="padding: 5px 10px 5px 5px;">
                 {{=response.employee_control}}
                 {{=response.employee_id}}
               </td>
-              <td style="padding-left: 5px;width: 90px;" class="td_label"><div class="label">{{=form.custom.label.project_id}}</div></td>
-              <td style="padding-right: 0px;">
+              <td style="padding: 5px 10px 5px 10px;width: 90px;">
+                <div class="label">{{=form.custom.label.project_id}}</div>
+              </td>
+              <td style="padding: 5px 20px 5px 5px;">
                 {{=response.project_control}}
                 {{=response.project_id}}
               </td>
@@ -555,29 +343,33 @@ div.workzone {
         </td>  
       </tr>
       <tr>
-        <td style="padding-left:0px; padding-right: 10px;">
+        <td style="padding: 0px;">
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
-              <td width="50%" style="padding-right: 10px;" class="td_label_nf">
+              <td style="padding: 5px 10px 5px 10px;width: 50%;">
                 <div class="label">{{=form.custom.label.notes}}</div>
               </td>
-              <td style="padding-right: 10px;" class="td_label_nf">
+              <td style="padding: 5px 10px 5px 10px;">
                 <div class="label">{{=form.custom.label.intnotes}}</div>
               </td>
-              <td style="padding-left: 10px;" class="td_label"><div class="label">{{=form.custom.label.transtate}}</div></td>
-              <td width="60px" style="padding-right: 0px;">{{=form.custom.widget.transtate}}</td>
+              <td style="padding: 5px 10px 5px 10px;width: 90px;">
+                <div class="label">{{=form.custom.label.transtate}}</div>
+              </td>
+              <td style="padding: 5px 10px 5px 5px;width: 60px;">
+                {{=form.custom.widget.transtate}}
+              </td>
             </tr>
           </table>
         </td>  
       </tr>
       <tr>
-        <td style="padding-left:0px; padding-right: 10px;">
+        <td style="padding: 0px;">
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
-              <td style="vertical-align: top; padding-right: 10px; padding-top: 0px; padding-left: 10px;padding-bottom: 10px;">
+              <td style="padding: 0px 10px 10px 10px;width: 50%;">
                 {{=form.custom.widget.notes}}
               </td>
-              <td style="vertical-align: top; padding-right: 10px; padding-top: 0px; padding-left: 10px;padding-bottom: 10px;">
+              <td style="padding: 0px 20px 10px 10px;width: 50%;">
                 {{=form.custom.widget.intnotes}}
               </td>
             </tr>
@@ -614,7 +406,7 @@ div.workzone {
             <a class="tab_label" href="#tabs-3">
               {{=response.icon_money}}
               {{=T('Payments')}}
-              {{=response.cmd_link_invoice_new}}
+              {{=response.cmd_link_payment_new}}
             </a>
           </li>
           {{pass}}
@@ -651,47 +443,62 @@ div.workzone {
   </table>
   
   <div id="tabs-1">
-    <table width="100%" cellpadding="0" cellspacing="0" style="border-style: solid;border-top:none;border-width: 5px;border-color: #CCCCCC;">
+    <table width="100%" cellpadding="0" cellspacing="0" 
+      style="border-style: solid;border-top:none;border-width: 5px;border-color: #CCCCCC;">
       <tr>
-        <td style="padding-left: 5px;width: 100px;" class="td_label"><div class="label">{{=T('Netamount')}}</div></td>
-        <td style="padding-right: 10px;">{{=response.netamount}}</td>
-        <td style="padding-left: 0px;;width: 80px;" class="td_label"><div class="label">{{=T('VAT')}}</div></td>
-        <td style="padding-right: 10px;">{{=response.vatamount}}</td>
-        <td style="padding-left: 0px;;width: 100px;" class="td_label"><div class="label">{{=T('Amount')}}</div></td>
-        <td style="padding-right: 10px;">{{=response.amount}}</td>
+        <td style="padding: 5px 10px 5px 5px;width: 100px;">
+          <div class="label">{{=T('Netamount')}}</div>
+        </td>
+        <td style="padding: 5px 10px 5px 5px;">
+          {{=response.netamount}}
+        </td>
+        <td style="padding: 5px 10px 5px 10px;width: 80px;">
+          <div class="label">{{=T('VAT')}}</div>
+        </td>
+        <td style="padding: 5px 10px 5px 5px;">
+          {{=response.vatamount}}
+        </td>
+        <td style="padding: 5px 10px 5px 10px;width: 100px;">
+          <div class="label">{{=T('Amount')}}</div>
+        </td>
+        <td style="padding: 5px 20px 5px 5px;">
+          {{=response.amount}}
+        </td>
       </tr>
     </table>
-    <div id="edit_item"
-      style="display: none;border-style: solid;border-width: 7px;border-color: #CCCCCC;padding: 8px;padding-bottom: 3px;border-top-width: 2px;" >
+    <div id="edit_item" class="frm_tab_edit_1" >
       {{=response.item_form.custom.begin}}
-      <div id="frm_head_item">
+      <div class="frm_tab_edit_2">
       <table width="100%" style="background-color: #2B2B2B;" 
           cellpadding="0" cellspacing="0">
          <tr>
-           <td style="padding-left: 10px;">
+           <td style="padding-left: 5px;vertical-align: middle;">
              <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.item_icon}}" />
              <span style="vertical-align: middle;color: #FFD700;font-weight: bold;padding-right: 10px;">{{=T('ITEM')}}</span>
              <span id="title_item" 
                style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;">
                {{=response.transnumber}}</span>
            </td>
-           <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
-             {{=response.cmd_item_submit}}
+           <td style="width: 120px;padding: 4px 20px 0px 0px;">
+             {{=response.cmd_item_update}}
            </td>
-           <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
-             {{=response.cmd_help}}{{=response.cmd_item_cancel}}
+           <td style="width:45px;padding: 4px 0px 0px 0px;">
+             {{=response.cmd_help}}</td>
+           <td style="width: 45px;padding: 4px 0px 0px 0px;">
+             {{=response.cmd_item_cancel}}
            </td>
          </tr>
        </table>
       <table style="padding: 0px;margin: 0px;width: 100%;" cellpadding="0" cellspacing="0">
         <tr>
-          <td style="width: 100px;padding-left: 10px;padding-right: 10px;padding-top: 15px;" class="td_label">
-            <div class="label" style="width: 80px;padding-right: 0px;text-align: center;">
+          <td style="padding: 10px 10px 5px 10px;width: 100px;">
+            <div class="label" style="text-align: center;">
               <span id="label_item_id">000000</span>{{=response.item_id}}{{=response.item_trans_id}}</div>
           </td>
-          <td style="padding-top: 15px;width: 80px;padding-right: 10px;padding-left: 5px;" class="td_label">
-            <div style="width: 80px;" class="label">{{=response.item_form.custom.label.product_id}}</div></td>
-          <td style="padding: 0px;padding-top: 10px;vertical-align: middle;padding-right: 18px;padding-left: 5px;">
+          <td style="padding: 10px 10px 5px 10px;width: 100px;">
+            <div class="label">{{=response.item_form.custom.label.product_id}}</div>
+          </td>
+          <td style="padding: 10px 20px 5px 5px;">
             {{=response.item_product_control}}{{=response.item_product_id}}{{=response.item_rate}}{{=response.item_vatamount}}{{=response.item_digit}}
           </td>
         </tr>
@@ -699,47 +506,85 @@ div.workzone {
           <td colspan="3" style="padding-left: 0px;">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
-                <td style="vertical-align: top;padding-right: 15px;" class="td_label"><div style="width: 100%;" class="label">{{=response.item_form.custom.label.description}}</div></td>
+                <td style="padding: 5px 10px 5px 10px;">
+                  <div class="label">{{=response.item_form.custom.label.description}}</div>
+                </td>
                 {{if response.item_deposit==None:}}
-                <td style="padding-left: 5px;width: 100px;" class="td_label_nf"><div style="width: 100px;" class="label">{{=response.item_form.custom.label.deposit}}</div></td>
-                <td style="vertical-align: middle;padding-top: 0px;width: 20px;padding-right: 2px;" >{{=response.item_form.custom.widget.deposit}}</td>
+                <td style="padding: 5px 5px 5px 10px;width: 100px;">
+                  <div class="label">{{=response.item_form.custom.label.deposit}}</div>
+                </td>
+                <td style="padding: 1px 5px 5px 5px;width: 20px;" >
+                  {{=response.item_form.custom.widget.deposit}}
+                </td>
                 {{pass}}
               </tr>
             </table>
           </td>
         </tr>
         <tr>
-          <td colspan="3" style="padding: 10px;padding-top: 0px;padding-right: 20px;padding-bottom: 5px;">
+          <td colspan="3" style="padding: 2px 20px 5px 10px;">
             {{=response.item_form.custom.widget.description}}</td>
         </tr>
         <tr>
-          <td colspan="3" style="padding-right: 10px;padding-top: 0px;">
+          <td colspan="3" style="padding: 0px;">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
-                <td style="width: 100px;padding-left: 5px;padding-right: 5px;" class="td_label"><div class="label" style="width: 100px;padding-right: 0px;">{{=response.item_form.custom.label.qty}}</div></td>
-                <td style="padding-right: 10px;padding-left: 5px;">{{=response.item_form.custom.widget.qty}}</td>
-                <td style="width: 100px;padding-left: 5px;padding-right: 5px;" class="td_label"><div class="label" style="width: 100px;padding-right: 0px;">{{=response.item_form.custom.label.discount}}</div></td>
-                <td style="width: 60px;padding-right: 0px;padding-left: 5px;">{{=response.item_form.custom.widget.discount}}</td>
-                <td style="width: 100px;padding-left: 5px;padding-right: 5px;" class="td_label"><div class="label" style="width: 100px;padding-right: 0px;">{{=response.item_form.custom.label.fxprice}}</div></td>
-                <td style="padding-right: 10px;padding-left: 5px;">{{=response.item_form.custom.widget.fxprice}}</td>
-                <td style="width: 100px;padding-left: 5px;padding-right: 0px;" class="td_label"><div class="label" style="width: 100px;padding-right: 0px;" class="label">{{=response.item_form.custom.label.unit}}</div></td>
-                <td style="padding-right: 10px;padding-left: 10px;">{{=response.item_form.custom.widget.unit}}</td>
+                <td style="padding: 5px 10px 5px 10px;width: 90px;">
+                  <div class="label">{{=response.item_form.custom.label.qty}}</div>
+                </td>
+                <td style="padding: 5px 10px 5px 5px;">
+                  {{=response.item_form.custom.widget.qty}}
+                </td>
+                <td style="padding: 5px 10px 5px 10px;width: 90px;">
+                  <div class="label">{{=response.item_form.custom.label.discount}}</div>
+                </td>
+                <td style="padding: 5px 10px 5px 5px;width: 60px;">
+                  {{=response.item_form.custom.widget.discount}}
+                </td>
+                <td style="padding: 5px 10px 5px 10px;width: 90px;">
+                  <div class="label" >{{=response.item_form.custom.label.fxprice}}</div>
+                </td>
+                <td style="padding: 5px 10px 5px 5px;">
+                  {{=response.item_form.custom.widget.fxprice}}
+                </td>
+                <td style="padding: 5px 10px 5px 10px;width: 90px;">
+                  <div class="label">{{=response.item_form.custom.label.unit}}</div>
+                </td>
+                <td style="padding: 5px 20px 5px 5px;">
+                  {{=response.item_form.custom.widget.unit}}
+                </td>
               </tr>
             </table>
           </td>
         </tr>
         <tr>
-          <td colspan="3" style="padding-right: 10px;padding-top: 0px;padding-bottom: 10px;">
+          <td colspan="3" style="padding: 0px;">
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
-                <td style="width: 100px;padding-left: 5px;padding-right: 5px;" class="td_label"><div class="label" style="width: 100px;padding-right: 0px;">{{=response.item_form.custom.label.netamount}}</div></td>
-                <td style="padding-right: 10px;padding-left: 5px;">{{=response.item_form.custom.widget.netamount}}</td>
-                <td style="width: 100px;padding-left: 5px;padding-right: 5px;" class="td_label"><div class="label" style="width: 100px;padding-right: 0px;" class="label">{{=response.item_form.custom.label.tax_id}}</div></td>
-                <td style="width: 80px;padding-right: 0px;">{{=response.item_form.custom.widget.tax_id}}</td>
-                <td style="width: 100px;padding-left: 5px;padding-right: 5px;" class="td_label"><div class="label" style="width: 100px;padding-right: 0px;">{{=response.item_form.custom.label.amount}}</div></td>
-                <td style="padding-right: 10px;padding-left: 5px;">{{=response.item_form.custom.widget.amount}}</td>
-                <td style="width: 100px;padding-left: 5px;padding-right: 5px;" class="td_label"><div class="label" style="width: 100px;padding-right: 0px;">{{=response.item_form.custom.label.ownstock}}</div></td>
-                <td style="width: 80px;padding-right: 10px;padding-left: 5px;">{{=response.item_form.custom.widget.ownstock}}</td>
+                <td style="padding: 5px 10px 10px 10px;width: 90px;">
+                  <div class="label">{{=response.item_form.custom.label.netamount}}</div>
+                </td>
+                <td style="padding: 5px 10px 10px 5px;">
+                  {{=response.item_form.custom.widget.netamount}}
+                </td>
+                <td style="padding: 5px 10px 10px 10px;width: 90px;">
+                  <div class="label" >{{=response.item_form.custom.label.tax_id}}</div>
+                </td>
+                <td style="padding: 5px 10px 10px 5px;width: 60px;">
+                  {{=response.item_form.custom.widget.tax_id}}
+                </td>
+                <td style="padding: 5px 10px 10px 10px;width: 90px;">
+                  <div class="label">{{=response.item_form.custom.label.amount}}</div>
+                </td>
+                <td style="padding: 5px 10px 10px 5px;">
+                  {{=response.item_form.custom.widget.amount}}
+                </td>
+                <td style="padding: 5px 10px 10px 10px;width: 90px;">
+                  <div class="label">{{=response.item_form.custom.label.ownstock}}</div>
+                </td>
+                <td style="padding: 5px 20px 10px 5px;width: 70px;">
+                  {{=response.item_form.custom.widget.ownstock}}
+                </td>
               </tr>
             </table>
           </td>
@@ -754,27 +599,28 @@ div.workzone {
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>
         <td style="padding: 0px;">
-          <table width="100%" cellpadding="0" cellspacing="0" style="border-style: solid;border-top:none;border-width: 5px;border-color: #CCCCCC;">
+          <table width="100%" cellpadding="0" cellspacing="0" 
+            style="border-style: solid;border-top:none;border-width: 5px;border-color: #CCCCCC;">
             <tr>
               {{if response.cmd_fields:}}
-              <td style="width: 16px;padding-right: 0px;padding-top: 7px;">
+              <td style="padding: 7px 0px 5px 5px;width: 16px;">
                   {{=response.cmd_fields}}</td>
               {{pass}}
-              <td style="width: 150px;padding-left: 3px;padding-right: 5px;" class="td_label">
+              <td style="padding: 5px 5px 5px 0px;width: 150px;">
                 {{if response.cmb_fields:}}
-                <div class="label" style="width: 150px;padding-right: 0px;font-size: small;" class="label">
+                <div class="label" style="font-size: small;">
                   {{=T('Additional Data')}}</div>
                 {{else:}}
                 <div style="height: 30px;"></div>
                 {{pass}}
               </td>
-              <td>
+              <td style="padding: 5px 5px 5px 10px;">
                   {{=response.cmb_fields}}</td>
             </tr>
           </table>
         </td>
-        <td width="25%" style="padding-right: 10px;padding-left: 5px;text-align: left;" class="td_label_nf">
-          <div class="label" style="padding-bottom:  0px;font-size: small;min-height: 28px;">
+        <td style="padding: 5px 10px 0px 5px;width: 25%;">
+          <div class="label">
             {{=response.cmd_groups_add}}
             {{=response.cmd_groups}}
             {{=T('Transaction Groups')}}
@@ -783,34 +629,35 @@ div.workzone {
       </tr>
       <tr>
         <td style="vertical-align: top; padding: 0px;">
-          <div id="edit_fieldvalue"
-            style="display: none;border-style: solid;border-width: 7px;border-color: #CCCCCC;padding: 8px;padding-bottom: 3px;border-top-width: 2px;" >
+          <div id="edit_fieldvalue" class="frm_tab_edit_1">
             {{=response.fieldvalue_form.custom.begin}}
-            <div id="frm_head_field">
+            <div class="frm_tab_edit_2">
               <table width="100%" style="background-color: #2B2B2B;" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="padding-left: 10px;">
+                  <td style="padding-left: 5px;vertical-align: middle;">
                     <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.fieldvalue_icon}}" />
                     <span style="vertical-align: middle;color: #FFD700;font-weight: bold;padding-right: 10px;">{{=T('FIELD')}}</span>
                     <span id="title_item" 
                       style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;">
                       {{=response.transnumber}}</span>
                   </td>
-                  <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
-                    {{=response.cmd_fieldvalue_submit}}
+                  <td style="width: 120px;padding: 4px 20px 0px 0px;">
+                    {{=response.cmd_fieldvalue_update}}
                   </td>
-                  <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
-                    {{=response.cmd_help}}{{=response.cmd_fieldvalue_cancel}}
+                  <td style="width:45px;padding: 4px 0px 0px 0px;">
+                    {{=response.cmd_help}}</td>
+                  <td style="width: 45px;padding: 4px 0px 0px 0px;">
+                    {{=response.cmd_fieldvalue_cancel}}
                   </td>
                 </tr>
               </table>
               <table style="border-style: solid;border-width: 1px;border-color: #CCCCCC;border-top: none;" 
                 width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="width: 200px;vertical-align: top;padding-top: 11px;padding-right: 10px;" class="td_label">
-                    <div id="fieldvalue_description" class="label" style="width: 100%;" ></div>
+                  <td style="padding: 13px 15px 5px 10px;width: 200px;">
+                    <div id="fieldvalue_description" class="label" ></div>
                   </td>
-                  <td style="padding-top: 10px;vertical-align: middle;padding-right: 20px;">
+                  <td style="padding-top: 10px;padding-right: 20px;">
                     <div id="fieldvalue_value_controls">
                       <input id="fieldvalue_value" type="hidden" name="value" value="">
                       <input id="fieldvalue_value_bool" 
@@ -842,11 +689,12 @@ div.workzone {
                   </td>
                 </tr>
                 <tr>
-                  <td colspan="2" style="vertical-align: top;padding-right: 20px;" class="td_label">
-                    <div class="label">{{=response.fieldvalue_form.custom.label.notes}}</div></td>
+                  <td colspan="2" style="padding: 5px 20px 5px 10px;">
+                    <div class="label">{{=response.fieldvalue_form.custom.label.notes}}</div>
+                  </td>
                 </tr>
                 <tr>
-                  <td colspan="2" style="padding: 10px;padding-top: 0px;padding-right: 20px;">
+                  <td colspan="2" style="padding: 0px 20px 10px 10px;">
                     {{=response.fieldvalue_form.custom.widget.notes}}</td>
                 </tr>
               </table>
@@ -863,10 +711,10 @@ div.workzone {
         <td style="vertical-align: top;padding-top: 0px; padding-right: 0px;">
           <table width="100%" cellpadding="0" cellspacing="0" style="padding: 0px;height: 100%;" >
             <tr>
-              <td style="vertical-align:top; padding: 0px;padding-right: 0px;">{{=response.cmb_groups}}</td>
+              <td style="vertical-align:top; padding: 5px 0px 0px 5px;">{{=response.cmb_groups}}</td>
             </tr>
             <tr>
-              <td style="vertical-align: top; padding: 0px;">
+              <td style="vertical-align: top; padding: 5px;padding-right: 0px;">
                 {{=response.view_trans_groups}}
               </td>
             </tr>
@@ -877,58 +725,56 @@ div.workzone {
   </div>
   {{if response.transtype_name=='invoice' and not response.payment_disabled:}}
   <div id="tabs-3">
-      <div id="edit_link_invoice"
-        style="display: none;border-style: solid;border-width: 7px;border-color: #CCCCCC;padding: 8px;border-top-width: 2px;padding-bottom: 3px;" >
+      <div id="edit_link_invoice" class="frm_tab_edit_1" >
         {{=response.link_invoice_form.custom.begin}}
-        <div id="frm_head_link_invoice">
+        <div class="frm_tab_edit_2">
           <table width="100%" style="background-color: #2B2B2B;" 
             cellpadding="0" cellspacing="0">
              <tr>
-               <td style="padding-left: 10px;">
+               <td style="padding-left: 5px;vertical-align: middle;">
                  <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.link_invoice_icon}}" />
                  <span style="vertical-align: middle;color: #FFD700;font-weight: bold;padding-right: 10px;">{{=T('LINK')}}</span>
                  <span id="title_item" 
                    style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;">
                    {{=response.transnumber}}</span>
                </td>
-               <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
-                 {{=response.cmd_link_invoice_submit}}
+               <td style="width: 120px;padding: 4px 20px 0px 0px;">
+                 {{=response.cmd_link_payment_update}}
                </td>
-               <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
-                 {{=response.cmd_help}}{{=response.cmd_link_invoice_cancel}}
+               <td style="width:45px;padding: 4px 0px 0px 0px;">
+                 {{=response.cmd_help}}</td>
+               <td style="width: 45px;padding: 4px 0px 0px 0px;">
+                 {{=response.cmd_link_invoice_cancel}}
                </td>
              </tr>
           </table>
           <table style="border-style: solid;border-width: 1px;border-color: #CCCCCC;border-top: none;" 
             width="100%" cellpadding="0" cellspacing="0">
             <tr>
-              <td style="width: 80px;padding-left: 10px;padding-right: 0px;padding-top: 8px;" class="td_label">
-                  <div class="label" style="width: 100%;padding-right: 0px;text-align: center;">
+              <td style="padding: 10px 10px 10px 10px;width: 80px;">
+                  <div class="label" style="text-align: center;">
                   <span id="label_link_id">000000</span></div>
               </td>
-              <td style="vertical-align: middle;padding-top: 8px;padding-right: 15px;width: 120px;" class="td_label">
-                <div class="label" style="paddig: 0px;" >
-                  {{=T('Payment No.')}}</div>
+              <td style="padding: 10px 10px 10px 10px;width: 120px;">
+                <div class="label" >{{=T('Payment No.')}}</div>
               </td>
-              <td style="padding: 0px;padding-right: 10px;padding-top: 5px;vertical-align: middle;">
+              <td style="padding: 10px 10px 10px 5px;">
                 {{=response.link_invoice_payment_selector}}
                 {{=response.link_invoice_ref_id_1}}
               </td>
-              <td style="padding: 0px;padding-right: 0px;padding-top: 5px;vertical-align: middle;width: 35px;">
+              <td style="padding: 10px 5px 10px 5px;width: 35px;">
                 {{=response.link_invoice_curr}}
               </td>
-              <td style="vertical-align: middle;padding-top: 8px;padding-right: 15px;padding-left: 5px;width: 80px;" class="td_label">
-                <div class="label" style="paddig: 0px;" >
-                  {{=T('Amount')}}</div>
+              <td style="padding: 10px 10px 10px 5px;width: 80px;">
+                <div class="label">{{=T('Amount')}}</div>
               </td>
-              <td style="padding: 0px;padding-right: 5px;padding-top: 5px;vertical-align: middle;width: 90px;">
+              <td style="padding: 10px 10px 10px 5px;width: 90px;">
                 {{=response.link_invoice_amount}}
               </td>
-              <td style="vertical-align: middle;padding-top: 8px;padding-right: 15px;width: 80px;" class="td_label">
-                <div class="label" style="paddig: 0px;" >
-                  {{=T('Rate')}}</div>
+              <td style="padding: 10px 10px 10px 10px;width: 80px;">
+                <div class="label">{{=T('Rate')}}</div>
               </td>
-              <td style="padding: 0px;padding-right: 20px;padding-top: 5px;vertical-align: middle;width: 50px;">
+              <td style="padding: 10px 20px 10px 5px;width: 50px;">
                 {{=response.link_invoice_rate}}
               </td>
             </tr>
@@ -962,6 +808,9 @@ div.workzone {
   {{pass}}
 </div>
 {{pass}}
+
+<div id="frm_info" title="{{=T('Load data')}}" style="display: none;">
+</div>
 
 <script language="javascript">
 <!--

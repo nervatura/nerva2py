@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This file is part of the Nervatura Project
+This file is part of the Nervatura Framework
 http://www.nervatura.com
 Copyright © 2011-2013, Csaba Kappel
 License: LGPLv3
@@ -85,6 +85,7 @@ if create_tbl:
     createTable(db[auth.settings.table_group_name])
     createTable(db[auth.settings.table_membership_name])
     createTable(db[auth.settings.table_event_name])
+    createTable(db[auth.settings.table_cas_name])
     #temp. test users!
     db.auth_user.insert(username="admin", #password: 12345
                        password="pbkdf2(1000,20,sha512)$8783641ae67d774b$cb9a2abc38f4297cd0c6fb050b2996759bd3e514")

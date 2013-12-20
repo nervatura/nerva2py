@@ -5,11 +5,10 @@ License: LGPLv3 (http://www.gnu.org/licenses/lgpl.html)
 """
 import datetime
 import decimal
-from storage import Storage
-from html import TAG, XmlComponent
-from html import xmlescape
-from languages import lazyT
-import contrib.rss2 as rss2
+from gluon.storage import Storage
+from gluon.html import TAG, XmlComponent, xmlescape
+from gluon.languages import lazyT
+import gluon.contrib.rss2 as rss2
 
 try:
     import simplejson as json_parser                # try external module
@@ -17,7 +16,7 @@ except ImportError:
     try:
         import json as json_parser                  # try stdlib (Python >= 2.6)
     except:
-        import contrib.simplejson as json_parser    # fallback to pure-Python module
+        import gluon.contrib.simplejson as json_parser    # fallback to pure-Python module
 
 have_yaml = True
 try:
@@ -47,20 +46,23 @@ def cast_keys(o, cast=str, encoding="utf-8"):
             newobj = dict()
         else:
             newobj = Storage()
-
         for k, v in o.items():
             if (cast == str) and isinstance(k, unicode):
                 key = k.encode(encoding)
             else:
                 key = cast(k)
-            if isinstance(v, (dict, Storage)):
-                value = cast_keys(v, cast=cast, encoding=encoding)
-            else:
-                value = v
-            newobj[key] = value
+            newobj[key] = cast_keys(v, cast=cast, encoding=encoding)
+    elif isinstance(o, (tuple, set, list)):
+        newobj = []
+        for item in o:
+            newobj.append(cast_keys(item, cast=cast, encoding=encoding))
+        if isinstance(o, tuple):
+            newobj = tuple(newobj)
+        elif isinstance(o, set):
+            newobj = set(newobj)
     else:
-        raise TypeError("Cannot cast keys: %s is not supported" % \
-                        type(o))
+        # no string cast (unknown object)
+        newobj = o
     return newobj
 
 def loads_json(o, unicode_keys=True, **kwargs):
@@ -130,7 +132,7 @@ def csv(value):
 def ics(events, title=None, link=None, timeshift=0, calname=True,
         **ignored):
     import datetime
-    title = title or '(unkown)'
+    title = title or '(unknown)'
     if link and not callable(link):
         link = lambda item, prefix=link: prefix.replace(
             '[id]', str(item['id']))

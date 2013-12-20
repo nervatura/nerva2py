@@ -159,6 +159,7 @@ fi
 
 wget http://web2py.com/examples/static/web2py_src.zip
 unzip web2py_src.zip
+mv web2py/handlers/wsgihandler.py web2py/wsgihandler.py
 chown -R apache:apache web2py
 
 ###
@@ -300,7 +301,7 @@ NameVirtualHost *:80
 NameVirtualHost *:443
 
 <VirtualHost *:80>
-  WSGIDaemonProcess web2py user=apache group=apache
+  WSGIDaemonProcess web2py user=apache group=apache processes=1 threads=1
   WSGIProcessGroup web2py
   WSGIScriptAlias / /opt/web-apps/web2py/wsgihandler.py
   WSGIPassAuthorization On

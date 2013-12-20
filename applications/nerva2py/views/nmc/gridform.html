@@ -1,0 +1,43 @@
+{{extend 'nmc/layout.html'}}
+
+<style>
+<!--
+table {
+  width: 100%;
+}
+
+-->
+</style>
+
+{{block header}}
+  {{=response.cmd_menu}}
+  <h1 style="color: #FFD700;font-size: small;margin-bottom: 0px;margin-top: 5px;">{{=response.title}}</h1>
+  <h1 style="margin-bottom: 5px;margin-top: 0px;"> {{=response.subtitle}}</h1>
+  {{if response.cmd_add_new:}}
+    {{=response.cmd_commands}}
+  {{pass}}
+{{end}}
+
+{{=form}}
+
+{{=gform}}
+
+<div id="local-menu" data-role="panel" data-position="right" data-position-fixed="true" data-display="overlay" data-theme="a">
+  <div data-role="header">
+    {{=response.cmd_home}}
+    {{=response.cmd_close}}
+  </div>
+  <div data-role="content" style="margin-top:30px;padding:0px;margin-bottom: 20px;">
+    <hr style="border-width:0;background-color: #333333;">
+    <div data-role="controlgroup" style="margin-top:20px;">
+      {{=response.cmd_add_new}}
+    </div>
+    
+  </div>
+</div>
+
+<script language="javascript">
+<!--
+ jQuery("#web2py_keywords").focus();
+//-->
+</script>

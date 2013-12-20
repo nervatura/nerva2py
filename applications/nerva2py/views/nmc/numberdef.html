@@ -1,0 +1,97 @@
+{{extend 'nmc/layout.html'}}
+
+<style>
+<!--
+table {
+  width: 100%;
+}
+#numberdef_sep {
+  text-align: center;
+}
+-->
+</style>
+
+{{block header}}
+  {{=response.cmd_menu}}
+  <h1 style="color: #FFD700;font-size: small;margin-bottom: 0px;margin-top: 5px;">{{=response.title}}</h1>
+  <h1 style="margin-bottom: 5px;margin-top: 0px;"> {{=response.subtitle}}</h1>
+  {{if response.edit:}}
+    {{=response.cmd_commands}}
+  {{pass}}
+{{end}}
+
+{{if response.edit:}}
+  {{=form[0].custom.begin}}
+  <div align="center" style="max-width: 600px;" >
+    <table width="100%" cellpadding="0px;" cellspacing="0px;" style="padding: 5px;">
+      <tr>
+        <td style="padding-right: 5px;"><div class="label">{{=form[0].custom.label.numberkey}}</div></td>
+        <td><div class="label_disabled">{{=form[0].custom.widget.numberkey}}</div></td>
+      </tr>
+      <tr>
+	      <td colspan="2">
+	        <table width="100%" cellpadding="0px;" cellspacing="0px;" style="padding-top: 5px;">
+	          <tr>
+	            <td style="padding-right: 5px;"><div class="label">{{=form[0].custom.label.prefix}} - {{=form[0].custom.label.curvalue}}</div></td>
+	            <td style="padding-right: 5px;">{{=form[0].custom.widget.prefix}}</td>
+	            <td>{{=form[0].custom.widget.curvalue}}</td>
+	          </tr>
+	        </table>
+	      </td>
+	    </tr>
+	    <tr>
+        <td colspan="2">
+          <table width="100%" cellpadding="0px;" cellspacing="0px;">
+            <tr>
+              <td style="padding-right: 5px;"><div class="label">{{=form[0].custom.label.sep}}</div></td>
+              <td style="padding-right: 5px;width: 50px;">{{=form[0].custom.widget.sep}}</td>
+              <td style="padding-right: 5px;"><div class="label">{{=form[0].custom.label.len}}</div></td>
+              <td style="padding-right: 5px;">{{=form[0].custom.widget.len}}</td>
+              <td><div class="label">{{=form[0].custom.label.isyear}}</div></td>
+              <td class="td_checkbox">{{=form[0].custom.widget.isyear}}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+      <td colspan="2">
+        <table width="100%" cellpadding="0px;" cellspacing="0px;">
+          <tr>
+            <td><div class="label">{{=form[0].custom.label.description}}</div></td>
+          </tr>
+          <tr>
+            <td>{{=form[0].custom.widget.description}}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    </table>
+  </div>
+  {{=form[0].custom.end}}
+{{else:}}
+  {{=sform}}
+  {{=form}}
+{{pass}}
+
+<div id="local-menu" data-role="panel" data-position="right" data-position-fixed="true" data-display="overlay" data-theme="a">
+  <div data-role="header">
+    {{=response.cmd_home}}
+    {{=response.cmd_close}}
+  </div>
+  <div data-role="content" style="margin-top:30px;padding:0px;margin-bottom: 20px;">
+    <hr style="border-width:0;background-color: #333333;">
+    {{if response.edit:}}
+      <div id="ctr_edit_numberdef" style="margin-top:20px;padding:0px;"> 
+        <div data-role="controlgroup" >
+          {{=form[0].custom.submit}}
+        </div>
+        <div data-role="controlgroup" style="margin-top:20px;">
+          {{=response.cmd_numberdef_close}}
+        </div>
+      </div>
+    {{else:}}
+      <div id="ctr_numberdef_page" data-role="controlgroup" data-mini="false" style="margin-top:20px;padding:0px;">
+      </div>
+    {{pass}}
+  </div>
+</div>

@@ -16,8 +16,6 @@ try:
 except ImportError:
     pgv = None
 
-response.subtitle = 'Database Administration (appadmin)'
-
 # ## critical --- make a copy of the environment
 
 global_env = copy.copy(globals())
@@ -34,17 +32,29 @@ except:
 
 if request.env.http_x_forwarded_for or request.is_https:
     session.secure()
-elif (remote_addr not in hosts) and (remote_addr != "127.0.0.1"):
+elif (remote_addr not in hosts) and (remote_addr != "127.0.0.1") and \
+    (request.function != 'manage'):
     raise HTTP(200, T('appadmin is disabled because insecure channel'))
 
-if request.function in ('auth_manage','manage') and 'auth' in globals():
-    auth.requires_membership(auth.settings.manager_group_role)(lambda: None)()
+if request.function == 'manage':
+    if not 'auth' in globals() or not request.args:
+        redirect(URL(request.controller, 'index'))
+    manager_action = auth.settings.manager_actions.get(request.args(0), None)
+    if manager_action is None and request.args(0) == 'auth':
+        manager_action = dict(role=auth.settings.auth_manager_role,
+                              heading=T('Manage Access Control'),
+                              tables=[auth.table_user(),
+                                      auth.table_group(),
+                                      auth.table_permission()])
+    manager_role = manager_action.get('role', None) if manager_action else None
+    auth.requires_membership(manager_role)(lambda: None)()
     menu = False
 elif (request.application == 'admin' and not session.authorized) or \
-        (request.application != 'admin' and not gluon.fileutils.check_credentials(request)):    
+        (request.application != 'admin' and not gluon.fileutils.check_credentials(request)):
     redirect(URL('admin', 'default', 'index',
                  vars=dict(send=URL(args=request.args, vars=request.vars))))
 else:
+    response.subtitle = T('Database Administration (appadmin)')
     menu = True
 
 ignore_rw = True
@@ -530,30 +540,30 @@ def table_template(table):
 
 def bg_graph_model():
     graph = pgv.AGraph(layout='dot',  directed=True,  strict=False,  rankdir='LR')
-    
-    subgraphs = dict()    
+
+    subgraphs = dict()
     for tablename in db.tables:
         if hasattr(db[tablename],'_meta_graphmodel'):
             meta_graphmodel = db[tablename]._meta_graphmodel
         else:
             meta_graphmodel = dict(group='Undefined', color='#ECECEC')
-        
-        group = meta_graphmodel['group'].replace(' ', '') 
+
+        group = meta_graphmodel['group'].replace(' ', '')
         if not subgraphs.has_key(group):
             subgraphs[group] = dict(meta=meta_graphmodel, tables=[])
             subgraphs[group]['tables'].append(tablename)
         else:
-            subgraphs[group]['tables'].append(tablename)        
-      
+            subgraphs[group]['tables'].append(tablename)
+
         graph.add_node(tablename, name=tablename, shape='plaintext',
                        label=table_template(tablename))
-    
-    for n, key in enumerate(subgraphs.iterkeys()):        
+
+    for n, key in enumerate(subgraphs.iterkeys()):
         graph.subgraph(nbunch=subgraphs[key]['tables'],
                     name='cluster%d' % n,
                     style='filled',
                     color=subgraphs[key]['meta']['color'],
-                    label=subgraphs[key]['meta']['group'])   
+                    label=subgraphs[key]['meta']['group'])
 
     for tablename in db.tables:
         for field in db[tablename]:
@@ -567,47 +577,57 @@ def bg_graph_model():
                 graph.add_edge(n1, n2, color="#4C4C4C", label='')
 
     graph.layout()
-    #return graph.draw(format='png', prog='dot')
     if not request.args:
+        response.headers['Content-Type'] = 'image/png'
         return graph.draw(format='png', prog='dot')
-    else:       
+    else:
         response.headers['Content-Disposition']='attachment;filename=graph.%s'%request.args(0)
-        if request.args(0) == 'dot':        
+        if request.args(0) == 'dot':
             return graph.string()
         else:
             return graph.draw(format=request.args(0), prog='dot')
 
-def graph_model():    
+def graph_model():
     return dict(databases=databases, pgv=pgv)
 
-def auth_manage():
-    tablename = request.args(0)
-    if not tablename or not tablename in auth.db.tables:
-        return dict()
-    table = auth.db[tablename]
-    formname = '%s_grid' % tablename
-    if tablename == auth.settings.table_user_name:
-        auth.settings.table_user._plural = T('Users')
-        auth.settings.table_membership._plural = T('Roles')
-        auth.settings.table_membership._id.readable = False
-        auth.settings.table_membership.user_id.label = T('User')
-        auth.settings.table_membership.group_id.label = T('Role')
-        grid = SQLFORM.smartgrid(table, args=request.args[:1], user_signature=True,
-                                 linked_tables=[auth.settings.table_membership_name],
-                                 maxtextlength=1000, formname=formname)
-    else:
-        table._id.readable = False
-        auth.settings.table_permission.group_id.label = T('Role')
-        auth.settings.table_permission.name.label = T('Permission')
-        orderby = 'role' if table == auth.settings.table_group_name else 'group_id'
-        grid = SQLFORM.grid(table, args=request.args[:1], orderby=table[orderby],
-                            user_signature=True, maxtextlength=1000, formname=formname)    
-    return grid if request.extension=='load' else dict(grid=grid)
-
 def manage():
-    tablename = request.args(0)
-    if tablename in auth.db.tables:
-        grid = SQLFORM.smartgrid(auth.db[tablename], args=request.args[:1])
-    else:
-        return dict()
-    return grid if request.extension=='load' else dict(grid=grid)
+    tables = manager_action['tables']
+    if isinstance(tables[0], str):
+        db = manager_action.get('db', auth.db)
+        db = globals()[db] if isinstance(db, str) else db
+        tables = [db[table] for table in tables]
+    if request.args(0) == 'auth':
+        auth.table_user()._plural = T('Users')
+        auth.table_group()._plural = T('Roles')
+        auth.table_membership()._plural = T('Memberships')
+        auth.table_permission()._plural = T('Permissions')
+    if request.extension != 'load':
+        return dict(heading=manager_action.get('heading',
+                    T('Manage %(action)s') % dict(action=request.args(0).replace('_', ' ').title())),
+                    tablenames=[table._tablename for table in tables],
+                    labels=[table._plural.title() for table in tables])
+
+    table = tables[request.args(1, cast=int)]
+    formname = '%s_grid' % table._tablename
+    linked_tables = orderby = None
+    if request.args(0) == 'auth':
+        auth.table_group()._id.readable = \
+        auth.table_membership()._id.readable = \
+        auth.table_permission()._id.readable = False
+        auth.table_membership().user_id.label = T('User')
+        auth.table_membership().group_id.label = T('Role')
+        auth.table_permission().group_id.label = T('Role')
+        auth.table_permission().name.label = T('Permission')
+        if table == auth.table_user():
+            linked_tables=[auth.settings.table_membership_name]
+        elif table == auth.table_group():
+            orderby = 'role' if not request.args(3) or '.group_id' not in request.args(3) else None
+        elif table == auth.table_permission():
+            orderby = 'group_id'
+    kwargs = dict(user_signature=True, maxtextlength=1000,
+                  orderby=orderby, linked_tables=linked_tables)
+    smartgrid_args = manager_action.get('smartgrid_args', {})
+    kwargs.update(**smartgrid_args.get('DEFAULT', {}))
+    kwargs.update(**smartgrid_args.get(table._tablename, {}))
+    grid = SQLFORM.smartgrid(table, args=request.args[:2], formname=formname, **kwargs)
+    return grid

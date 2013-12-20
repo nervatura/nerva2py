@@ -12,13 +12,13 @@ import traceback
 import zipfile
 import urllib
 from shutil import rmtree
-from utils import web2py_uuid
-from fileutils import w2p_pack, w2p_unpack, w2p_pack_plugin, w2p_unpack_plugin
-from fileutils import up, fix_newlines, abspath, recursive_unlink
-from fileutils import read_file, write_file, parse_version
-from restricted import RestrictedError
-from settings import global_settings
-from http import HTTP
+from gluon.utils import web2py_uuid
+from gluon.fileutils import w2p_pack, w2p_unpack, w2p_pack_plugin, w2p_unpack_plugin
+from gluon.fileutils import up, fix_newlines, abspath, recursive_unlink
+from gluon.fileutils import read_file, write_file, parse_version
+from gluon.restricted import RestrictedError
+from gluon.settings import global_settings
+
 
 if not global_settings.web2py_runtime_gae:
     import site
@@ -353,7 +353,7 @@ def plugin_install(app, fobj, request, filename):
         return False
 
 
-def check_new_version(myversion, version_URL):
+def check_new_version(myversion, version_url):
     """
     Compares current web2py's version with the latest stable web2py version.
 
@@ -374,10 +374,10 @@ def check_new_version(myversion, version_URL):
     """
     try:
         from urllib import urlopen
-        version = urlopen(version_URL).read()
+        version = urlopen(version_url).read()
         pversion = parse_version(version)
         pmyversion = parse_version(myversion)
-    except Exception,e:
+    except IOError:
         import traceback
         print traceback.format_exc()
         return -1, myversion
@@ -398,7 +398,7 @@ def unzip(filename, dir, subfolder=''):
         raise RuntimeError('Not a valid zipfile')
     zf = zipfile.ZipFile(filename)
     if not subfolder.endswith('/'):
-        subfolder = subfolder + '/'
+        subfolder += '/'
     n = len(subfolder)
     for name in sorted(zf.namelist()):
         if not name.startswith(subfolder):
@@ -432,11 +432,11 @@ def upgrade(request, url='http://web2py.com'):
     web2py_version = request.env.web2py_version
     gluon_parent = request.env.gluon_parent
     if not gluon_parent.endswith('/'):
-        gluon_parent = gluon_parent + '/'
+        gluon_parent += '/'
     (check, version) = check_new_version(web2py_version,
                                          url + '/examples/default/version')
     if not check:
-        return (False, 'Already latest version')
+        return False, 'Already latest version'
     if os.path.exists(os.path.join(gluon_parent, 'web2py.exe')):
         version_type = 'win'
         destination = gluon_parent
@@ -452,7 +452,6 @@ def upgrade(request, url='http://web2py.com'):
 
     full_url = url + '/examples/static/web2py_%s.zip' % version_type
     filename = abspath('web2py_%s_downloaded.zip' % version_type)
-    file = None
     try:
         write_file(filename, urllib.urlopen(full_url).read(), 'wb')
     except Exception, e:

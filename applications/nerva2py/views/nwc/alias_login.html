@@ -11,74 +11,35 @@
   response.files.append(URL('static','css/base.css'))
   response.files.append(URL('static','css/skeleton.css'))
   response.files.append(URL('static','css/web2py.css'))
-  response.files.append(URL('static','css/superfish.css'))
-  response.files.append(URL('static','js/superfish.js'))
+  response.files.append(URL('static','css/nwc.css'))
   }}
 
   {{include 'web2py_ajax.html'}}
 
   <style>
-body  {
-  background: #808080;
-  margin: 0;
-  font-size: 14px;
-}
 div.flash { position: fixed; float: right; padding: 10px; top: 10px; right: 30px; opacity: 0.75; margin: 10px 10px 10px 10px; text-align: center; clear: both; color: #fff; font-size: 11pt; text-align: center; vertical-align: middle; cursor: pointer; background: black; border: 2px solid #fff; -moz-border-radius: 5px; -webkit-border-radius: 5px; z-index: 2; }
 div.error { background-color: red; color: white; padding: 3px; }
 .auth_navbar { text-align:right; z-index:20; position: absolute; top: 2px; right:30px; border:0; padding:0 }
-input[type="submit"] {
-  font-weight: bold !important;
-  height: 30px !important;
-  padding: 4px !important;
-  padding-left: 10px !important;
-  padding-right: 10px !important;
-  color: #008B00;
-}
-input[type="text"], input[type="password"] {
-font-size: 14px;
-padding: 3px;
-}
+
 select {
-width: 100px;
-font-size: 14px;
-padding: 3px;
+  width: 100px;
+  padding: 3px;
 }
-#main {
-margin: 0px;
-width: 100%;
-height: 100%;
+
+.login {
+  background-color: #EEEEE0;
+  border-style: solid;
+  border-width: 5px;
+  width: 400px;
 }
-#td_main {
-vertical-align: middle;
-text-align: center;
-width: 100%;
-background-color: #F0F0F0;
-}
-#login {
-background-color: #F2F2F2;
-border-style: solid;
-border-width: 5px;
-}
-td {
-vertical-align: middle;
-}
-.label {
-font-weight: bold;
-padding: 5px;
-padding-left: 20px;
+
+form {
+  margin-bottom: 0px;
 }
 hr {
-margin: 0px;
+  margin: 0px;
 }
-#login_alias {
-  width: 250px;
-}
-#login_username {
-  width: 250px;
-}
-#login_password {
-  width: 250px;
-}
+
   </style>
  </head>
  <body>
@@ -86,54 +47,48 @@ margin: 0px;
 <div class="flash">{{=response.flash or ''}}</div>
 
   <div id="alogin" align="center" style="margin-top: 120px;">
-{{=form.custom.begin}}
-    <table id="login" cellpadding="0" cellspacing="0" width="400px;" >
+    {{=form.custom.begin}}
+    <table class="login" cellpadding="0" cellspacing="0" >
       <tr>
-		<td style="padding-top: 12px;padding-bottom:12px;text-align: center;background-color: #DBDBDB;"><a href="http://www.nervatura.com">
-		  <img width="64px" height="64px" title="Nervatura"
-		    src="{{=URL('static','images/icon256_ntura.png')}}"/></a></td>
-		<td align="center" style="text-align: center;font-weight: bold;font-size: large;color: #3B7687;background-color: #DBDBDB;">
-		  {{=T('Login to database')}}</td>
-	  </tr>
+		    <td style="padding-top: 12px;padding-bottom:12px;text-align: center;background-color: #A9A9A9;">
+		      <a href="http://www.nervatura.com"><img width="64px" height="64px" title="Nervatura"
+		        src="{{=URL('static','images/icon64_ntura_te.png')}}"/></a></td>
+		    <td align="center" style="text-align: center;font-weight: bold;font-size: large;color: #FFD700;background-color: #2A2A2A;">
+		      {{=T('Login to database')}}</td>
+	    </tr>
+      
+	    <tr>
+	      <td style="padding: 15px 20px 0px 20px;"><div class="label">{{=form.custom.label.alias}}</div></td>
+	      <td style="padding: 15px 30px 0px 0px;">{{=form.custom.widget.alias}}</td>
+	    </tr>
+	    <tr>
+	      <td style="padding: 10px 20px 0px 20px;"><div class="label">{{=form.custom.label.username}}</div></td>
+	      <td style="padding: 10px 30px 0px 0px;">{{=form.custom.widget.username}}</td>
+	    </tr>
+	      <tr>
+	        <td style="padding: 10px 20px 15px 20px;"><div class="label">{{=form.custom.label.password}}</div></td>
+	        <td style="padding: 10px 30px 15px 0px;">{{=form.custom.widget.password}}</td>
+	      </tr>
+	      <tr>
+	        <td colspan="2"><hr/></td>
+	      </tr>
+	      <tr>
+	        <td colspan="2" style="text-align: center;padding-top: 10px;padding-bottom: 10px;" >{{=form.custom.submit}}</td>
+	      </tr>
+    </table>
+    {{=form.custom.end}}
+    <table class="login" cellpadding="0" cellspacing="0" style="border-top: none;">
       <tr>
-        <td colspan="2"><hr/></td>
-      </tr>
-      <tr>
-        <td class="label" style="padding-top: 10px;padding-bottom: 0px;">{{=form.custom.label.alias}}</td>
-        <td style="padding-top: 10px;padding-bottom: 0px;padding-right: 20px;">{{=form.custom.widget.alias}}</td>
-      </tr>
-      <tr>
-        <td class="label" style="padding-top: 10px;padding-bottom: 0px;">{{=form.custom.label.username}}</td>
-        <td style="padding-top: 10px;padding-bottom: 0px;padding-right: 20px;">{{=form.custom.widget.username}}</td>
-      </tr>
-      <tr>
-        <td class="label" style="padding-top: 10px;padding-bottom: 10px;">{{=form.custom.label.password}}</td>
-        <td style="padding-top: 10px;padding-bottom: 10px;padding-right: 20px;">{{=form.custom.widget.password}}</td>
-      </tr>
-      <tr>
-        <td colspan="2"><hr/></td>
-      </tr>
-      <tr>
-        <td colspan="2" style="text-align: center;padding-top: 10px;padding-bottom: 10px;" >{{=form.custom.submit}}</td>
-      </tr>
-      <tr>
-        <td colspan="2"><hr/></td>
-      </tr>
-      <tr>
-        <td colspan="2" style="padding: 0px;">
-          <table width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              <td class="label" style="padding-top: 10px;padding-bottom: 10px;">{{=T('Language')}}</td>
-              <td style="padding-top: 10px;padding-bottom: 10px;padding-right: 20px;">{{=translate()}}</td>
-              <td style="padding-right: 20px;padding-top: 10px;padding-bottom: 10px;text-align: right;">
-                {{=response.cmd_help}}
-              </td>
-            </tr>
-          </table>
-        </td>  
+        <td style="padding: 8px 10px 8px 15px;width: 90px;"><div class="label">{{=T('Language')}}</div></td>
+        <td style="padding: 9px 15px 8px 5px;">{{=translate()}}</td>
+        <td style="padding: 11px 0px 8px 0px;text-align: right;width: 100px;">
+          {{=response.cmd_mobil}}
+        </td>
+        <td style="padding: 11px 10px 8px 0px;text-align: right;width: 40px;">
+          {{=response.cmd_help}}
+        </td>
       </tr>
     </table>
-{{=form.custom.end}}
   </div>
 
 <script language="javascript">

@@ -22,10 +22,10 @@ import logging
 import traceback
 import threading
 import urllib
-from storage import Storage, List
-from http import HTTP
-from fileutils import abspath, read_file
-from settings import global_settings
+from gluon.storage import Storage, List
+from gluon.http import HTTP
+from gluon.fileutils import abspath, read_file
+from gluon.settings import global_settings
 
 isdir = os.path.isdir
 isfile = os.path.isfile
@@ -244,21 +244,15 @@ def try_rewrite_on_error(http_response, request, environ, ticket=None):
                     url = path_info + '?' + query_string
                     message = 'You are being redirected <a href="%s">here</a>'
                     return HTTP(303, message % url, Location=url), environ
-                else:
-                    error_raising_path = environ['PATH_INFO']
-                    # Rewrite routes_onerror path.
-                    path_info = '/' + path_info.lstrip(
-                        '/')  # add leading '/' if missing
+                elif not environ.get('__ROUTES_ONERROR__', False):
+                    # wsgibase will be called recursively with
+                    # the routes_onerror path.
+                    environ['__ROUTES_ONERROR__'] = True # limit recursion
+                    path_info = '/' + path_info.lstrip('/')
                     environ['PATH_INFO'] = path_info
-                    error_handling_path = \
-                        url_in(request, environ)[2]['PATH_INFO']
-                    # Avoid infinite loop.
-                    if error_handling_path != error_raising_path:
-                        # wsgibase will be called recursively with the routes_onerror path.
-                        environ['PATH_INFO'] = path_info
-                        environ['QUERY_STRING'] = query_string
-                        environ['WEB2PY_STATUS_CODE'] = status
-                        return None, environ
+                    environ['QUERY_STRING'] = query_string
+                    environ['WEB2PY_STATUS_CODE'] = status
+                    return None, environ
     # do nothing!
     return http_response, environ
 
@@ -644,6 +638,8 @@ def regex_url_in(request, environ):
     if match.group('c') == 'static':
         application = match.group('a')
         version, filename = None, match.group('z')
+        if not filename:
+            raise HTTP(404)
         items = filename.split('/', 1)
         if regex_version.match(items[0]):
             version, filename = items

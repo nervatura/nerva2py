@@ -1,0 +1,132 @@
+{{extend 'nmc/layout.html'}}
+
+<style>
+<!--
+table {
+  width: 100%;
+}
+-->
+</style>
+
+{{block header}}
+  {{=response.cmd_menu}}
+  <h1 style="color: #FFD700;font-size: small;margin-bottom: 0px;margin-top: 5px;">{{=response.title}}</h1>
+  <h1 style="margin-bottom: 5px;margin-top: 0px;"> {{=response.subtitle}}</h1>
+  {{=response.cmd_commands}}
+{{end}}
+
+<div align="center" style="max-width: 600px;" >
+{{if not response.prm_input:}}
+  {{=form.custom.begin}}
+  <table width="100%" cellpadding="0px;" cellspacing="0px;">
+    <tr>
+      <td style="padding-right: 5px;"><div class="label">{{=form.custom.label.menukey}}</div></td>
+      <td>{{=form.custom.widget.menukey}}</td>
+    </tr>
+    <tr>
+      <td style="padding-right: 5px;"><div class="label">{{=form.custom.label.description}}</div></td>
+      <td>{{=form.custom.widget.description}}</td>
+    </tr>
+    <tr>
+      <td style="padding-right: 5px;"><div class="label">{{=form.custom.label.funcname}}</div></td>
+      <td>{{=form.custom.widget.funcname}}</td>
+    </tr>
+     <tr>
+      <td style="padding-right: 5px;"><div class="label">{{=form.custom.label.modul}}</div></td>
+      <td>{{=form.custom.widget.modul}}</td>
+    </tr>
+     <tr>
+      <td style="padding-right: 5px;"><div class="label">{{=form.custom.label.icon}}</div></td>
+      <td>{{=form.custom.widget.icon}}</td>
+    </tr>
+    <tr>
+      <td colspan="2" style="padding-top: 5px;">
+        <table width="100%" cellpadding="0px;" cellspacing="0px;">
+          <tr>
+            <td style="padding-right: 5px;"><div class="label">{{=form.custom.label.address}}</div></td>
+            <td class="label" style="width: 100px;">{{=form.custom.label.url}}</td>
+            <td class="td_checkbox">{{=form.custom.widget.url}}</td>
+          </tr>
+          <tr>
+            <td colspan="3">{{=form.custom.widget.address}}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <div class="ui-bar-a" style="border-radius: 5px;text-align: center;padding: 5px;">
+          <span>{{=T('Parameters')}}</span></div>
+        {{=view_menufields}}
+      </td>
+    </tr>
+  </table>
+  {{=form.custom.end}}
+{{else:}}
+  {{=form.custom.begin}}
+  <table width="100%" cellpadding="0px;" cellspacing="0px;">
+    <tr>
+      <td style="padding-right: 5px;"><div class="label">{{=form.custom.label.fieldname}}</div></td>
+      <td>{{=form.custom.widget.fieldname}}</td>
+    </tr>
+    <tr>
+      <td style="padding-right: 5px;"><div class="label">{{=form.custom.label.description}}</div></td>
+      <td>{{=form.custom.widget.description}}</td>
+    </tr>
+    <tr>
+      <td colspan="2" style="padding-top: 5px;">
+        <table width="100%" cellpadding="0px;" cellspacing="0px;">
+          <tr>
+            <td style="padding-right: 5px;"><div class="label">{{=form.custom.label.fieldtype}}</div></td>
+            <td><div class="label">{{=form.custom.label.orderby}}</div></td>
+          </tr>
+          <tr>
+            <td style="padding-right: 5px;">{{=form.custom.widget.fieldtype}}</td>
+            <td>{{=form.custom.widget.orderby}}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  {{=form.custom.end}}
+{{pass}}
+</div>
+
+<div id="local-menu" data-role="panel" data-position="right" data-position-fixed="true" data-display="overlay" data-theme="a">
+  <div data-role="header">
+    {{=response.cmd_home}}
+    {{=response.cmd_close}}
+  </div>
+  <div data-role="content" style="margin-top:30px;padding:0px;margin-bottom: 20px;">
+    <hr style="border-width:0;background-color: #333333;">
+    {{if not response.prm_input:}}
+      <div id="ctr_edit_menucmd" style="margin-top:20px;padding:0px;">
+        <div data-role="controlgroup" >
+          {{=form.custom.submit}}
+          {{if response.cmd_delete_menu:}}
+            {{=response.cmd_delete_menu}}
+          {{pass}}
+          {{if response.cmd_add_menufields:}}
+            <hr class="menu_separator">
+            {{=response.cmd_add_menufields}}
+          {{pass}}
+        </div>
+        <div data-role="controlgroup" style="margin-top:20px;">
+          {{=response.cmd_menucmd_close}}
+        </div>
+      </div>
+    {{else:}}
+      <div id="ctr_edit_menufields" style="margin-top:20px;padding:0px;">
+        <div data-role="controlgroup" >
+          {{=form.custom.submit}}
+          {{if response.cmd_delete_menufields:}}
+            {{=response.cmd_delete_menufields}}
+          {{pass}}
+        </div>
+        <div data-role="controlgroup" style="margin-top:20px;">
+          {{=response.cmd_menufields_close}}
+        </div>
+      </div>
+    {{pass}}
+  </div>
+</div>

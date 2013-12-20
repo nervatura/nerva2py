@@ -1,207 +1,19 @@
-{{left_sidebar_enabled=right_sidebar_enabled=False}}
 {{extend 'nwc/layout.html'}}
-{{footer_enabled=False}}
 
 <style>
-body  {
-background: #808080;
-margin: 0;
-}
-.main {
-  padding: 10px 0 10px 0;
-}
 #frm_head {
-  background-color: #F2F2F2;
-  border-style: solid;
-  border-width: 5px;
 {{if form.vars.id!=None:}}
   border-bottom: none;
 {{pass}}
 }
-#tabs {
-  background-color: #F2F2F2;
-  border-style: solid;
-  border-width: 5px;
-  border-top: none;
-  border-color: #444444;
-}
-td {
-  vertical-align: middle;
-}
-.label {
-  font-weight: bold;
-  padding: 5px;
-  background-color: #DBDBDB;
-  width: 100% !important;
-}
-.label_disabled {
-  padding: 5px;
-  background-color: #FFFFFF;
-  width: 300px;
-  height: 18px;
-  border: 1px solid #CCC;
-  width: 100%;
-}
-.detail_count {
-  background-color: #DBDBDB;
-  color: #555555;
-  text-align: center;
-  font-weight: bold;
-  padding-top: 0px;
-  padding-bottom: 2px;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-.td_label {
-  vertical-align: middle;
-  padding: 10px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  width: 100px;
-}
-.td_label_nf {
-  vertical-align: middle;
-  padding: 10px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  font-size: 12px;  
-}
-.tab_label {
-  font-weight: bold;
-  font-size: small;
-}
-.ui-tabs-panel {
-  padding: 0px !important;
-}
-#tabs .web2py_console {
-  visibility:hidden;
-  padding: 0px;
-  height: 0px !important;
-  min-height: 0px !important;
-}
-#tabs .web2py_search_actions {
-  visibility:hidden;
-  height: 0px !important;
-  min-height: 0px !important;
-}
-#tabs .web2py_counter {
-  visibility:hidden;
-  height: 0px !important;
-  min-height: 0px !important;
-}
-#tabs .web2py_table {
-  font-size: small;
-}
-#tabs .web2py_grid {
-  background-color: #FFFFFF;
-}
-#tabs .web2py_grid tbody td {
-  height:34px;
-  border-bottom: 1px solid #DDDDDD;
-  border-right: 1px solid #DDDDDD;
-}
-#menu input[type="submit"] {
-  height: 25px !important;
+input[type="submit"] {
   padding-top: 2px !important;
-  color: #008B00;
-  width: 100%;
 }
-#place_planumber {
-  width: 100%;
-}
-#place_description {
-  width: 100%;
-}
-#address_zipcode {
-  width: 100%;
-}
-#address_city {
-  width: 100%;
-}
-#address_street {
-  width: 100%;
-}
-#place_placetype {
-  width: 100%;
-  height: 29px;
-}
-#place_curr {
-  width: 100%;
-  height: 29px;
-}
-
 #place_notes {
-  width: 100%;
   height: 30px;
 }
-#cmb_fields {
-  width: 500px;
-  height: 25px;
-}
-#cmd_delete {
-  width: 100%;
-}
-#cmd_password {
-  width: 100%;
-}
-#frm_head_field {
-  background-color: #F2F2F2;
-  border-style: solid;
-  border-width: 5px;
-}
-#cmb_fields {
-  width: 100%;
-  height: 25px;
-}
-#cmd_field_submit {
-  height: 25px !important;
-  padding-top: 2px !important;
-  color: #008B00;
-  width: 100%;
-}
-#fieldvalue_value {
-  width: 100%;
-}
 #fieldvalue_notes {
-  width: 100%;
   height: 80px;
-}
-
-#frm_head_contact {
-  background-color: #F2F2F2;
-  border-style: solid;
-  border-width: 5px;
-}
-#cmd_contact_submit {
-  height: 25px !important;
-  padding-top: 2px !important;
-  color: #008B00;
-  width: 100%;
-}
-#contact_firstname {
-  width: 100%;
-}
-#contact_surname {
-  width: 100%;
-}
-#contact_status {
-  width: 100%;
-}
-#contact_phone {
-  width: 100%;
-}
-#contact_fax {
-  width: 100%;
-}
-#contact_mobil {
-  width: 100%;
-}
-#contact_email {
-  width: 100%;
-}
-#contact_notes {
-  width: 100%;
-  height: 100px;
 }
 </style>
 
@@ -223,24 +35,25 @@ var ms_err_field_update = "{{=T('Read-only data!')}}";
       <div id="menu">
         <table width="100%" cellpadding="0" cellspacing="0">
           <tr>
-            <td>
+            <td style="padding-left: 5px;vertical-align: middle;">
               <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.titleicon}}" />
               <span style="vertical-align: middle;color: #FFD700;font-weight: bold;">{{=response.title}}</span>
-              <span style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;">&nbsp;
+              <span style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;padding-left: 5px;">
                 {{=response.subtitle}}</span>
             </td>
-            <td>
+            <td style="width:120px;padding-right: 5px;">
               {{=form.custom.submit}}
             </td>
-            <td>
+            <td style="width:120px;padding-right: 5px;">
               {{=response.cmd_report}}
             </td>
-            <td>
+            <td style="width:120px;padding-right: 20px;">
               {{=response.cmd_delete}}
             </td>
-            <td style="text-align: right;padding-right: 20px;">
-              {{=response.cmd_help}}
-	          {{=response.cmd_back}}
+            <td style="width:45px;padding-right: 0px;">
+              {{=response.cmd_help}}</td>
+            <td style="width: 45px;padding-right: 20px;">
+              {{=response.cmd_back}}
             </td>
           </tr>
         </table>
@@ -255,12 +68,24 @@ var ms_err_field_update = "{{=T('Read-only data!')}}";
       <td colspan="4" style="padding: 0px;">
         <table width="100%" cellpadding="0" cellspacing="0">
           <tr>
-            <td style="padding-top: 15px;" class="td_label"><div class="label">{{=form.custom.label.planumber}}</div></td>
-            <td style="width: 200px;padding-top: 12px;padding-right: 10px;">{{=form.custom.widget.planumber}}</td>
-            <td style="padding-top: 15px;padding-left: 5px;" class="td_label"><div class="label">{{=form.custom.label.description}}</div></td>
-            <td style="padding-top: 12px;padding-right: 10px;">{{=form.custom.widget.description}}</td>
-            <td style="padding-top: 15px;padding-left: 5px;width: 90px;" class="td_label_nf"><div class="label">{{=form.custom.label.inactive}}</div></td>
-            <td style="vertical-align: middle;padding-top: 5px;width: 15px;text-align: right;padding-right: 10px;" >{{=form.custom.widget.inactive}}</td>
+            <td style="padding: 10px 5px 5px 10px;width: 100px;">
+              <div class="label">{{=form.custom.label.planumber}}</div>
+            </td>
+            <td style="padding: 10px 15px 5px 10px;">
+              {{=form.custom.widget.planumber}}
+            </td>
+            <td style="padding: 10px 5px 5px 5px;width: 100px;">
+              <div class="label">{{=form.custom.label.description}}</div>
+            </td>
+            <td style="padding: 10px 10px 5px 10px;">
+              {{=form.custom.widget.description}}
+            </td>
+            <td style="padding: 10px 5px 5px 10px;width: 100px;">
+              <div class="label">{{=form.custom.label.inactive}}</div>
+            </td>
+            <td style="padding: 0px 0px 5px 5px;" >
+              {{=form.custom.widget.inactive}}
+            </td>
           </tr>
          </table>
        </td>
@@ -272,30 +97,38 @@ var ms_err_field_update = "{{=T('Read-only data!')}}";
             <td style="padding: 0px;">
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="padding-top: 5px;vertical-align: top;" class="td_label"><div class="label">{{=form.custom.label.notes}}</div></td>
-                  <td colspan="3" style="padding-top: 5px;padding-right: 5px;">{{=form.custom.widget.notes}}</td>
+                  <td style="padding: 5px 10px 5px 10px;vertical-align: top;width: 100px;">
+                    <div class="label">{{=form.custom.label.notes}}</div>
+                  </td>
+                  <td style="padding: 5px 10px 5px 5px;">
+                    {{=form.custom.widget.notes}}
+                  </td>
                 </tr>
               </table>
             </td>
             <td style="vertical-align: top;">
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="width: 60px;" class="td_label"> <div class="label">{{=form.custom.label.placetype}}</div></td>
-                  <td style="width: 60px;">
+                  <td style="padding: 5px 5px 5px 10px;width: 60px;">
+                    <div class="label">{{=form.custom.label.placetype}}</div>
+                  </td>
+                  <td style="padding: 5px 10px 5px 10px;width: 60px;vertical-align: top;">
                     {{if form.formname!='place/create':}}
-                      <div style="width: 88%;" class="label_disabled">{{=form.custom.widget.placetype}}</div>
+                      <div style="width: 88%;" class="label_disabled">
+                        {{=form.custom.widget.placetype}}
+                      </div>
                     {{else:}}
                       {{=form.custom.widget.placetype}}
                     {{pass}}
                   </td>
                 </tr>
                 <tr>  
-                  <td style="width: 60px;" class="td_label">
+                  <td style="padding: 5px 5px 5px 10px;width: 60px;">
                     {{if form.custom.widget.curr:}} 
                       <div class="label">{{=form.custom.label.curr}}</div>
                     {{pass}}
                   </td>
-                  <td style="width: 60px;">
+                  <td style="padding: 5px 10px 5px 10px;width: 60px;vertical-align: top;">
                     {{if form.custom.widget.curr:}}
                       {{=form.custom.widget.curr}}
                     {{pass}}
@@ -313,14 +146,26 @@ var ms_err_field_update = "{{=T('Read-only data!')}}";
       </td>
     </tr>
     <tr>
-      <td class="td_label"><div class="label">{{=T('Zipcode')}}</div></td>
-      <td style="padding-right: 10px;width: 150px;">{{=response.zipcode}}</td>
-      <td style="padding-left: 5px;" class="td_label"><div class="label">{{=T("City")}}</div></td>
-      <td style="padding-right: 20px;">{{=response.city}}</td>
+      <td style="padding: 5px 5px 5px 10px;width: 100px;">
+        <div class="label">{{=T('Zipcode')}}</div>
+      </td>
+      <td style="padding: 5px 10px 5px 10px;width: 150px;">
+        {{=response.zipcode}}
+      </td>
+      <td style="padding: 5px 5px 5px 10px;width: 100px;">
+        <div class="label">{{=T("City")}}</div>
+      </td>
+      <td style="padding: 5px 20px 5px 10px;">
+        {{=response.city}}
+      </td>
     </tr>
     <tr >
-      <td class="td_label" style="padding-bottom: 10px;"><div class="label">{{=T("Street")}}</div></td>
-      <td colspan="3" style="padding-right: 20px;padding-bottom: 10px;" >{{=response.street}}</td>
+      <td style="padding: 5px 5px 10px 10px;width: 100px;">
+        <div class="label">{{=T("Street")}}</div>
+      </td>
+      <td colspan="3" style="padding: 5px 20px 10px 10px;" >
+        {{=response.street}}
+      </td>
     </tr>    
   </table>
 </div></div>
@@ -352,17 +197,19 @@ var ms_err_field_update = "{{=T('Read-only data!')}}";
         <td style="padding: 0px;">
           <table width="100%" cellpadding="0" cellspacing="0" style="border-style: solid;border-top:none;border-width: 5px;border-color: #CCCCCC;">
             <tr>
-              <td style="width: 16px;padding-right: 0px;padding-top: 7px;">
+              {{if response.cmd_fields:}}
+              <td style="padding: 7px 0px 5px 5px;width: 16px;">
                   {{=response.cmd_fields}}</td>
-              <td style="width: 150px;padding-left: 0px;padding-right: 5px;" class="td_label">
+              {{pass}}
+              <td style="padding: 5px 5px 5px 0px;width: 150px;">
                 {{if response.cmb_fields:}}
-                <div class="label" style="width: 150px;padding-right: 0px;font-size: small;" class="label">
+                <div class="label" style="font-size: small;">
                   {{=T('Additional Data')}}</div>
                 {{else:}}
                 <div style="height: 30px;"></div>
                 {{pass}}
               </td>
-              <td>
+              <td style="padding: 5px 5px 5px 10px;">
                   {{=response.cmb_fields}}</td>
             </tr>
           </table>
@@ -370,34 +217,35 @@ var ms_err_field_update = "{{=T('Read-only data!')}}";
       </tr>
       <tr>
         <td style="vertical-align: top; padding: 0px;">
-          <div id="edit_fieldvalue"
-            style="display: none;border-style: solid;border-width: 7px;border-color: #CCCCCC;padding: 8px;padding-bottom: 3px;border-top-width: 2px;" >
+          <div id="edit_fieldvalue" class="frm_tab_edit_1">
             {{=response.fieldvalue_form.custom.begin}}
-            <div id="frm_head_field">
+            <div class="frm_tab_edit_2">
               <table width="100%" style="background-color: #2B2B2B;" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="padding-left: 10px;">
+                  <td style="padding-left: 5px;vertical-align: middle;">
                     <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.fieldvalue_icon}}" />
                     <span style="vertical-align: middle;color: #FFD700;font-weight: bold;padding-right: 10px;">{{=T('FIELD')}}</span>
                     <span id="title_item" 
-                      style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;">
+                      style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;padding-left: 0px;">
                       {{=response.subtitle}}</span>
                   </td>
-                  <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
-                    {{=response.cmd_fieldvalue_submit}}
+                  <td style="width: 120px;padding: 4px 20px 0px 0px;">
+                    {{=response.cmd_fieldvalue_update}}
                   </td>
-                  <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
-                    {{=response.cmd_help}}{{=response.cmd_fieldvalue_cancel}}
+                  <td style="width:45px;padding: 4px 0px 0px 0px;">
+                    {{=response.cmd_help}}</td>
+                  <td style="width: 45px;padding: 4px 0px 0px 0px;">
+                    {{=response.cmd_fieldvalue_cancel}}
                   </td>
                 </tr>
               </table>
               <table style="border-style: solid;border-width: 1px;border-color: #CCCCCC;border-top: none;" 
                 width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td style="width: 200px;vertical-align: top;padding-top: 11px;padding-right: 10px;" class="td_label">
-                    <div id="fieldvalue_description" class="label" style="width: 100%;" ></div>
+                  <td style="padding: 13px 15px 5px 10px;width: 200px;">
+                    <div id="fieldvalue_description" class="label" ></div>
                   </td>
-                  <td style="padding-top: 10px;vertical-align: middle;padding-right: 20px;">
+                  <td style="padding-top: 10px;padding-right: 20px;">
                     <div id="fieldvalue_value_controls">
                       <input id="fieldvalue_value" type="hidden" name="value" value="">
                       <input id="fieldvalue_value_bool" 
@@ -429,11 +277,12 @@ var ms_err_field_update = "{{=T('Read-only data!')}}";
                   </td>
                 </tr>
                 <tr>
-                  <td colspan="2" style="vertical-align: top;padding-right: 20px;" class="td_label">
-                    <div class="label">{{=response.fieldvalue_form.custom.label.notes}}</div></td>
+                  <td colspan="2" style="padding: 5px 20px 5px 10px;">
+                    <div class="label">{{=response.fieldvalue_form.custom.label.notes}}</div>
+                  </td>
                 </tr>
                 <tr>
-                  <td colspan="2" style="padding: 10px;padding-top: 0px;padding-right: 20px;">
+                  <td colspan="2" style="padding: 0px 20px 10px 10px;">
                     {{=response.fieldvalue_form.custom.widget.notes}}</td>
                 </tr>
               </table>
@@ -451,83 +300,84 @@ var ms_err_field_update = "{{=T('Read-only data!')}}";
     </table>
   </div>
 	<div id="tabs-2">
-	  <div id="edit_contact"
-      style="display: none;border-style: solid;border-width: 7px;border-color: #CCCCCC;padding: 8px;padding-bottom: 3px;border-top-width: 2px;" >
+	  <div id="edit_contact" class="frm_tab_edit_1" >
       {{=response.contact_form.custom.begin}}
-      <div id="frm_head_contact">
+      <div class="frm_tab_edit_2">
         <table width="100%" style="background-color: #2B2B2B;" cellpadding="0" cellspacing="0">
           <tr>
-            <td style="padding-left: 10px;">
+            <td style="padding-left: 5px;vertical-align: middle;">
               <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.contact_icon}}" />
               <span style="vertical-align: middle;color: #FFD700;font-weight: bold;padding-right: 10px;">{{=T('CONTACT')}}</span>
               <span id="title_item" 
                 style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;">
                 {{=response.subtitle}}</span>
             </td>
-            <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
-              {{=response.cmd_contact_submit}}
+            <td style="width: 120px;padding: 4px 20px 0px 0px;">
+               {{=response.cmd_contact_update}}
             </td>
-            <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
-              {{=response.cmd_help}}{{=response.cmd_contact_cancel}}
+            <td style="width:45px;padding: 4px 0px 0px 0px;">
+               {{=response.cmd_help}}</td>
+            <td style="width: 45px;padding: 4px 0px 0px 0px;">
+               {{=response.cmd_contact_cancel}}
             </td>
           </tr>
         </table>
         <table style="padding: 0px;margin: 0px;width: 100%;" cellpadding="0" cellspacing="0">
           <tr>
-            <td style="width: 85px;padding-left: 10px;padding-right: 5px;padding-top: 10px;" class="td_label">
-              <div class="label" style="width: 80px;padding-right: 0px;text-align: center;">
+            <td style="padding: 10px 5px 5px 10px;width: 85px;">
+              <div class="label" style="padding-right: 0px;text-align: center;">
                 <span id="label_contact_id">000000</span>{{=response.contact_id}}</div>
             </td>
-            <td style="padding-top: 10px;width: 80px;padding-right: 10px;padding-left: 5px;" class="td_label">
-              <div style="width: 80px;" class="label">{{=response.contact_form.custom.label.firstname}}</div></td>
-            <td style="padding: 0px;padding-top: 5px;vertical-align: middle;padding-right: 10px;padding-left: 5px;">
+            <td style="padding: 10px 5px 5px 5px;width: 80px;">
+              <div class="label">{{=response.contact_form.custom.label.firstname}}</div></td>
+            <td style="padding: 10px 10px 5px 10px;">
               {{=response.contact_form.custom.widget.firstname}}
             </td>
-            <td style="padding-top: 10px;width: 80px;padding-right: 10px;padding-left: 5px;" class="td_label">
-              <div style="width: 80px;" class="label">{{=response.contact_form.custom.label.surname}}</div></td>
-            <td style="padding: 0px;padding-top: 5px;vertical-align: middle;padding-right: 20px;padding-left: 5px;">
+            <td style="padding: 10px 5px 5px 10px;width: 80px;">
+              <div class="label">{{=response.contact_form.custom.label.surname}}</div></td>
+            <td style="padding: 10px 20px 5px 10px;">
               {{=response.contact_form.custom.widget.surname}}
             </td>
           </tr>
         </table>
         <table style="padding: 0px;margin: 0px;width: 100%;" cellpadding="0" cellspacing="0">
            <tr>
-            <td style="padding-top: 5px;width: 80px;padding-right: 10px;padding-left: 10px;" class="td_label">
+            <td style="padding: 5px 5px 5px 10px;width: 85px;">
               <div style="width: 80px;" class="label">{{=response.contact_form.custom.label.status}}</div></td>
-            <td style="width: 200px;padding: 0px;padding-top: 0px;vertical-align: middle;padding-right: 10px;padding-left: 5px;">
+            <td style="padding: 5px 10px 5px 0px;">
               {{=response.contact_form.custom.widget.status}}
             </td>
-            <td style="padding-top: 5px;width: 80px;padding-right: 10px;padding-left: 5px;" class="td_label">
+            <td style="padding: 5px 5px 5px 10px;width: 80px;">
               <div style="width: 80px;" class="label">{{=response.contact_form.custom.label.email}}</div></td>
-            <td style="padding: 0px;padding-top: 0px;vertical-align: middle;padding-right: 20px;padding-left: 5px;">
+            <td style="padding: 5px 20px 5px 0px;">
               {{=response.contact_form.custom.widget.email}}
             </td>
           </tr>
         </table>
         <table style="padding: 0px;margin: 0px;width: 100%;" cellpadding="0" cellspacing="0">
            <tr>
-            <td style="padding-top: 5px;width: 80px;padding-right: 10px;padding-left: 10px;" class="td_label">
+            <td style="padding: 5px 5px 5px 10px;width: 85px;">
               <div style="width: 80px;" class="label">{{=response.contact_form.custom.label.phone}}</div></td>
-            <td style="padding: 0px;padding-top: 0px;vertical-align: middle;padding-right: 10px;padding-left: 5px;">
+            <td style="padding: 5px 10px 5px 0px;">
               {{=response.contact_form.custom.widget.phone}}
             </td>
-            <td style="padding-top: 5px;width: 80px;padding-right: 10px;padding-left: 10px;" class="td_label">
+            <td style="padding: 5px 5px 5px 10px;width: 80px;">
               <div style="width: 80px;" class="label">{{=response.contact_form.custom.label.fax}}</div></td>
-            <td style="padding: 0px;padding-top: 0px;vertical-align: middle;padding-right: 10px;padding-left: 5px;">
+            <td style="padding: 5px 10px 5px 0px;">
               {{=response.contact_form.custom.widget.fax}}
             </td>
-            <td style="padding-top: 5px;width: 80px;padding-right: 10px;padding-left: 5px;" class="td_label">
+            <td style="padding: 5px 5px 5px 10px;width: 80px;">
               <div style="width: 80px;" class="label">{{=response.contact_form.custom.label.mobil}}</div></td>
-            <td style="padding: 0px;padding-top: 0px;vertical-align: middle;padding-right: 20px;padding-left: 5px;">
+            <td style="padding: 5px 20px 5px 0px;">
               {{=response.contact_form.custom.widget.mobil}}
             </td>
           </tr>
         </table>
         <table style="padding: 0px;margin: 0px;width: 100%;" cellpadding="0" cellspacing="0">
            <tr>
-            <td style="width: 80px;padding-top: 5px;padding-bottom:10px;padding-right: 10px;padding-left: 10px;vertical-align: top;" class="td_label">
-              <div style="width: 80px;" class="label">{{=response.contact_form.custom.label.notes}}</div></td>
-            <td style="padding: 0px;padding-top: 0px;padding-bottom:10px;vertical-align: top;padding-right: 20px;padding-left: 5px;">
+            <td style="padding: 5px 10px 10px 10px;width: 80px;vertical-align: top;">
+              <div class="label">{{=response.contact_form.custom.label.notes}}</div></td>
+            <td style="padding: 5px 20px 10px 5px;">
               {{=response.contact_form.custom.widget.notes}}
             </td>
           </tr>

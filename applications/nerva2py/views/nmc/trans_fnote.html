@@ -1,0 +1,83 @@
+{{extend 'nmc/layout.html'}}
+
+<style>
+
+</style>
+
+<script>
+  var ms_er_exists = "{{=T('The name already exists!')}}'"
+  var ms_wn_chosen = "{{=T('You have chosen a template!')}}"
+  var ms_wn_conf = "{{=T('Do you want to make the default template?')}}"
+  var title_def = "{{=T('Default: ')}}"
+  var ms_wn_save = "{{=T('Do you want to save the text as a template?')}}"
+  var ms_err_new = "{{=T('Missing template name!')}}"
+  var ms_wn_delete = "{{=T('Do you want to delete the template?')}}"
+  
+</script>
+
+{{block header}}
+  {{=response.cmd_menu}}
+  <h1 style="color: #FFD700;font-size: small;margin-bottom: 0px;margin-top: 5px;">{{=response.title}}</h1>
+  <h1 style="margin-bottom: 5px;margin-top: 0px;"> {{=response.transnumber}}</h1>
+  {{=response.cmd_commands}}
+{{end}}
+
+<div id="note_page" name="pages" align="center" style="max-width: 600px;display: block;" >
+{{=form.custom.begin}}
+<table width="100%" cellpadding="0px;" cellspacing="0px;">
+  <tr>
+    <td style="padding-right: 5px;"><div class="label">{{=T('Templates')}}</div></td>
+    <td>{{=response.cmb_temp}}</td>
+  </tr>
+  <tr>
+    <td colspan="2">{{=form.custom.widget.fnote}}{{=response.trans_id}}</td>
+  </tr>
+</table>
+{{=form.custom.end}}
+</div>
+
+<div id="local-menu" data-role="panel" data-position="right" data-position-fixed="true" data-display="overlay" data-theme="a">
+  <div data-role="header">
+    {{=response.cmd_back}}
+    {{=response.cmd_close}}
+  </div>
+  <div data-role="content" style="margin-top:30px;padding:0px;margin-bottom: 20px;">
+    <div data-role="controlgroup" data-mini="false" style="display: block;margin-top:10px;padding:0px;">
+      <hr style="border-width:0;background-color: #333333;">
+    </div>
+    <div id="ctr_note_page" data-role="controlgroup" data-mini="false" style="display: block;margin-top:20px;padding:0px;">
+      {{=response.cmd_note_update}}
+    </div>
+    <div id="ctr_template" data-role="controlgroup" data-mini="false" style="display: block;margin-top:20px;padding:0px;">
+      <div data-role="header" data-theme="a" class="ui-corner-top" style="margin:0px;border-top-left-radius: 10px;border-top-right-radius:10px;">
+        <h1 style="font-size: small;">{{=T('Templates')}}</h1>
+      </div>
+      {{=response.cmd_default_template}}
+      {{=response.cmd_load_template}}
+      {{=response.cmd_save_template}}
+      {{=response.cmd_new_template}}
+      {{=response.cmd_delete_template}}
+    </div>
+  </div>
+  <div id="ctr_local_menu" data-role="controlgroup" data-mini="false" style="display: block;margin-top:20px;padding:0px;">
+      
+  </div>
+</div>
+
+<div id="popup_new_template" data-role="popup" data-theme="d" data-overlay-theme="a" data-position-to="#appl_url"
+  data-tolerance="15,5" style="padding:10px;border-radius:10px;min-width: 290px;min-height: 20px;">
+  <div data-role="header" data-theme="a" class="ui-corner-top" style="margin:0px;">
+    <a style="top:1px;" href="#" data-icon="delete" data-iconpos="notext" data-theme="a" data-rel="back">{{=T("Close")}}</a>
+    <h1 style="color: #FFD700;font-size: small;">{{=T("New template:")}}</h1>
+  </div>
+  <table width="100%" cellpadding="0px;" cellspacing="0px;">
+    <tr>
+      <td><input class="string" id="new_tempdesc" name="new_tempdesc" type="text" ></td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        {{=response.cmd_template_update}}
+      </td>
+    </tr>
+  </table>
+</div>

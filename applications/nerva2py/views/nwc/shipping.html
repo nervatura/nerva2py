@@ -1,147 +1,8 @@
-{{left_sidebar_enabled=right_sidebar_enabled=False}}
 {{extend 'nwc/layout.html'}}
-{{footer_enabled=False}}
 
 <style>
-body  {
-  background: #808080;
-  margin: 0;
-}
-.main {
-  padding: 10px 0 10px 0;
-}
-#frm_head {
-  background-color: #F2F2F2;
-  border-style: solid;
-  border-width: 5px;
-}
-#tabs {
-  background-color: #F2F2F2;
-  border-style: solid;
-  border-width: 5px;
-  border-top: none;
-  border-color: #444444;
-}
-td {
-  vertical-align: middle;
-}
-.label {
-  font-weight: bold;
-  padding: 5px;
-  background-color: #DBDBDB;
-  width: 100% !important;
-}
-.td_label {
-  vertical-align: middle;
-  padding: 10px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-.label_disabled {
-  padding: 5px;
-  background-color: #FFFFFF;
-  width: 97%;
-  height: 18px;
-  border: 1px solid #CCC;
-}
-.label_error {
-  padding: 5px;
-  background-color: #FF0000;
-  color: #FFFFFF;
-  width: 97%;
-  height: 18px;
-  border: 1px solid #CCC;
-}
-.td_label_nf {
-  vertical-align: middle;
-  padding: 10px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  font-size: 12px;  
-}
-.tab_label {
-  font-weight: bold;
-  font-size: small;
-}
-.ui-tabs-panel {
-  padding: 0px !important;
-}
-#tabs .web2py_console {
-  visibility:hidden;
-  padding: 0px;
-  height: 0px !important;
-  min-height: 0px !important;
-}
-#tabs .web2py_search_actions {
-  visibility:hidden;
-  height: 0px !important;
-  min-height: 0px !important;
-}
-#tabs .web2py_counter {
-  visibility:hidden;
-  height: 0px !important;
-  min-height: 0px !important;
-}
-#tabs .web2py_table {
-  font-size: small;
-}
-
-#tabs .web2py_grid {
-  background-color: #FFFFFF;
-}
-#tabs .web2py_grid tbody td {
-  height:34px;
-  border-bottom: 1px solid #DDDDDD;
-  border-right: 1px solid #DDDDDD;
-}
-#tabs-1 input[type="submit"] {
-  height: 30px !important;
+input[type="submit"] {
   padding-top: 2px !important;
-  color: #008B00;
-  width: 100%;
-}
-div.el-rte.ui-resizable {
-  height: 100% !important;
-  width: 100% !important;
-}
-div.workzone {
-  height: 100% !important;
-  width: 100% !important;
-}
-.detail_count {
-  background-color: #DBDBDB;
-  color: #555555;
-  text-align: center;
-  font-weight: bold;
-  padding-top: 0px;
-  padding-bottom: 2px;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-#shippingdate {
-  width: 100%;
-  text-align: center;
-  vertical-align: middle;
-}
-#cmd_create {
-  width: 100%;
-  text-align: center;
-  vertical-align: middle;
-}
-#qty {
-  width: 100%;;
-  text-align: right;
-}
-#batch {
-  width: 100%;;
-}
-#filter_product {
-  width: 100%;
-}
-#cmd_update {
-  width: 100%;
-  text-align: center;
-  vertical-align: middle;
 }
 </style>
 
@@ -162,15 +23,16 @@ var ms_err_missing_date = "{{=T('Missing Shipping Date!')}}";
       <div id="menu">
         <table width="100%" cellpadding="0" cellspacing="0">
           <tr>
-            <td>
+            <td style="vertical-align: middle;">
               <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.titleicon}}" />
               <span style="vertical-align: middle;color: #FFD700;font-weight: bold;">{{=response.subtitle}}</span>
-              <span style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;">&nbsp;
+              <span style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;padding-left: 5px;">
                 {{=response.transnumber}}</span>
             </td>
-            <td style="text-align: right;padding-right: 20px;">
-              {{=response.cmd_help}}
-	            {{=response.cmd_back}}
+            <td style="width:45px;padding-right: 0px;">
+              {{=response.cmd_help}}</td>
+            <td style="width: 45px;padding-right: 20px;">
+              {{=response.cmd_back}}
             </td>
           </tr>
         </table>
@@ -182,18 +44,18 @@ var ms_err_missing_date = "{{=T('Missing Shipping Date!')}}";
   <table style="border-style: solid;border-width: 1px;border-color: #CCCCCC;border-top: none;" 
     width="100%" cellpadding="0" cellspacing="0">
     <tr>
-      <td style="width: 200px;padding-left: 10px;padding-right: 0px;padding-top: 15px;padding-bottom: 15px;" class="td_label">
-          <div class="label" style="width: 200px;padding-right: 0px;text-align: center;">
+      <td style="padding: 7px 5px 5px 10px;width: 200px;">
+          <div class="label" style="text-align: center;">
           {{=response.transnumber}}</div></td>
-      <td style="width: 150px;padding-left: 10px;padding-right: 0px;padding-top: 15px;padding-bottom: 15px;" class="td_label">
-          <div class="label" style="width: 150px;padding-right: 0px;">
-          {{=T('Direction: ')}}
-          <span style="color: green;">{{=response.direction}}</span>
-          </div></td>
-      <td style="width: 100px;padding-left: 10px;padding-right: 5px;padding-top: 15px;padding-bottom: 15px;" class="td_label">
-          <div class="label" style="width: 100px;padding-right: 0px;">
-          {{=T('Customer')}}</div></td>
-      <td style="width: auto;padding-right: 20px;">
+      <td style="padding: 7px 5px 5px 10px;width: 150px;">
+          <div class="label">{{=T('Direction: ')}}
+            <span style="color: green;">{{=response.direction}}</span>
+          </div>
+      </td>
+      <td style="padding: 7px 5px 5px 10px;width: 100px;">
+          <div class="label">{{=T('Customer')}}</div>
+      </td>
+      <td style="padding: 5px 20px 5px 10px;">
         {{=response.customer}}
       </td>  
     </tr>
@@ -231,11 +93,21 @@ var ms_err_missing_date = "{{=T('Missing Shipping Date!')}}";
 	  <table width="100%" cellpadding="0" cellspacing="0" 
       style="border-style: solid;border-top:none;border-width: 5px;border-color: #CCCCCC;">
         <tr>
-          <td style="padding-top: 6px;padding-left: 5px;width: 90px;" class="td_label"><div class="label">{{=response.filter.custom.label.product}}</div></td>
-          <td style="padding-top: 4px;padding-right: 10px;">{{=response.filter.custom.widget.product}}</td>
-          <td style="padding-top: 6px;padding-left: 5px;width: 130px;" class="td_label_nf"><div class="label">{{=response.filter.custom.label.nocomp}}</div></td>
-          <td style="vertical-align: middle;width: 15px;padding: 0px;padding-left: 5px;" >{{=response.filter.custom.widget.nocomp}}</td>
-          <td style="width: 70px;padding-top: 6px;padding-right: 5px;">{{=response.filter.custom.submit}}</td>
+          <td style="padding: 7px 5px 5px 10px;width: 90px;">
+            <div class="label">{{=response.filter.custom.label.product}}</div>
+          </td>
+          <td style="padding: 7px 5px 5px 10px;">
+            {{=response.filter.custom.widget.product}}
+          </td>
+          <td style="padding: 7px 5px 5px 10px;width: 130px;">
+            <div class="label">{{=response.filter.custom.label.nocomp}}</div>
+          </td>
+          <td style="padding: 0px 0px 5px 5px;width: 20px" >
+            {{=response.filter.custom.widget.nocomp}}
+          </td>
+          <td style="padding: 9px 5px 5px 5px;width: 100px;">
+            {{=response.filter.custom.submit}}
+          </td>
         </tr>
     </table>
     {{=response.filter.custom.end}}
@@ -245,31 +117,46 @@ var ms_err_missing_date = "{{=T('Missing Shipping Date!')}}";
 	  <table width="100%" cellpadding="0" cellspacing="0" 
       style="border-style: solid;border-top:none;border-width: 5px;border-color: #CCCCCC;">
         <tr>
-          <td style="padding-left: 5px;width: 120px;" class="td_label"><div class="label">{{=T('Shipping Date')}}</div></td>
-          <td style="padding-right: 15px;width: 90px;">{{=response.shippingdate}}</td>
-          <td style="padding-left: 5px;width: 120px;" class="td_label"><div class="label">{{=T('Warehouse')}}</div></td>
-          <td style="padding-right: 10px;">{{=response.place_control}}{{=response.place_id}}{{=response.trans_id}}{{=response.item_id}}{{=response.product_id}}</td>
-          <td style="width: 100px;padding-top: 6px;">{{=response.cmd_create}}</td>
+          <td style="padding: 7px 5px 5px 10px;width: 120px;">
+            <div class="label">{{=T('Shipping Date')}}</div>
+          </td>
+          <td style="padding: 7px 5px 5px 10px;width: 90px;">{{=response.shippingdate}}</td>
+          <td style="padding: 7px 5px 5px 10px;width: 120px;">
+            <div class="label">{{=T('Warehouse')}}</div>
+          </td>
+          <td style="padding: 7px 5px 5px 10px;">
+            {{=response.place_control}}{{=response.place_id}}{{=response.trans_id}}{{=response.item_id}}{{=response.product_id}}
+          </td>
+          <td style="padding: 9px 10px 5px 10px;width: 100px;">
+            {{=response.cmd_create}}
+          </td>
         </tr>
     </table>
-    <div id="edit_item"
+    <div id="edit_item" 
       style="display: none;border-style: solid;border-width: 7px;border-color: #444444;padding: 8px;padding-bottom: 3px;" >
       <table style="padding: 0px;margin: 0px;width: 100%;" cellpadding="0" cellspacing="0">
         <tr>
-          <td style="width: 16px;padding-top: 0px;padding-right: 0px;padding-left: 0px;">{{=response.cmd_cancel}}</td>
-          <td style="padding-left: 0px;width: 200px;padding-top: 2px;" class="td_label">
+          <td style="padding: 0px;width: 16px;">
+            {{=response.cmd_cancel}}
+          </td>
+          <td style="padding: 0px 5px 0px 0px;width: 200px;">
             <div id="partnumber" class="label" style="text-align: center;"></div>
           </td>
           
-          <td style="padding-left: 5px;width: 90px;padding-top: 2px;" class="td_label"><div class="label">{{=T('Batch No.')}}</div></td>
-          <td style="padding-top: 0px;width: 200px;padding-right: 10px;">
-            <input id="batch" class="string" type="text" value="" name="batch" width="100px;">
+          <td style="padding: 0px 5px 0px 10px;width: 90px;">
+            <div class="label">{{=T('Batch No.')}}</div>
           </td>
-          <td style="padding-left: 5px;width: 70px;padding-top: 2px;" class="td_label"><div class="label">{{=T('Qty')}}</div></td>
-          <td style="padding-top: 0px;width: 90px;padding-right: 10px;">
+          <td style="padding: 0px 5px 0px 10px;">
+            <input id="batch" class="string" type="text" value="" name="batch">
+          </td>
+          <td style="padding: 0px 5px 0px 10px;width: 70px;">
+            <div class="label">{{=T('Qty')}}</div>
+          </td>
+          <td style="padding: 0px 5px 0px 10px;width: 90px;">
             <input id="qty" class="double" type="text" value="" name="qty">
           </td>
-          <td style="width: 100px;padding-top: 2px;padding-right: 0px;">{{=response.cmd_update}}</td>
+          <td style="padding: 2px 0px 0px 10px;width: 100px;">
+            {{=response.cmd_update}}</td>
         </tr>
       </table>        
     </div>
@@ -278,6 +165,10 @@ var ms_err_missing_date = "{{=T('Missing Shipping Date!')}}";
 	<div id="tabs-3">
     {{=response.view_trans}}
   </div>
+</div>
+
+<div id="frm_stocks" title="{{=T('STOCKS')}}" style="display: none;">
+  <div id="stock_info"></div>
 </div>
 
 <script language="javascript">

@@ -1,0 +1,138 @@
+{{extend 'nmc/layout.html'}}
+
+<style>
+<!--
+table {
+  width: 100%;
+}
+-->
+</style>
+
+{{block header}}
+  {{=response.cmd_menu}}
+  <h1 style="color: #FFD700;font-size: small;margin-bottom: 0px;margin-top: 5px;">{{=response.title}}</h1>
+  <h1 style="margin-bottom: 5px;margin-top: 0px;"> {{=response.subtitle}}</h1>
+  {{=response.cmd_commands}}
+{{end}}
+
+{{if response.prm_input:}}
+  {{=form.custom.begin}}
+<div align="center" style="max-width: 600px;" >
+  <table width="100%" cellpadding="0px;" cellspacing="5px;">
+    <tr>
+      <td style="width: 150px;"><div class="label">{{=form.custom.label.fieldname}}</div></td>
+      <td>
+          {{if form.formname=='deffield/create':}}
+            <div class="label_disabled"></div>
+          {{else:}}
+            <div class="label_disabled">{{=form.custom.widget.fieldname}}</div>
+          {{pass}}
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <table width="100%" cellpadding="5px;" cellspacing="0px;">
+          <tr>
+            <td style="padding-left: 0px;"><div class="label">{{=form.custom.label.fieldtype}}</div></td>
+            <td>
+              {{if form.formname=='deffield/create':}}
+                {{=form.custom.widget.nervatype}}
+              {{else:}}
+                <div class="label_disabled">{{=form.custom.widget.nervatype}}</div>
+              {{pass}}
+            </td>
+            <td>
+              {{if form.formname=='deffield/create':}}
+                {{=form.custom.widget.fieldtype}}
+              {{else:}}
+                <div class="label_disabled">{{=form.custom.widget.fieldtype}}</div>
+              {{pass}}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <table width="100%" cellpadding="0px;" cellspacing="0px;">
+          <tr>
+            <td style="padding-right: 5px;"><div class="label">{{=form.custom.label.description}}</div></td>
+            <td class="label" style="width: 100px;">{{=form.custom.label.readonly}}</td>
+            <td class="td_checkbox">{{=form.custom.widget.readonly}}</td>
+          </tr>
+          <tr>
+            <td colspan="3">{{=form.custom.widget.description}}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    {{if form.custom.widget.valuelist!=None:}}
+    <tr>
+      <td colspan="2">
+        <table width="100%" cellpadding="0px;" cellspacing="0px;">
+          <tr>
+            <td><div class="label">{{=form.custom.label.valuelist}}</div></td>
+          </tr>
+          <tr>
+            <td>{{=form.custom.widget.valuelist}}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    {{pass}}
+    <tr>
+      <td colspan="2">
+        <table width="100%" cellpadding="0px;" cellspacing="0px;">
+          <tr>
+            <td><div class="label">{{=form.custom.label.addnew}}</div></td>
+            <td class="td_checkbox">{{=form.custom.widget.addnew}}</td>
+            <td><div class="label">{{=form.custom.label.visible}}</div></td>
+            <td class="td_checkbox">{{=form.custom.widget.visible}}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</div>
+  {{=form.custom.end}}
+{{else:}}
+  {{=response.sform}}
+  {{=form}}
+{{pass}}
+
+<div id="local-menu" data-role="panel" data-position="right" data-position-fixed="true" data-display="overlay" data-theme="a">
+  <div data-role="header">
+    {{=response.cmd_home}}
+    {{=response.cmd_close}}
+  </div>
+  <div data-role="content" style="margin-top:30px;padding:0px;margin-bottom: 20px;">
+    <hr style="border-width:0;background-color: #333333;">
+    {{if response.prm_input:}}
+      <div id="ctr_edit_deffield" data-role="controlgroup" data-mini="false" style="margin-top:20px;padding:0px;">
+        <div data-role="controlgroup" >
+          {{=form.custom.submit}}
+          {{if form.formname!='deffield/create':}}
+            {{=response.cmd_delete}}
+            {{if response.cmd_deffield_new:}}
+              <hr class="menu_separator">
+              {{=response.cmd_deffield_new}}
+            {{pass}}
+          {{pass}}
+        </div>
+        <div data-role="controlgroup" style="margin-top:20px;">
+          {{=response.cmd_deffield_close}}
+        </div>
+      </div>
+    {{else:}}
+      <div id="ctr_deffield_page" data-role="controlgroup" data-mini="false" style="margin-top:20px;padding:0px;">
+        {{=response.cmd_deffield_new}}
+      </div>
+    {{pass}}
+  </div>
+</div>
+
+<script language="javascript">
+<!--
+ jQuery("#web2py_keywords").focus();
+//-->
+</script

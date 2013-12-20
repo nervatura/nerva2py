@@ -95,7 +95,7 @@ td.w2p_fl, td.w2p_fc { padding-top: 4px; }
 a, a:visited, a:hover { color:#0069D6}
 
 /*********** web2py specific ***********/
-div.flash {
+/* div.flash {
     font-weight: bold;
     display: none;
     position: fixed;
@@ -114,7 +114,41 @@ div.flash {
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     z-index: 2;
+} */
+div.flash {
+    font-weight:bold;
+    display:none;
+    position:fixed;
+    padding:10px;
+    top:48px;
+    right:250px;
+    min-width:280px;
+    opacity:0.95;
+    margin:0px 0px 10px 10px;
+    vertical-align:middle;
+    cursor:pointer;
+    color:#fff;
+    background-color:#000;
+    border:2px solid #fff;
+    border-radius:8px;
+    -o-border-radius: 8px;
+    -moz-border-radius:8px;
+    -webkit-border-radius:8px;
+    background-image: -webkit-linear-gradient(top,#222,#000);
+    background-image: -o-linear-gradient(top,#222,#000);
+    background-image: -moz-linear-gradient(90deg, #222, #000);
+    background-image: linear-gradient(top,#222,#000);
+    background-repeat: repeat-x;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    z-index:2000;
 }
+
+div.flash #closeflash{color:inherit; float:right; margin-left:15px;}
+.ie-lte7  div.flash #closeflash
+{color:expression(this.parentNode.currentStyle['color']);float:none;position:absolute;right:4px;}
+
+div.flash:hover { opacity:0.25; }
 div.error {
     background-color: red;
     color: white;
@@ -346,5 +380,10 @@ color: #222;
         padding: 3px 3px;
 	border-radius:2px;
 }
-.ie9 #query_panel {padding-bottom:2px;}
 
+/* fix some IE problems */
+
+.ie-lte7 .topbar .container {z-index:2}
+.ie-lte8 div.flash{ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endColorstr='#000000', GradientType=0 ); }
+.ie-lte8 div.flash:hover {filter:alpha(opacity=25);}
+.ie9 #w2p_query_panel {padding-bottom:2px}

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This file is part of the Nervatura Project
+This file is part of the Nervatura Framework
 http://www.nervatura.com
 Copyright © 2011-2013, Csaba Kappel
 License: LGPLv3
@@ -25,7 +25,7 @@ T.force(session._language)
 if T.accepted_language != session._language:
     import re
     lang = re.compile('\w{2}').findall(session._language)[0]
-    response.files.append(URL(r=request,c='static',f='js/jquery.translate-1.4.3-debug-all.js'))
+    response.files.append(URL(r=request,c='static',f='js/jquery.translate.min.js'))
     response.files.append(URL(r=request,c='ndr',f='translate',args=lang+'.js'))
 
 def translate():

@@ -1,26 +1,12 @@
-{{left_sidebar_enabled=right_sidebar_enabled=False}}
 {{extend 'default/layout.html'}}
 
 <style>
-.sname {
-  background-color: #DAA520;
-  color: #FFFFFF;
-  font-weight: bold;
-  padding-left: 3px;
-  padding-right: 3px;
-  font-family: monospace;
-  font-size: 16px;
-  font-style: italic;
-}
 </style>
 
 <p>
-	A <b>Nervatura Projekt</b> célja olyan adatmodell, eszközök és
+	A <b>Nervatura Framework</b> célja olyan adatmodell, eszközök és
 	tudásbázis fejlesztése, amelyek segítségével hatékonyan, gyorsan és kis
-	költséggel építhetőek biztonságos és rugalmas ügyviteli megoldások. A
-	projekt eredményeit elsősorban fejlesztőknek és ügyviteli
-	szolgáltatásokat értékesítő cégeknek szánjuk, de természetesen bármely
-	cég számára hasznos lehet saját ügyvitelének fejlesztésében.
+	költséggel építhetőek biztonságos és rugalmas ügyviteli megoldások.
 </p>
 <p>
 	A projekt több alprojektből áll, melyek mindegyike a Nervatura saját
@@ -35,17 +21,23 @@
 <h2>Áttekintés</h2>
 
 <ul>
-	<li><a style="cursor: help;" title="{{=T('More info')}}"
-		onclick="var tb=document.getElementById('mom'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
+	<li><a style="cursor: help;" title="{{=T('More info')}}" href="#mom" data-transition="turn" 
+    data-inline="true" data-rel="popup" data-position-to="window">
 			<span class="sname">NOM</span>&nbsp;<b>Nervatura Object Model</b>
-	</a>&nbsp;
-		<p>
+	</a>
+    <p style="margin-top: 0px;text-align: left;">
+      <a href="#mom" data-transition="turn" data-role="button" data-icon="info" data-theme="d"
+        data-inline="true" data-rel="popup" data-position-to="window" 
+        style="margin-left: 0px;color: #444444 !important;;">Részletek</a>
 			Általános adatmodell, amely képes tárolni egy klasszikus gazdasági
-			szervezet működése során keletkezett információkat. 
-			<a class="w2p_trap buttontext button" title="{{=T('More info')}}"
-				onclick="var tb=document.getElementById('mom'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
-				<span class="icon plus"></span></a> 
-			<div id="mom" style="display: none;">
+			szervezet működése során keletkezett információkat.
+			
+			<div data-role="popup" id="mom" class="ui-content" data-theme="d" data-overlay-theme="a" 
+        style="max-width:600px;padding: 20px;font-size: 90%;padding-bottom: 8px;" >
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;left: -12px;top: -12px;">Close</a>
+      <hr style="margin-top: 0px;">
+      
 			<p>Ide értendő minden olyan termelő, forgalmazó és szolgáltató
 				cég (vagy kormányzati egység), amely működése értelmezhető és
 				leírható egy tetszőleges ÁRU (amit el szeretnénk adni, vagy
@@ -82,24 +74,39 @@
 				tudnak eltérő platformokra (pc, mobil eszközök, adatgyűjtők stb.) és
 				különböző technológiákban (HTML5, java, flash, hagyományos
 				programnyelvek stb.) írt alkalmazásokat vegyesen használni.</p>
-			<p><b><i>További leírást itt találhat:</i></b> 
-			  <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/nom/nom&content=view&lang=auto'}} target="_blank"><b><i>Nervatura Object Model</i></b></a>
-			</p>
+			
+			<hr style="margin-bottom: 3px;">
+      <div class="info_div">  
+        <p class="info_p"><b><i>További leírást itt találhat:</i></b> 
+			    <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/nom/nom&content=view&lang=auto'}} target="_blank"><b><i>Nervatura Object Model</i></b></a>
+			  </p>
+			</div>
+      <hr style="margin-top: 3px;">
+      <div align="right" style="">
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;right: -12px;bottom: 0px;">Close</a>
 		</div>
 		</p>
   </li>
 		
-	<li><a style="cursor: help;" title="{{=T('More info')}}"
-		onclick="var tb=document.getElementById('nas'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
-			<span class="sname">NAS</span>&nbsp;<b>Nervatura Application Server</b>
-	</a>&nbsp;
-		<p>
+	<li><a style="cursor: help;" title="{{=T('More info')}}" href="#nas" data-transition="turn" 
+    data-inline="true" data-rel="popup" data-position-to="window">
+      <span class="sname">NAS</span>&nbsp;<b>Nervatura Application Server</b>
+    </a>
+    <p style="margin-top: 0px;text-align: left;">
+      <a href="#nas" data-transition="turn" data-role="button" data-icon="info" data-theme="d"
+        data-inline="true" data-rel="popup" data-position-to="window" 
+        style="margin-left: 0px;color: #444444 !important;;">Részletek</a>
+        
 			Feladata az alkalmazások által küldött kérések fogadása, ellenőrzése,
 			majd a megfelelő kiszolgálói réteg felé való továbbítása.
-			<a class="w2p_trap buttontext button" title="{{=T('More info')}}"
-        onclick="var tb=document.getElementById('nas'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
-        <span class="icon plus"></span></a> 
-      <div id="nas" style="display: none;">
+		
+		<div data-role="popup" id="nas" class="ui-content" data-theme="d" data-overlay-theme="a" 
+        style="max-width:600px;padding: 20px;font-size: 90%;padding-bottom: 8px;" >
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;left: -12px;top: -12px;">Close</a>
+      <hr style="margin-top: 0px;">
+      
 			<p>
 				Itt tárolódnak a jogosultság kezeléshez szükséges adatok, valamint a
 				megfelelő adatbázis elérések beállításai. Szintén itt
@@ -125,26 +132,40 @@
 				jogosultságok, vagy adatbázis elérések beállításainak megadása. Ezek
 				távoli használata biztonsági okokból korlátozható.</p>
 				
-			<p><b><i>További leírást itt találhat: </i></b>
-        <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/nas/nas&content=view&lang=auto'}} target="_blank"><b><i>Nervatura Application Server</i></b></a> 
-      </p>
+			<hr style="margin-bottom: 3px;">
+      <div class="info_div">  
+        <p class="info_p"><b><i>További leírást itt találhat: </i></b>
+          <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/nas/nas&content=view&lang=auto'}} target="_blank"><b><i>Nervatura Application Server</i></b></a> 
+        </p>
+      </div>
+      <hr style="margin-top: 3px;">
+      <div align="right" style="">
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;right: -12px;bottom: 0px;">Close</a>
+      </div>
     </div>
-    </p>
   </li>
 	
-	<li><a style="cursor: help;" title="{{=T('More info')}}"
-    onclick="var tb=document.getElementById('ndi'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
+	<li><a style="cursor: help;" title="{{=T('More info')}}" href="#ndi" data-transition="turn" 
+    data-inline="true" data-rel="popup" data-position-to="window">
       <span class="sname">NDI</span>&nbsp;<b>Nervatura Data Interface</b>
-  </a>&nbsp;
-    <p>
+    </a>
+    <p style="margin-top: 0px;text-align: left;">
+      <a href="#ndi" data-transition="turn" data-role="button" data-icon="info" data-theme="d"
+        data-inline="true" data-rel="popup" data-position-to="window" 
+        style="margin-left: 0px;color: #444444 !important;;">Részletek</a>
+        
 			A cél egy könnyen megtanulható, egyszerű és biztonságos
 			függvénykészlet létrehozása. Használata főként olyan felhasználóknak
 			előnyös, akik bármilyen célból adatokat szeretnének lekérni, vagy
 			átadni egy Nervatura ügyféladatbázisnak.
-			<a class="w2p_trap buttontext button" title="{{=T('More info')}}"
-        onclick="var tb=document.getElementById('ndi'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
-        <span class="icon plus"></span></a> 
-      <div id="ndi" style="display: none;">
+			
+		<div data-role="popup" id="ndi" class="ui-content" data-theme="d" data-overlay-theme="a" 
+        style="max-width:600px;padding: 20px;font-size: 90%;padding-bottom: 8px;" >
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;left: -12px;top: -12px;">Close</a>
+      <hr style="margin-top: 0px;">
+      
 			<p>Lehetséges felhasználási területei például: háttérmentések
 				készítése, adatáttöltések, más programoknak -például számviteli
 				rendszerek, analitikus adatszolgáltatások stb.-, vagy más
@@ -175,27 +196,42 @@
 					logikai hibákat is</li>
 			</ul>
 			</p>
-      <p><b><i>További leírást itt találhat:</i></b> 
-        <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/ndi/ndi&content=view&lang=auto'}} target="_blank"><b><i>Nervatura Data Interface</i></b></a></p>
-      <p><b><i>A bemutatót itt próbálhatja ki:</i></b> 
-        <a href={{=URL( 'ndi_demo', 'index')}} target="_blank"><b><i>Nervatura Data Interface Demo</i></b></a></p>
+			
+			<hr style="margin-bottom: 3px;">
+      <div class="info_div">  
+        <p class="info_p"><b><i>További leírást itt találhat:</i></b> 
+          <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/ndi/ndi&content=view&lang=auto'}} target="_blank"><b><i>Nervatura Data Interface</i></b></a></p>
+        <p class="info_p"><b><i>A bemutatót itt próbálhatja ki:</i></b> 
+          <a href={{=URL( 'ndi_demo', 'index')}} target="_blank"><b><i>Nervatura Data Interface Demo</i></b></a></p>
+      </div>
+      <hr style="margin-top: 3px;">
+      <div align="right" style="">
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;right: -12px;bottom: 0px;">Close</a>
+      </div>
     </div>
-    </p>
   </li>
   
-  <li><a style="cursor: help;" title="{{=T('More info')}}"
-    onclick="var tb=document.getElementById('npi'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
+  <li><a style="cursor: help;" title="{{=T('More info')}}" href="#npi" data-transition="turn" 
+    data-inline="true" data-rel="popup" data-position-to="window">
       <span class="sname">NPI</span>&nbsp;<b>Nervatura Programming Interface</b>
-  </a>&nbsp;
-    <p>
+    </a>
+    <p style="margin-top: 0px;text-align: left;">
+      <a href="#npi" data-transition="turn" data-role="button" data-icon="info" data-theme="d"
+        data-inline="true" data-rel="popup" data-position-to="window" 
+        style="margin-left: 0px;color: #444444 !important;;">Részletek</a>
+        
 			A Nervatura adatbázisok közvetlen, adatbázis szintű elérését teszi
 			lehetővé. Bizonyos esetekben gyorsabb és hatékonyabb adatkezelést
 			tesz lehetővé, mint az <b>NDI</b>, de biztonságos használata alaposabb
 			adatbázis szerkezeti, valamint programozói tudást is igényel. 
-			<a class="w2p_trap buttontext button" title="{{=T('More info')}}"
-        onclick="var tb=document.getElementById('npi'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
-        <span class="icon plus"></span></a> 
-      <div id="npi" style="display: none;">
+		
+		<div data-role="popup" id="npi" class="ui-content" data-theme="d" data-overlay-theme="a" 
+        style="max-width:600px;padding: 20px;font-size: 90%;padding-bottom: 8px;" >
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;left: -12px;top: -12px;">Close</a>
+      <hr style="margin-top: 0px;">
+      
 			<p>Segítségével az adatbázis pontos helye és típusának ismerete
 				nélkül tudunk adatokat küldeni és fogadni, de lehetőségünk van
 				adatbázis specifikus jellemzők használatára is. A kommunikáció során
@@ -217,43 +253,52 @@
 				a <b>NPI</b> függvényeiben levő lehetőségeket. Támogatja mindazokat az
 				ügyviteli feladatokat, amik a <b>NWC</b>-nek is részei.
 			</p>
-			<p><b><i>További leírást itt találhat:</i></b> 
-			  <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/npi/npi&content=view&lang=auto'}} target="_blank"><b><i>Nervatura Programming Interface</i></b></a>
-			</p>
-      <p>A <b><i>NervaFlex</i></b> programot itt próbálhatja ki: 
-        <a href={{=URL('ndr', 'getAppl')+'?appl=nflex/nervex.html'}} target="_blank"><b><i>NervaFlex</i></b></a><br>
-        Database: <b><i>demo</i></b>, Username: <b><i>demo</i></b>, Password: leave the field empty, not need<br>
-        Korlátozott DEMO MODE verzió! Korlátozott funkciók: adatbázis beállítások, jogosultság kezelés és jelszó csere.
-      </p>
+			
+			<hr style="margin-bottom: 3px;">
+      <div class="info_div"> 
+        <p class="info_p"><b><i>További leírást itt találhat:</i></b> 
+          <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/npi/npi&content=view&lang=auto'}} target="_blank"><b><i>Nervatura Programming Interface</i></b></a>
+        <p class="info_p">A <b><i>NervaFlex</i></b> programot itt próbálhatja ki: 
+          <a href={{=URL('ndr', 'getAppl')+'?appl=nflex/nervex.html'}} target="_blank"><b><i>NervaFlex</i></b></a><br>
+          Database: <b><i>demo</i></b>, Username: <b><i>demo</i></b>, Password: leave the field empty, not need<br>
+          <i>Korlátozott DEMO MODE verzió! Korlátozott funkciók: adatbázis beállítások, jogosultság kezelés és jelszó csere.</i>
+        </p>
+      </div>
+      <hr style="margin-top: 3px;">
+      <div align="right" style="">
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;right: -12px;bottom: 0px;">Close</a>
+      </div>
     </div>
-    </p>
   </li>
   
-  <li><a style="cursor: help;" title="{{=T('More info')}}"
-    onclick="var tb=document.getElementById('nwc'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
-      <span class="sname">NWC</span>&nbsp;<b>Nervatura Web Client</b>
-  </a>&nbsp;
-    <p>
-      Egy nyílt forráskódú, a <a href="http://www.web2py.com/" target="_blank">WEB2PY</a> 
-      keretrendszerét használó, általános ügyviteli alkalmazás. 
-      A célja, hogy bemutassa a Nervatura lehetőségeit a HTML5 technológia keretei között.  
-      <a class="w2p_trap buttontext button" title="{{=T('More info')}}"
-        onclick="var tb=document.getElementById('nwc'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
-        <span class="icon plus"></span></a> 
-      <div id="nwc" style="display: none;">
-			<p>A kliens már önmagában is működőképes, és teljes értékű
-				eszköz, de alapvetően más fejlesztők számára kíván könnyen
-				használható, testreszabható kiindulási alapot jelenteni. Erre
-				alapozva, a funkcionalitásából elhagyva, vagy hozzátéve, egyszerűen
-				létrehozhatják saját felhasználói felületeiket.</p>
-			<p>Jellegéből adódóan bármilyen eszközön, egy megfelelő böngészőn
+  <li><a style="cursor: help;" title="{{=T('More info')}}" href="#nwc" data-transition="turn" 
+    data-inline="true" data-rel="popup" data-position-to="window">
+      <span class="sname">NWC</span>&nbsp;<b>Nervatura Clients</b>
+    </a>
+    <p style="margin-top: 0px;text-align: left;">
+      <a href="#nwc" data-transition="turn" data-role="button" data-icon="info" data-theme="d"
+        data-inline="true" data-rel="popup" data-position-to="window" 
+        style="margin-left: 0px;color: #444444 !important;;">Részletek</a>
+
+      Nyílt forráskódú, a <a href="http://www.web2py.com/" target="_blank">WEB2PY</a> 
+      keretrendszerét használó, általános ügyviteli alkalmazások. 
+      A céljuk, hogy bemutassák a Nervatura lehetőségeit a HTML5 technológia keretei között.
+      
+    <div data-role="popup" id="nwc" class="ui-content" data-theme="d" data-overlay-theme="a" 
+        style="max-width:600px;padding: 20px;font-size: 90%;padding-bottom: 8px;" >
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;left: -12px;top: -12px;">Close</a>
+      <hr style="margin-top: 0px;">
+      
+			<p><b><i>Nervatura Web Client: </i></b>
+			  Jellegéből adódóan bármilyen eszközön, egy megfelelő böngészőn
 				keresztül futtatható, de felületei elsősorban irodai, desktop
-				jellegű (PC, laptop) használatra lettek optimalizálva. Ugyanakkor
-				egyes célfeladatokhoz, eltérő beviteli technikákhoz, méretarányokhoz
-				(pl. érintőképernyő, tablet, telefon stb.) könnyen kiegészíthető.
-				Ezek az alap <b>NWC</b> programnak nem részei, de a 
-				<a href={{=response.menu[1][2]}}><b>{{=response.menu[1][0]}}</b></a> részben
-				letölthetőek lehetnek.</p>
+				jellegű (PC, laptop) használatra lettek optimalizálva.</p>
+			<p><b><i>Nervatura Mobile Client: </i></b>Érintőképernyős használatra optimalizált, 
+			  <a href="http://jquerymobile.com/" target="_blank">jQuery Mobile</a> alapú 
+			  felhasználói felület telefonokhoz és táblagépekhez. Az alkalmazás az összes 
+			  népszerű mobil platformon használható.</p>
 			<p>A kliensprogram jelenleg az alábbi ügyviteli feladatokat
 				támogatja: ajánlatok, rendelések, munkalapok, bérlet, számlázás,
 				raktárkezelés, bank- és pénztár, projektek, ügyfél kezelés, termékek
@@ -261,26 +306,43 @@
 				jogosultság kezelése, kimutatások készítése, egyéb program és adat
 				beállító felületek, naplózás.</p>
 			
-      <p>A <b><i>Web Client</i></b> programot itt próbálhatja ki: 
-        <a href={{=URL( 'nwc', 'index')}} target="_blank"><b><i>Nervatura Web Client</i></b></a><br>
-        Database: <b><i>demo</i></b>, Username: <b><i>demo</i></b>, Password: leave the field empty, not need<br>
-        Korlátozott DEMO MODE verzió! Korlátozott funkciók: adatbázis beállítások, jogosultság kezelés és jelszó csere.
-      </p>
+			<hr style="margin-bottom: 3px;">
+      <div class="info_div"> 
+        <p class="info_p">A <b><i>Web Client</i></b> programot itt próbálhatja ki: 
+          <a href={{=URL( 'nwc', 'index',vars={'desktop':'true'})}} target="_blank"><b><i>Nervatura Web Client</i></b></a><br>
+        <p class="info_p">A <b><i>Mobile Client</i></b> programot itt próbálhatja ki: 
+          <a href={{=URL( 'nwc', 'index',vars={'mobile':'true'})}} target="_blank"><b><i>Nervatura Mobile Client</i></b></a><br>
+          Database: <b><i>demo</i></b>, Username: <b><i>demo</i></b>, Password: leave the field empty, not need<br>
+          <i>Korlátozott DEMO MODE verzió! Korlátozott funkciók: adatbázis beállítások, jogosultság kezelés és jelszó csere.</i>
+        </p>
+      </div>
+      <hr style="margin-top: 3px;">
+      <div align="right" style="">
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;right: -12px;bottom: 0px;">Close</a>
+      </div>
     </div>
-    </p>
   </li>
   
-  <li><a style="cursor: help;" title="{{=T('More info')}}"
-    onclick="var tb=document.getElementById('ndr'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
+  <li><a style="cursor: help;" title="{{=T('More info')}}" href="#ndr" data-transition="turn" 
+    data-inline="true" data-rel="popup" data-position-to="window">
       <span class="sname">NDR</span>&nbsp;<b>Nervatura Data Representation</b>
-  </a>&nbsp;
-    <p>Feladata az adatmegjelenítési felületek és szabványos
+    </a>
+    <p style="margin-top: 0px;text-align: left;">
+      <a href="#ndr" data-transition="turn" data-role="button" data-icon="info" data-theme="d"
+        data-inline="true" data-rel="popup" data-position-to="window" 
+        style="margin-left: 0px;color: #444444 !important;;">Részletek</a>
+        
+      Feladata az adatmegjelenítési felületek és szabványos
       adatkimenetek támogatása: az adatok nyomtatásától kezdve, a vezetői
       kimutatásokon át a különböző típusú adatok exportjáig.
-      <a class="w2p_trap buttontext button" title="{{=T('More info')}}"
-        onclick="var tb=document.getElementById('ndr'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
-        <span class="icon plus"></span></a> 
-      <div id="ndr" style="display: none;">
+      
+    <div data-role="popup" id="ndr" class="ui-content" data-theme="d" data-overlay-theme="a" 
+        style="max-width:600px;padding: 20px;font-size: 90%;padding-bottom: 8px;" >
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;left: -12px;top: -12px;">Close</a>
+      <hr style="margin-top: 0px;">
+      
       <p>Az <b>NDI</b> és <b>NPI</b> projektek függvényeikkel az adatok kezelését
         teszik lehetővé: azok módosítását, adatlekérdezések készítését. Az
         <b>NWC</b> célja hasonló, segítségével felhasználói felületeket
@@ -301,14 +363,22 @@
           <li>adatok nyomtatását segítő rutinok, nyomtatás helyi, hálózati, vagy Cloud Print nyomtatóra</li>
         </ul>
       </p>
-      <p><b><i>További leírást itt találhat:</i></b> 
-        <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/ndr/ndr&content=view&lang=auto'}} 
+      
+      <hr style="margin-bottom: 3px;">
+      <div class="info_div"> 
+        <p class="info_p"><b><i>További leírást itt találhat:</i></b> 
+          <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/ndr/ndr&content=view&lang=auto'}} 
           target="_blank"><b><i>Nervatura Data Representation</i></b></a></p>
-      <p><b><i>További segítséget itt találhat: </i></b> 
-        <a href={{=URL( 'report2py', 'index')}} target="_blank"><b><i>Nervatura Report Help & Demo</i></b></a>
-      </p>
+        <p class="info_p"><b><i>További segítséget itt találhat: </i></b> 
+          <a href={{=URL( 'report2py', 'index')}} target="_blank"><b><i>Nervatura Report Help & Demo</i></b></a>
+        </p>
+      </div>
+      <hr style="margin-top: 3px;">
+      <div align="right" style="">
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;right: -12px;bottom: 0px;">Close</a>
+      </div>
     </div>
-    </p>
   </li>
   
 </ul>  

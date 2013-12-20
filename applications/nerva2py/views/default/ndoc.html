@@ -1,37 +1,28 @@
-{{left_sidebar_enabled=right_sidebar_enabled=False}}
 {{extend 'default/layout.html'}}
 
 <style>
-.sname {
-  background-color: #DAA520;
-  color: #FFFFFF;
-  font-weight: bold;
-  padding-left: 3px;
-  padding-right: 3px;
-  font-family: monospace;
-  font-size: 16px;
-  font-style: italic;
-}
-li {
-  padding-top: 2px;
-}
+  li {
+      padding-top: 10px;
+      text-align: left;
+  }
 </style>
 
 <h3>
 	<p>
-		<a href="#bm_documentation"><b>1. {{=T('DOCUMENTATIONS')}}</b></a>
+		<a href="#bm_documentation" data-ajax="false"><b>1. {{=T('DOCUMENTATIONS')}}</b></a>
 	</p>
 	<p>
-		<a href="#bm_demo"><b>2. {{=T('DEMO APPLICATIONS')}}</b></a>
+		<a href="#bm_demo" data-ajax="false"><b>2. {{=T('DEMO APPLICATIONS')}}</b></a>
 	</p>
 	<p>
-    <a href="#bm_report"><b>3. {{=T('SAMPLE REPORTS')}}</b></a>
+    <a href="#bm_report" data-ajax="false"><b>3. {{=T('SAMPLE REPORTS')}}</b></a>
   </p>
   <p>
-    <a href="#bm_more"><b>4. {{=T('MORE RESOURCES')}}</b></a>
+    <a href="#bm_more" data-ajax="false"><b>4. {{=T('MORE RESOURCES')}}</b></a>
   </p>
 </h3>
 
+<a id="bm_documentation"></a>
 <hr>
 
 <h3 style="color: #3B7687;">1. {{=T('Documentations')}}</h3>
@@ -53,23 +44,28 @@ li {
   </li>
 </ul>
 
+<a id="bm_demo"></a>
 <hr>
 
 <h3 style="color: #3B7687;">2. {{=T('DEMO Applications')}}</h3>
 <ul>
-  <li><a href={{=URL( 'nwc', 'index')}} target="_blank"><span class="sname">NWC</span>&nbsp;<b><i>Nervatura Web Client</i></b></a><br>
+  <li><a href={{=URL( 'nwc', 'index',vars={'desktop':'true'})}} target="_blank"><span class="sname">NWC</span>&nbsp;<b><i>Nervatura Web Client</i></b></a><br>
   {{=T('Database')}}: <b><i>demo</i></b>, {{=T('Username')}}: <b><i>demo</i></b>, {{=T('Password')}}: {{=T('leave the field empty, not need')}}<br>
-  {{=T('Restricted DEMO MODE version! Restricted functions are: Database Settings, Access Rights and Change Password.')}}</li>
+  <i>{{=T('Restricted DEMO MODE version! Restricted functions are: Database Settings, Access Rights and Change Password.')}}</i></li>
+  <li><a href={{=URL( 'nwc', 'index',vars={'mobile':'true'})}} target="_blank"><span class="sname">NWC</span>&nbsp;<b><i>Nervatura Mobile Client</i></b></a><br>
+  {{=T('Database')}}: <b><i>demo</i></b>, {{=T('Username')}}: <b><i>demo</i></b>, {{=T('Password')}}: {{=T('leave the field empty, not need')}}<br>
+  <i>{{=T('Restricted DEMO MODE version! Restricted functions are: Database Settings, Access Rights and Change Password.')}}</i></li>
   <li><a href={{=URL('ndr', 'getAppl')+'?appl=nflex/nervex.html'}} 
     target="_blank"><span class="sname">NPI</span>&nbsp;<b><i>NervaFlex</i></b></a><br>
   {{=T('Database')}}: <b><i>demo</i></b>, {{=T('Username')}}: <b><i>demo</i></b>, {{=T('Password')}}: {{=T('leave the field empty, not need')}}<br>
-  {{=T('Restricted DEMO MODE version! Restricted functions are: Database Settings, Access Rights and Change Password.')}}
+  <i>{{=T('Restricted DEMO MODE version! Restricted functions are: Database Settings, Access Rights and Change Password.')}}</i>
   </li>
   <li><a href={{=URL( 'ndi_demo', 'index')}} 
     target="_blank"><span class="sname">NDI</span>&nbsp;<b><i>Nervatura Data Interface Demo</i></b></a></li>
   <li><a href={{=URL( 'report2py', 'index')}} target="_blank"><span class="sname">NDR</span>&nbsp;<b><i>Nervatura Report Help & Demo</i></b></a></li>
 </ul>
 
+<a id="bm_report"></a>
 <hr>
 
 <h3 style="color: #3B7687;">3. {{=T('Sample Reports')}}</h3>
@@ -82,11 +78,19 @@ li {
         <a href="http://web2py.com/books/default/chapter/29/05#HTML-helpers" target="_blank">Web2Py HTML helper</a>
          {{=T(' class.')}} {{=T('Quick and easy to use, but only for making HTML reports.')}}<br>
         <hr style="margin: 0px;margin-bottom: 2px;">
-        <a href={{=URL( 'ndr', 'getResource')+'?file_name=report/html_vat&content=text/plain&file_type=sql'}} 
-        target="_blank">Download</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode'], 
-          vars=dict(database='demo',username='demo',password='',reportcode='html_vat'))}} 
-          target="_blank" >DEMO Preview</a>
+        <table width="100%" cellpadding="5px;" cellspacing="0" style="background-color: #F5F5DC;">
+          <tr><td>
+            <div style="float: left;width: 120px;">
+              <a href={{=URL( 'ndr', 'getResource')+'?file_name=report/html_vat&content=text/plain&file_type=sql'}} 
+                target="_blank">Download</a>
+            </div>
+            <div style="float: left;">
+              <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode'], 
+                vars=dict(database='demo',username='demo',password='',reportcode='html_vat'))}} 
+                target="_blank" >DEMO Preview</a>
+            </div>
+          </td></tr>
+        </table>        
         <hr style="margin: 0px;margin-bottom: 5px;margin-top: 2px;">
       </li>
       <li><span class="sname">NDR</span><span style="color: #3B7687;font-weight: bold;font-style: italic;">
@@ -95,17 +99,29 @@ li {
         <a href={{=URL( 'report2py', 'index')}} target="_blank">Nervatura Report.</a>
          {{=T('Quick and easy to use, but offers limited formatting options. Simple reports, if it is important to print, PDF, and XML output option is available.')}}<br>
         <hr style="margin: 0px;margin-bottom: 2px;margin-top: 2px;">
-        <a href={{=URL( 'ndr', 'getResource')+'?file_name=report/fpdf_vat_en&content=text/plain&file_type=sql'}} 
-        target="_blank">Download</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode'], 
-          vars=dict(database='demo',username='demo',password='',reportcode='fpdf_vat_en'))}} 
-          target="_blank" >DEMO Preview</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode','output'], 
-          vars=dict(database='demo',username='demo',password='',reportcode='fpdf_vat_en',output='pdf'))}} 
-          target="_blank" >DEMO PDF</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode','output'], 
-          vars=dict(database='demo',username='demo',password='',reportcode='fpdf_vat_en',output='xml'))}} 
-          target="_blank" >DEMO XML</a>
+        <table width="100%" cellpadding="5px;" cellspacing="0" style="background-color: #F5F5DC;">
+          <tr><td>
+            <div style="float: left;width: 120px;">
+              <a href={{=URL( 'ndr', 'getResource')+'?file_name=report/fpdf_vat_en&content=text/plain&file_type=sql'}} 
+                target="_blank">Download</a>
+            </div>
+            <div style="float: left;width: 150px;">
+              <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode'], 
+                vars=dict(database='demo',username='demo',password='',reportcode='fpdf_vat_en'))}} 
+                target="_blank" >DEMO Preview</a>
+            </div>
+            <div style="float: left;width: 120px;">
+              <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode','output'],
+                vars=dict(database='demo',username='demo',password='',reportcode='fpdf_vat_en',output='pdf'))}}
+                target="_blank" >DEMO PDF</a>
+            </div>
+            <div style="float: left;width: 120px;">
+              <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode','output'],
+                vars=dict(database='demo',username='demo',password='',reportcode='fpdf_vat_en',output='xml'))}} 
+                target="_blank" >DEMO XML</a>
+            </div>
+          </td></tr>
+        </table>        
         <hr style="margin: 0px;margin-bottom: 5px;">
       </li>
       <li><span class="sname">NDR</span><span style="color: #3B7687;font-weight: bold;font-style: italic;">
@@ -115,11 +131,19 @@ li {
          {{=T('Parsing, generating, and processing HTML, XML or other textual content.')}} 
          {{=T('Well documented. Suitable for creating complex reports, but it requires external library.')}}<br>
         <hr style="margin: 0px;margin-bottom: 2px;">
-        <a href={{=URL( 'ndr', 'getResource')+'?file_name=report/gshi_vat_en&content=text/plain&file_type=sql'}} 
-        target="_blank">Download</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode'], 
-          vars=dict(database='demo',username='demo',password='',reportcode='gshi_vat_en'))}} 
-          target="_blank" >DEMO Preview</a>
+        <table width="100%" cellpadding="5px;" cellspacing="0" style="background-color: #F5F5DC;">
+          <tr><td>
+            <div style="float: left;width: 120px;">
+              <a href={{=URL( 'ndr', 'getResource')+'?file_name=report/gshi_vat_en&content=text/plain&file_type=sql'}}
+                target="_blank">Download</a>
+            </div>
+            <div style="float: left;">
+              <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode'],
+                vars=dict(database='demo',username='demo',password='',reportcode='gshi_vat_en'))}}
+                target="_blank" >DEMO Preview</a>
+            </div>
+          </td></tr>
+        </table>        
         <hr style="margin: 0px;margin-bottom: 5px;margin-top: 2px;">
        </li>
        <li><span class="sname">NDR</span><span style="color: #3B7687;font-weight: bold;font-style: italic;">
@@ -129,11 +153,19 @@ li {
          {{=T('The result is a separate worksheet for each query. The column name and type of formatting can be specified. ')}} 
          {{=T('Useful when the output data requires further analysis or a chart needs to be created.')}}<br>
         <hr style="margin: 0px;margin-bottom: 2px;">
-        <a href={{=URL( 'ndr', 'getResource')+'?file_name=report/xls_vat_en&content=text/plain&file_type=sql'}} 
-        target="_blank">Download</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode'], 
-          vars=dict(database='demo',username='demo',password='',reportcode='xls_vat_en'))}} 
-          target="_blank" >DEMO Preview</a>
+        <table width="100%" cellpadding="5px;" cellspacing="0" style="background-color: #F5F5DC;">
+          <tr><td>
+            <div style="float: left;width: 120px;">
+              <a href={{=URL( 'ndr', 'getResource')+'?file_name=report/xls_vat_en&content=text/plain&file_type=sql'}}
+                target="_blank">Download</a>
+            </div>
+            <div style="float: left;">
+              <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode'],
+                vars=dict(database='demo',username='demo',password='',reportcode='xls_vat_en'))}}
+                target="_blank" >DEMO Preview</a>
+            </div>
+          </td></tr>
+        </table>
         <hr style="margin: 0px;margin-bottom: 5px;margin-top: 2px;">
        </li>
     </ul>
@@ -143,55 +175,92 @@ li {
       <li><span class="sname">NDR</span><span style="color: #3B7687;font-weight: bold;font-style: italic;">
         {{=T('Invoice template')}}</span><br>
         <hr style="margin: 0px;margin-bottom: 2px;margin-top: 2px;">
-        <a href={{=URL( 'ndr', 'getResource')+'?file_name=report/fpdf_invoice_en_EN&content=text/plain&file_type=sql'}} 
-        target="_blank">Download</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode'], 
-          vars=dict(database='demo',username='demo',password='',reportcode='fpdf_invoice_en'))}} 
-          target="_blank" >DEMO Preview</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode','output'], 
-          vars=dict(database='demo',username='demo',password='',reportcode='fpdf_invoice_en',output='pdf'))}} 
-          target="_blank" >DEMO PDF</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode','output'], 
-          vars=dict(database='demo',username='demo',password='',reportcode='fpdf_invoice_en',output='xml'))}} 
-          target="_blank" >DEMO XML</a>
+        <table width="100%" cellpadding="5px;" cellspacing="0" style="background-color: #F5F5DC;">
+          <tr><td>
+            <div style="float: left;width: 120px;">
+              <a href={{=URL( 'ndr', 'getResource')+'?file_name=report/fpdf_invoice_en_EN&content=text/plain&file_type=sql'}}
+                target="_blank">Download</a>
+            </div>
+            <div style="float: left;width: 150px;">
+              <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode'],
+              vars=dict(database='demo',username='demo',password='',reportcode='fpdf_invoice_en'))}}
+              target="_blank" >DEMO Preview</a>
+            </div>
+            <div style="float: left;width: 120px;">
+              <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode','output'],
+              vars=dict(database='demo',username='demo',password='',reportcode='fpdf_invoice_en',output='pdf'))}}
+              target="_blank" >DEMO PDF</a>
+            </div>
+            <div style="float: left;width: 120px;">
+              <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode','output'],
+              vars=dict(database='demo',username='demo',password='',reportcode='fpdf_invoice_en',output='xml'))}}
+              target="_blank" >DEMO XML</a>
+            </div>
+          </td></tr>
+        </table>        
         <hr style="margin: 0px;margin-bottom: 5px;">
       </li>
       <li><span class="sname">NDR</span><span style="color: #3B7687;font-weight: bold;font-style: italic;">
         {{=T('Customer Information template')}}</span><br>
         <hr style="margin: 0px;margin-bottom: 2px;margin-top: 2px;">
-        <a href={{=URL( 'ndr', 'getResource')+'?file_name=report/fpdf_customer_sheet_en&content=text/plain&file_type=sql'}} 
-        target="_blank">Download</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode'], 
-          vars=dict(database='demo',username='demo',password='',reportcode='fpdf_customer_sheet_en'))}} 
-          target="_blank" >DEMO Preview</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode','output'], 
-          vars=dict(database='demo',username='demo',password='',reportcode='fpdf_customer_sheet_en',output='pdf'))}} 
-          target="_blank" >DEMO PDF</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode','output'], 
-          vars=dict(database='demo',username='demo',password='',reportcode='fpdf_customer_sheet_en',output='xml'))}} 
-          target="_blank" >DEMO XML</a>
+        <table width="100%" cellpadding="5px;" cellspacing="0" style="background-color: #F5F5DC;">
+          <tr><td>
+            <div style="float: left;width: 120px;">
+              <a href={{=URL( 'ndr', 'getResource')+'?file_name=report/fpdf_customer_sheet_en&content=text/plain&file_type=sql'}}
+                target="_blank">Download</a>
+            </div>
+            <div style="float: left;width: 150px;">
+              <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode'],
+                vars=dict(database='demo',username='demo',password='',reportcode='fpdf_customer_sheet_en'))}}
+                target="_blank" >DEMO Preview</a>
+            </div>
+            <div style="float: left;width: 120px;">
+              <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode','output'],
+                vars=dict(database='demo',username='demo',password='',reportcode='fpdf_customer_sheet_en',output='pdf'))}}
+                target="_blank" >DEMO PDF</a>
+            </div>
+            <div style="float: left;width: 120px;">
+              <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode','output'],
+                vars=dict(database='demo',username='demo',password='',reportcode='fpdf_customer_sheet_en',output='xml'))}}
+                target="_blank" >DEMO XML</a>
+            </div>
+          </td></tr>
+        </table>        
         <hr style="margin: 0px;margin-bottom: 5px;">
       </li>
       <li><span class="sname">NDR</span><span style="color: #3B7687;font-weight: bold;font-style: italic;">
         {{=T('Employee Data Sheet template')}}</span><br>
         <hr style="margin: 0px;margin-bottom: 2px;margin-top: 2px;">
-        <a href={{=URL( 'ndr', 'getResource')+'?file_name=report/fpdf_employee_sheet_en&content=text/plain&file_type=sql'}} 
-        target="_blank">Download</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode'], 
-          vars=dict(database='demo',username='demo',password='',reportcode='fpdf_employee_sheet_en'))}} 
-          target="_blank" >DEMO Preview</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode','output'], 
-          vars=dict(database='demo',username='demo',password='',reportcode='fpdf_employee_sheet_en',output='pdf'))}} 
-          target="_blank" >DEMO PDF</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode','output'], 
-          vars=dict(database='demo',username='demo',password='',reportcode='fpdf_employee_sheet_en',output='xml'))}} 
-          target="_blank" >DEMO XML</a>
+        <table width="100%" cellpadding="5px;" cellspacing="0" style="background-color: #F5F5DC;">
+          <tr><td>
+            <div style="float: left;width: 120px;">
+              <a href={{=URL( 'ndr', 'getResource')+'?file_name=report/fpdf_employee_sheet_en&content=text/plain&file_type=sql'}}
+                target="_blank">Download</a>
+            </div>
+            <div style="float: left;width: 150px;">
+              <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode'],
+                vars=dict(database='demo',username='demo',password='',reportcode='fpdf_employee_sheet_en'))}}
+                target="_blank" >DEMO Preview</a>
+            </div>
+            <div style="float: left;width: 120px;">
+              <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode','output'],
+                vars=dict(database='demo',username='demo',password='',reportcode='fpdf_employee_sheet_en',output='pdf'))}}
+                target="_blank" >DEMO PDF</a>
+            </div>
+            <div style="float: left;width: 120px;">
+              <a href={{=URL( 'demo', 'get_demo_report', args=['database','username','password','reportcode','output'],
+                vars=dict(database='demo',username='demo',password='',reportcode='fpdf_employee_sheet_en',output='xml'))}}
+                target="_blank" >DEMO XML</a>
+            </div>
+          </td></tr>
+        </table>
         <hr style="margin: 0px;margin-bottom: 5px;">
       </li>
     </ul>
   </li>
 </ul>
 
+<a id="bm_more"></a>
 <hr>
 
 <h3 style="color: #3B7687;">4. {{=T('More Resources')}}</h3>
@@ -204,8 +273,10 @@ li {
     target="_blank"><span class="sname">NDR</span>&nbsp;<b><i>Nervatura Client Additions</i></b></a><br>
     <a href={{=URL( 'report2py', 'index')}} target="_blank">Nervatura Report</a> <b>{{=T('client-side printing')}}</b> {{=T('and file export/import support.')}} {{=T('The program uses ')}}
     <a href="http://en.wikipedia.org/wiki/Java_virtual_machine" target="_blank">the Java runtime environment.</a><br>
-    {{=T('For more information:')}} <a href={{=URL( 'ndr', 'getHelp', args=['appl','page','folder'], vars=dict(appl='nguest',page='help',folder='src'))}} target="_blank">Nervatura Client Additions Help</a>.<br>
-    {{=T('Windows installer:')}} <a href={{=URL( 'ndr', 'getResource')+'?file_name=download/nguest&content=application/exe&file_type=exe'}} 
+    {{=T('For more information:')}} <br>
+      <a href={{=URL( 'ndr', 'getHelp', args=['appl','page','folder'], vars=dict(appl='nguest',page='help',folder='src'))}} target="_blank">Nervatura Client Additions Help</a>.<br>
+    {{=T('Windows installer:')}} <br>
+      <a href={{=URL( 'ndr', 'getResource')+'?file_name=download/nguest&content=application/exe&file_type=exe'}} 
     target="_blank">Nervatura Client Additions Setup</a>.<br>
     {{=T('The')}} <b>{{=T('server-side printing')}}</b> {{=T('requirements')}}:
     <ul>
@@ -243,14 +314,10 @@ li {
   </li>
 </ul>
 
-<hr>
+<!-- <hr>
 
 <h3 style="color: #3B7687;">5. {{=T('Under Development')}}</h3>
 <ul>
-  <li><span class="sname">NWC</span>&nbsp;<b><i>Nervatura Mobil Client</i></b><br>
-    {{=T('Touch-optimized, HTML5-based user interface for smartphones and tablets. The aim is to support work outside of the office. ')}}
-    {{=T('Not every task is supported only the ones which are well usable on this platform. ')}}
-  </li>
   <li><span class="sname">NPI</span>&nbsp;<b><i>Nervatura Terminal Client</i></b><br>
     {{=T('Sample text console application using')}} 
     <a href="http://excess.org/urwid" target="_blank">Urwid</a>
@@ -258,4 +325,4 @@ li {
     target="_blank">NPI</a>.
     {{=T('It is aimed to present the usage of a keyboard input optimized interface.')}}
   </li>
-</ul>
+</ul> -->

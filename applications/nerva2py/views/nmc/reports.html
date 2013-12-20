@@ -1,0 +1,71 @@
+{{extend 'nmc/layout.html'}}
+
+<style>
+<!--
+
+-->
+</style>
+
+{{if response.reports:}}
+<div style="padding: 15px;">
+  {{=response.reports}}
+</div>
+{{else:}}
+
+{{block header}}
+  {{=response.cmd_menu}}
+  <h1 style="color: #FFD700;">{{=response.title}}</h1>
+  {{if not response.reports:}}
+    {{=response.cmd_commands}}
+  {{pass}}
+{{end}}
+
+<div style="max-width: 600px;" >
+    <div id="frm_title">
+      <table class="head" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="padding-top: 10px;padding-bottom: 2px;background-color: #EEEEE0;padding-left: 10px;padding-right: 10px;" >
+            <span style="vertical-align: middle;font-style: italic;font-weight: bold;">{{=response.subtitle}}</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top: 0px;padding-bottom: 10px;background-color: #EEEEE0;padding-left: 10px;padding-right: 10px;" >
+            <span style="vertical-align: middle;font-style: italic;">{{=response.description}}</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div id="nwc_input">
+      {{=form.custom.begin}}
+      <table width="100%" cellpadding="0" cellspacing="0">
+        {{if response.rtable:}}
+        <tr>
+          <td>
+            {{=response.rtable}}
+          </td>
+        </tr>
+        {{pass}}
+        <tr>
+          <td style="padding-top: 20px;">
+            {{=form[0]}}
+          </td>
+        </tr>
+      </table>
+      {{=form.custom.end}}
+    </div>
+</div>
+
+<div id="local-menu" data-role="panel" data-position="right" data-position-fixed="true" data-display="overlay" data-theme="a">
+  <div data-role="header">
+    {{=response.cmd_back}}
+    {{=response.cmd_close}}
+  </div>
+  <div style="margin-top:40px;padding:0px;">
+    <hr style="border-width:0;background-color: #333333;">
+    <div data-role="controlgroup" data-mini="false" style="margin-top:20px;padding:0px;">
+      {{=response.cmd_preview}}
+    </div>
+  </div>
+</div>
+
+{{pass}}

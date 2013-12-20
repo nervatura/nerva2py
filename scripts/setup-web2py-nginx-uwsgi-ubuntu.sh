@@ -43,19 +43,19 @@ echo 'server {
         listen          80;
         server_name     $hostname;
         ###to enable correct use of response.static_version
-        #location ~* /(\w+)/static(?:/_[\d]+\.[\d]+\.[\d]+)?/(.*)$ {
+        #location ~* ^/(\w+)/static(?:/_[\d]+\.[\d]+\.[\d]+)?/(.*)$ {
         #    alias /home/www-data/web2py/applications/$1/static/$2;
         #    expires max;
         #}
         ###
 
         ###if you use something like myapp = dict(languages=['en', 'it', 'jp'], default_language='en') in your routes.py
-        #location ~* /(\w+)/(en|it|jp)/static/(.*)$ {
+        #location ~* ^/(\w+)/(en|it|jp)/static/(.*)$ {
         #    alias /home/www-data/web2py/applications/$1/;
         #    try_files static/$2/$3 static/$3 =404;
         #}
         ###
-        location ~* /(\w+)/static/ {
+        location ~* ^/(\w+)/static/ {
             root /home/www-data/web2py/applications/;
             #remove next comment on production
             #expires max;
@@ -169,9 +169,8 @@ mkdir /home/www-data
 cd /home/www-data
 wget http://web2py.com/examples/static/web2py_src.zip
 unzip web2py_src.zip
+mv web2py/handlers/wsgihandler.py web2py/wsgihandler.py
 rm web2py_src.zip
-# Download latest version of sessions2trash.py
-wget http://web2py.googlecode.com/hg/scripts/sessions2trash.py -O /home/www-data/web2py/scripts/sessions2trash.py
 chown -R www-data:www-data web2py
 cd /home/www-data/web2py
 sudo -u www-data python -c "from gluon.main import save_password; save_password('$PW',443)"

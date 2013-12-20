@@ -59,6 +59,7 @@ cd www-data
 rm web2py_src.zip*
 wget http://web2py.com/examples/static/web2py_src.zip
 unzip web2py_src.zip
+mv web2py/handlers/wsgihandler.py web2py/wsgihandler.py
 chown -R www-data:www-data web2py
 
 echo "setting up apache modules"
@@ -90,7 +91,7 @@ NameVirtualHost *:443
 # within a virtual host container, only WSGI applications associated with
 # virtual hosts with the same server name as that virtual host can be
 # delegated to that set of daemon processes.
-WSGIDaemonProcess web2py user=www-data group=www-data
+WSGIDaemonProcess web2py user=www-data group=www-data processes=1 threads=1
 
 <VirtualHost *:80>
   WSGIProcessGroup web2py

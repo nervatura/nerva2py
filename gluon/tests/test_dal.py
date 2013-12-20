@@ -8,17 +8,41 @@ import sys
 import os
 import glob
 
-if os.path.isdir('gluon'):
-    sys.path.append(os.path.realpath('gluon'))
-else:
-    sys.path.append(os.path.realpath('../'))
-
 import unittest
 import datetime
 try:
     import cStringIO as StringIO
 except:
     from io import StringIO
+
+def fix_sys_path():
+    """
+    logic to have always the correct sys.path
+     '', web2py/gluon, web2py/site-packages, web2py/ ...
+    """
+
+    def add_path_first(path):
+        sys.path = [path] + [p for p in sys.path if (
+            not p == path and not p == (path + '/'))]
+
+    path = os.path.dirname(os.path.abspath(__file__))
+
+    if not os.path.isfile(os.path.join(path,'web2py.py')):
+        i = 0
+        while i<10:
+            i += 1
+            if os.path.exists(os.path.join(path,'web2py.py')):
+                break
+            path = os.path.abspath(os.path.join(path, '..'))
+
+    paths = [path,
+             os.path.abspath(os.path.join(path, 'site-packages')),
+             os.path.abspath(os.path.join(path, 'gluon')),
+             '']
+    [add_path_first(path) for path in paths]
+
+fix_sys_path()
+
 from dal import DAL, Field, Table, SQLALL
 
 #for travis-ci
@@ -387,6 +411,10 @@ class TestExpressions(unittest.TestCase):
         self.assertEqual(db.tt.insert(aa=3), 3)
         self.assertEqual(db(db.tt.aa == 3).update(aa=db.tt.aa + 1), 1)
         self.assertEqual(db(db.tt.aa == 4).count(), 1)
+        self.assertEqual(db(db.tt.aa == -2).count(), 0)
+        sum = (db.tt.aa + 1).sum()
+        self.assertEqual(db(db.tt.aa == 2).select(sum).first()[sum], 3)
+        self.assertEqual(db(db.tt.aa == -2).select(sum).first()[sum], None)
         db.tt.drop()
 
 
@@ -600,6 +628,19 @@ class TestComputedFields(unittest.TestCase):
         db.tt.drop()
         db.commit()
 
+        # test checking that a compute field can refer to earlier-defined computed fields
+        db.define_table('tt',
+                        Field('aa'),
+                        Field('bb',default='x'),
+                        Field('cc',compute=lambda r: r.aa+r.bb),
+                        Field('dd',compute=lambda r: r.bb + r.cc))
+        db.commit()
+        id = db.tt.insert(aa="z")
+        self.assertEqual(db.tt[id].dd,'xzx')
+        db.tt.drop()
+        db.commit()
+
+
 class TestCommonFilters(unittest.TestCase):
 
     def testRun(self):
@@ -617,7 +658,7 @@ class TestCommonFilters(unittest.TestCase):
         self.assertEqual(db(db.t1).count(),2)
         q = db.t2.b==db.t1.id
         self.assertEqual(db(q).count(),2)
-        self.assertEqual(db(q).count(),2)        
+        self.assertEqual(db(q).count(),2)
         self.assertEqual(len(db(db.t1).select(left=db.t2.on(q))),3)
         db.t2._common_filter = lambda q: db.t2.aa<6
         self.assertEqual(db(q).count(),1)
@@ -684,13 +725,12 @@ class TestDALDictImportExport(unittest.TestCase):
         assert isinstance(dbdict, dict)
         uri = dbdict["uri"]
         assert isinstance(uri, basestring) and uri
-        assert len(dbdict["items"]) == 2
-        assert len(dbdict["items"]["person"]["items"]) == 3
-        assert dbdict["items"]["person"]["items"]["name"]["type"] == db.person.name.type
-        assert dbdict["items"]["person"]["items"]["name"]["default"] == db.person.name.default
-        assert dbdict
+        assert len(dbdict["tables"]) == 2
+        assert len(dbdict["tables"][0]["fields"]) == 3
+        assert dbdict["tables"][0]["fields"][1]["type"] == db.person.name.type
+        assert dbdict["tables"][0]["fields"][1]["default"] == db.person.name.default
 
-        db2 = DAL(dbdict, check_reserved=['all'])
+        db2 = DAL(**dbdict)
         assert len(db.tables) == len(db2.tables)
         assert hasattr(db2, "pet") and isinstance(db2.pet, Table)
         assert hasattr(db2.pet, "friend") and isinstance(db2.pet.friend, Field)
@@ -708,7 +748,7 @@ class TestDALDictImportExport(unittest.TestCase):
             unicode_keys = True
             if sys.version < "2.6.5":
                 unicode_keys = False
-            db3 = DAL(serializers.loads_json(dbjson,
+            db3 = DAL(**serializers.loads_json(dbjson,
                           unicode_keys=unicode_keys))
             assert hasattr(db3, "person") and hasattr(db3.person, "uuid") and\
             db3.person.uuid.type == db.person.uuid.type
@@ -719,18 +759,19 @@ class TestDALDictImportExport(unittest.TestCase):
 
         mpfc = "Monty Python's Flying Circus"
         dbdict4 = {"uri": DEFAULT_URI,
-                   "items":{"staff":{"items": {"name":
-                                                   {"default":"Michael"},
-                                               "food":
-                                                   {"default":"Spam"},
-                                               "tvshow":
-                                                   {"type": "reference tvshow"}
-                                               }},
-                            "tvshow":{"items": {"name":
-                                                   {"default":mpfc},
-                                              "rating":
-                                                   {"type":"double"}}}}}
-        db4 = DAL(dbdict4, check_reserved=['all'])
+                   "tables":[{"tablename": "tvshow",
+                              "fields": [{"fieldname": "name",
+                                          "default":mpfc},
+                                         {"fieldname": "rating",
+                                          "type":"double"}]},
+                             {"tablename": "staff",
+                              "fields": [{"fieldname": "name",
+                                          "default":"Michael"},
+                                         {"fieldname": "food",
+                                          "default":"Spam"},
+                                         {"fieldname": "tvshow",
+                                          "type": "reference tvshow"}]}]}
+        db4 = DAL(**dbdict4)
         assert "staff" in db4.tables
         assert "name" in db4.staff
         assert db4.tvshow.rating.type == "double"
@@ -744,20 +785,19 @@ class TestDALDictImportExport(unittest.TestCase):
         db4.commit()
 
         dbdict5 = {"uri": DEFAULT_URI}
-        db5 = DAL(dbdict5, check_reserved=['all'])
+        db5 = DAL(**dbdict5)
         assert db5.tables in ([], None)
         assert not (str(db5) in ("", None))
 
         dbdict6 = {"uri": DEFAULT_URI,
-                   "items":{"staff":{},
-                            "tvshow":{"items": {"name": {},
-                                              "rating":
-                                                 {"type":"double"}
-                                                 }
-                                }
-                            }
-                    }
-        db6 = DAL(dbdict6, check_reserved=['all'])
+                   "tables":[{"tablename": "staff"},
+                             {"tablename": "tvshow",
+                              "fields": [{"fieldname": "name"},
+                                         {"fieldname": "rating", "type":"double"}
+                                        ]
+                             }]
+                  }
+        db6 = DAL(**dbdict6)
 
         assert len(db6["staff"].fields) == 1
         assert "name" in db6["tvshow"].fields
@@ -771,6 +811,29 @@ class TestDALDictImportExport(unittest.TestCase):
         db6.commit()
 
 
+class TestValidateAndInsert(unittest.TestCase):
+
+    def testRun(self):
+        import datetime
+        from gluon.validators import IS_INT_IN_RANGE
+        db = DAL(DEFAULT_URI, check_reserved=['all'])
+        db.define_table('val_and_insert',
+                        Field('aa'),
+                        Field('bb', 'integer',
+                              requires=IS_INT_IN_RANGE(1,5))
+                       )
+        rtn = db.val_and_insert.validate_and_insert(aa='test1', bb=2)
+        self.assertEqual(rtn.id, 1)
+        #errors should be empty
+        self.assertEqual(len(rtn.errors.keys()), 0)
+        #this insert won't pass
+        rtn = db.val_and_insert.validate_and_insert(bb="a")
+        #the returned id should be None
+        self.assertEqual(rtn.id, None)
+        #an error message should be in rtn.errors.bb
+        self.assertNotEqual(rtn.errors.bb, None)
+        #cleanup table
+        db.val_and_insert.drop()
 
 
 

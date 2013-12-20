@@ -1,119 +1,122 @@
-{{left_sidebar_enabled=right_sidebar_enabled=False}}
 {{extend 'nas/layout.html'}}
+
 <style>
-body {
-  color: #444444;
+<!--
+.vernum {
+  background-color: #444444;
+  color: #FFFFFF;
+  font-weight: bold;
+  padding: 2px;
+  font-family: sans-serif;
+  font-size: 12px;
+  font-style: italic;
+  vertical-align: middle;
 }
-.main {
-    padding: 20px 0 20px;
+label, label.ui-input-text {
+  font-weight: bold;
+  background-color: #EEEEE0;
+  padding: 8px;
+  margin: 0.5em 0;
+  border-radius: 8px;
 }
-#input_form a {
-  color: #444444;
-  text-decoration: none;
+.w2p_fl {
+  padding-right: 5px;
+  
 }
-
-#input_form a:hover{
-  color: #3B7687;
+.ui-checkbox, .ui-radio {
+  position: inherit;
 }
-
-li {
-  padding-top: 5px;
-}
-.sbar {
-  width: 25%;;
-  padding-left: 20px;
-  padding-right: 20px;
-  background-color: #ECECEC;
-}
-input[type="submit"] {
-  height: 28px !important;
-  padding-top: 2px !important;
-}
-textarea {
-  width: 100%;
-}
-select {
-  height: 30px;
-  width: 310px;
-}
-#auth_user_username {
-  min-width: 250px !important;
-}
-#auth_user_password {
-  min-width: 250px !important;
-}
+-->
 </style>
 
-<table width="100%" style="height: 100%;width: 100%;" cellpadding="0" cellspacing="0">
-  <tr>
-    {{if response.frm_caption:}}
-    <td class="sbar">
-      <h2 style="font-weight: bold;color: #444444;">{{=response.frm_caption}}</h2>
-    </td>
-    {{pass}}
-    <td style="padding-left: 20px;">
-      <div id="input_form">
-        {{=form}}
-  
-			  {{if request.args(0)=='login':}}
-			    {{if not 'register' in response.auth.settings.actions_disabled:}}
-			      <br/><a href="{{=URL(r=request,args='register')}}">
-			        <span style="font-weight: bold;">{{=T('NAS user does not exist. Please register for one here.')}}</span></a>
-			    {{pass}}
-			    {{if not 'request_reset_password' in response.auth.settings.actions_disabled:}}
-			      <br/><a href="{{=URL(r=request,args='request_reset_password')}}">Lost password?</a>
-			    {{pass}}
-<!-- 			    <br/>Username: <span style="font-weight: bold;">demo</span>  -->
-<!-- 			         Password: <span style="font-weight: bold;">demo</span> -->
-			  {{pass}}
-      </div>
-    </td>
-  </tr>
-</table>
+{{block header}}
+  {{if request.args(0)!='login':}}
+    {{=response.cmd_menu}}
+    <h1 style="color: #FFD700;font-size: small;margin-bottom: 0px;margin-top: 5px;">{{=response.title}}</h1>
+    <h1 style="margin-bottom: 5px;margin-top: 0px;"> {{=response.subtitle}}</h1>
+    {{=response.cmd_exit}}
+  {{else:}}
+    <div data-role="navbar" data-iconpos="top">
+      <ul>
+        <li><a data-icon="home" data-ajax="false" data-theme="b" href={{=URL('default','start')}}>{{=T('HOME')}}</a></li>
+        <li><a data-icon="page" data-ajax="false" data-theme="b" href={{=URL('default','ndoc')}}>{{=T('DOCUMENTATION & RESOURCES')}}</a></li>
+        <li><a data-icon="info" data-ajax="false" data-theme="b" href={{=URL('default','about')}}>{{=T('ABOUT')}}</a></li>
+        <li><a data-icon="wrench" data-ajax="false" data-theme="e" href={{=URL('nas','index')}}>{{=T('NAS ADMIN')}}</a></li>
+      </ul>
+    </div><!-- /navbar -->
+    <h1 style="color: #FFD700;margin-bottom: 0px;margin-top: 13px;">{{=response.title}}</h1>
+    <h1><span class="vernum"> Ver.No: {{=response.verNo}}</span></h1>
+  {{pass}}
+{{end}}
 
-{{if request.args(0)=='login':}}
-  <hr style="margin: 25px 0 5px;border-width: 1.5px;" />
-  <div style="width: 100%;text-align: center;">
-    <a href="/nerva2py/default/start" 
-          style="color: #3B7687;font-size: 20px;text-decoration: none;font-weight: bold;padding: 3px;">
-          Get Started</a>
+<div align="center" >
+  <div id="input_form" style="max-width: 800px;padding-top: 10px;">
+    {{if response.cmd_back:}}
+      {{=response.cmd_back}}
+    {{pass}}
+    {{if response.cmd_new:}}
+      <div align="left">{{=response.cmd_new}}</div>
+    {{pass}}
+	  {{=form}}
+	  
+	  {{if request.args(0)=='login':}}
+      {{if not 'register' in response.auth.settings.actions_disabled:}}
+        <br/><a href="{{=URL(r=request,args='register')}}">
+           <span style="font-weight: bold;">{{=T('NAS user does not exist. Please register for one here.')}}</span></a>
+      {{pass}}
+      {{if not 'request_reset_password' in response.auth.settings.actions_disabled:}}
+        <br/><a href="{{=URL(r=request,args='request_reset_password')}}">Lost password?</a>
+      {{pass}}
+      {{if response.DEMO_MODE:}}
+	      <br/>Username: <span style="font-weight: bold;">demo</span> 
+	              Password: <span style="font-weight: bold;">demo</span>
+	    {{pass}}
+	  {{pass}}
   </div>
-  <hr style="margin: 5px 0 5px;border-width: 1.5px;" />
-  <table width="100%" style="height: 100%;width: 100%;" cellpadding="0" cellspacing="0">
-    <tr>
-      <td>
-        <span style="font-weight: bold;font-size: 20px;">Applications & Resources</span>
-        <ul style="padding-bottom: 0px;">
+	
+	{{if request.args(0)=='login':}}
+	<div style="max-width: 800px;">
+	  <hr style="margin: 25px 0 5px;border-width: 1.5px;"/>
+	  <hr style="margin: 0px 0 5px;border-width: 1.5px;"/>
+    <div>
+      <div align="left" style="float: left;">
+        <span style="font-weight: bold;font-size: 20px;padding-left: 10px;">Applications & Resources</span>
+        <ul style="padding-bottom: 0px;margin: 5px;">
           <li style="padding-top: 0px;margin-bottom: 0px;">
-            <a target="_blank" href="/nerva2py/nwc/index" 
-              style="color: #3B7687;text-decoration: none;font-weight: bold;;font-size: 16px;font-style: italic;">
+            <a target="_blank" href="/nerva2py/nwc/index?desktop" 
+              style="color: #3B7687;text-decoration: none;font-weight: bold;font-size: 16px;font-style: italic;">
               Nervatura Web Client</a>
           </li>
           <li style="padding-top: 0px;margin-bottom: 0px;">
+            <a target="_blank" href="/nerva2py/nwc/index?mobile" 
+              style="color: #3B7687;text-decoration: none;font-weight: bold;font-size: 16px;font-style: italic;">
+              Nervatura Mobil Client</a>
+          </li>
+          <li style="padding-top: 0px;margin-bottom: 0px;">
             <a target="_blank" href="/nerva2py/ndr/getAppl?appl=nflex/nervex.html" 
-              style="color: #3B7687;text-decoration: none;font-weight: bold;;font-size: 16px;font-style: italic;">
+              style="color: #3B7687;text-decoration: none;font-weight: bold;font-size: 16px;font-style: italic;">
               NervaFlex</a>
           </li>
           <li style="padding-top: 0px;margin-bottom: 0px;">
             <a target="_blank" href="/nerva2py/ndi_demo/index" 
-              style="color: #3B7687;text-decoration: none;font-weight: bold;;font-size: 16px;font-style: italic;">
+              style="color: #3B7687;text-decoration: none;font-weight: bold;font-size: 16px;font-style: italic;">
               Nervatura Data Interface Demo</a>
           </li>
           <li style="padding-top: 0px;margin-bottom: 0px;">
             <a target="_blank" href="/nerva2py/ndr/getResource?file_name=download/nguest&content=application/jar&file_type=jar" 
-              style="color: #3B7687;text-decoration: none;font-weight: bold;;font-size: 16px;font-style: italic;">
+              style="color: #3B7687;text-decoration: none;font-weight: bold;font-size: 16px;font-style: italic;">
               Nervatura Client Additions</a>
           </li>
           <li style="padding-top: 0px;margin-bottom: 0px;">
             <a target="_blank" href="/nerva2py/ndr/getResource?file_name=download/vba_demo&content=application/zip&file_type=zip" 
-              style="color: #3B7687;text-decoration: none;font-weight: bold;;font-size: 16px;font-style: italic;">
+              style="color: #3B7687;text-decoration: none;font-weight: bold;font-size: 16px;font-style: italic;">
               Nervatura Microsoft Excel Data Loader</a>
           </li>
         </ul>
-      </td>
-      <td>
-        <span style="font-weight: bold;font-size: 20px;">Documentations</span>
-        <ul style="padding-bottom: 0px;margin-bottom: 0px;">
+      </div>
+      <div align="left" style="float: left;">
+        <span style="font-weight: bold;font-size: 20px;padding-left: 10px;">Documentations</span>
+        <ul style="padding-bottom: 0px;margin: 5px;">
           <li style="padding-top: 0px;margin-bottom: 0px;">
             <a target="_blank" href="/nerva2py/ndr/getResource?file_name=docs/nom/nom&content=view&lang=auto" 
               style="color: #3B7687;text-decoration: none;font-weight: bold;;font-size: 16px;font-style: italic;">
@@ -139,25 +142,32 @@ select {
               style="color: #3B7687;text-decoration: none;font-weight: bold;;font-size: 16px;font-style: italic;">
               Nervatura Data Representation</a>
           </li>
+          <li style="padding-top: 0px;margin-bottom: 0px;">
+            <a target="_blank" href="/nerva2py/report2py" 
+              style="color: #3B7687;text-decoration: none;font-weight: bold;;font-size: 16px;font-style: italic;">
+              Nervatura Report Help & Demo</a>
+          </li>
         </ul>
-      </td>
-    </tr>
-  </table>
-  <table width="100%" style="height: 100%;width: 100%;" cellpadding="0" cellspacing="0">
-    <tr>
-      <td style="text-align: center;">
-          <a href="/nerva2py/default/ndoc" 
-          style="border-top-style: solid;border-top-width: 1px;border-bottom-style: solid;border-bottom-width: 1px;color: #3B7687;font-size: 14px;text-decoration: none;font-weight: bold;padding: 3px;">
-          MORE DOCS & RESOURCES</a>
-      </td>
-    </tr>
-  </table>
-{{pass}}
-      
-{{if response.frm_name in('user','accounts','databases','settings'):}}
-<script language="javascript">
-<!--
- jQuery("#input_form input:visible:enabled:first").focus();
-//-->
-</script>
-{{pass}}
+      </div>
+	  </div>
+	  <div style="padding-top: 20px;display:inline-block;width: 100%">
+	  <table cellpadding="0" cellspacing="0">
+      <tr>
+        <td style="width: 64px;padding-right: 0px;">
+          <img style="vertical-align: bottom;" src="{{=URL('static','images/icon64_ntura_te.png')}}" />
+        </td>
+        <td style="width: 120px;color: #616161;vertical-align: middle;font-size: 13px;font-weight: bold;">
+          OPEN SOURCE<br>
+          BUSINESS<br> 
+          MANAGEMENT
+        </td>
+      </tr>
+    </table>
+	  <p><a href="http://www.nervatura.com" target="_blank" title="Nervatura Homepage" 
+	             style="font-weight: bold;">©2011-2013 Nervatura Framework</a></p>
+	 </div>
+	</div>
+	{{pass}}
+</div>
+  
+

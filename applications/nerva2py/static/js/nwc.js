@@ -14,7 +14,7 @@ function call_menucmd(_menukey,new_window) {
 	} else {
 		window.location = url_str;
 	}
-  }
+}
 //--------------------------------------------------
 //general nervatype selectors
 //--------------------------------------------------
@@ -195,7 +195,7 @@ function set_payment_value(_payment_id, _transnumber, _transtype, _curr, _amount
     document.getElementById("ref_id_1").value = _payment_id;
     document.getElementById("label_link_id").innerHTML = _payment_id;
     document.getElementById("link_transnumber").innerHTML = _transnumber;
-    document.getElementById("payment_curr").innerHTML = _curr;
+    document.getElementById("link_curr").innerHTML = _curr;
     document.getElementById("link_amount").value= _amount;
     return true;
 }
@@ -248,6 +248,11 @@ function set_fieldvalue(_fieldvalue_id, _fieldname, _description, _value, _label
 		control = document.getElementById("fieldvalue_value_text");}
 
 	switch(control.nodeName) {
+	case "DIV":
+		document.getElementById("fieldvalue_value_"+_fieldtype+"_label").innerHTML = _label;
+		document.getElementById("fieldvalue_value").value =_value;
+		_focus = document.getElementById("fieldvalue_notes");
+		break;
 	case "INPUT":
 	case "TEXTAREA":
 		if (_fieldtype=="bool") {
@@ -268,11 +273,6 @@ function set_fieldvalue(_fieldvalue_id, _fieldname, _description, _value, _label
 			} else {
 				control.options.add(new Option(options[i]));}
 		}
-		break;
-	case "DIV":
-		document.getElementById("fieldvalue_value_"+_fieldtype+"_label").innerHTML = _label;
-		document.getElementById("fieldvalue_value").value =_value;
-		_focus = document.getElementById("fieldvalue_notes");
 		break;
 	default:
 	}
@@ -385,7 +385,7 @@ function load_price() {
 	var trans_id=document.getElementById("item_trans_id").value;	
 	var surl = get_base_url()+'/get_product_price?trans_id='+trans_id+'&product_id='+product_id.value+'&qty='+qty.value;
 	jQuery.ajax({
-    	type: "POST", 
+    	type: "POST",
     	url: surl,
     	success: function(data) {
     		if (parseFloat(data)!=0) {
@@ -847,7 +847,7 @@ function copy_trans(copy_url,redir_url){
 	});
 }
 //--------------------------------------------------
-//create nwe document type from base trans: trans_item
+//create new document type from base trans: trans_item
 //--------------------------------------------------
 function create_newtype_change(){
 	var seltype = document.getElementById('cmb_doctypes').value;
@@ -1059,7 +1059,7 @@ function save_template() {
 		if(confirm(ms_wn_save)){
 			var trans_id=document.getElementById("trans_id").value;
 			var surl = get_base_url()+'/frm_trans_fnote/'+trans_id+
-	    	  '?save_tmp_value='+ctmp.value+'&save_tmp_name='+ctmp.options[ctmp.selectedIndex].text+'&fnote='+encodeURIComponent($('#'+fnote.id).elrte('val'))
+	    	  '?save_tmp_value='+ctmp.value+'&save_tmp_name='+ctmp.options[ctmp.selectedIndex].text+'&fnote='+encodeURIComponent($('#'+fnote.id).val())
 			jQuery.ajax({
 		    	type: "POST", 
 		    	url: surl,
@@ -1133,7 +1133,7 @@ function loadTemplate() {
     	success: function(data) {
     		if (data=="") {data=" "};
     		var fnote=document.getElementsByName('fnote')[0];
-    		$('#'+fnote.id).elrte('val', data);
+    		$('#'+fnote.id).jqteVal(data);
     		}
     });
 }
@@ -1310,6 +1310,7 @@ function print_items(selmode,printer_clienthost) {
 	    		},
 		    error: function(jqXHR, textStatus, errorThrown ) {
 		    	alert(ms_err_missing_local_printer_support);
+		    	window.location.reload();
 		    	}
 	    });
 	} else {
@@ -1332,7 +1333,9 @@ function event_update() {
 		tb_description.setAttribute("name", "description");
 		document.forms["frm_event"].appendChild(tb_description);	
 	}
-	document.getElementById('tb_description').value = document.getElementById('event_description').value;
+	if (document.getElementById('event_description')!=null) {
+		document.getElementById('tb_description').value = document.getElementById('event_description').value;	
+	}
 	document.forms["frm_event"].submit();
 }
 
@@ -1343,14 +1346,27 @@ function create_report(cmd,ms_missing) {
 	if(document.getElementById('cmb_templates').value==''){
 		alert(ms_missing);
 		return true;
+	}   
+	var frm = document.createElement("form");
+	document.body.appendChild(frm);
+	frm.setAttribute('method',"post");
+	frm.setAttribute('action',document.getElementById("report_url").value);
+	frm.setAttribute('target',"_blank");
+	
+	frm_values = ["cmb_templates","cmb_orientation","cmb_size","page_copy"]
+	for (var i=0;i<frm_values.length;i++) {
+		var frm_value = document.createElement("input");
+		frm_value.setAttribute("type", "hidden");
+		frm_value.setAttribute("name", document.getElementById(frm_values[i]).name);
+		frm_value.setAttribute("value", document.getElementById(frm_values[i]).value);
+		frm.appendChild(frm_value);
 	}
-	if (document.getElementById('dlg_report_cmd')==null) {
-		var report_cmd = document.createElement("input");
-		report_cmd.setAttribute("id", "dlg_report_cmd");
-		report_cmd.setAttribute("type", "hidden");
-		report_cmd.setAttribute("name", "cmd");
-		document.forms["dlg_frm_report"].appendChild(report_cmd);	
-	}
-	document.getElementById('dlg_report_cmd').value = cmd;
-	document.forms["dlg_frm_report"].submit();
+	var frm_value = document.createElement("input");
+	frm_value.setAttribute("type", "hidden");
+	frm_value.setAttribute("name", "cmd");
+	frm_value.setAttribute("value", cmd);
+	frm.appendChild(frm_value);
+	
+	frm.submit();
+	document.body.removeChild(frm)
 }

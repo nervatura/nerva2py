@@ -1,55 +1,25 @@
-{{left_sidebar_enabled=right_sidebar_enabled=False}}
 {{extend 'nwc/layout.html'}}
-{{footer_enabled=False}}
 
 <style>
-body  {
-background: #808080;
-margin: 0;
-}
-.web2py_grid {
-  background-color: #FFFFFF;
-}
-.web2py_grid tbody td {
-  height:34px;
-  border-bottom: 1px solid #DDDDDD;
-  border-right: 1px solid #DDDDDD;
-}
-.main {
-  padding: 10px 0 10px 0;
-}
 #frm_head {
-  background-color: #F2F2F2;
-  border-style: solid;
-  border-width: 5px;
 {{if response.description:}}
   width: 550px;
 {{pass}}
 }
-.head_td {
-  background-color: #2B2B2B;
-  color: #FFFFFF;
-  padding-top: 4px;
-  padding-bottom:  4px;
-  padding-left: 15px;
-  padding-right: 5px;
-  vertical-align: middle;
-}
-#frm_title input[type="submit"] {
-  height: 25px !important;
+input[type="submit"] {
   padding-top: 2px !important;
-  color: #008B00;
-  width: 100%;
 }
-select {
-  height: 29px;
+td.w2p_fl {
+  text-align: left;
+  cursor: default;
+  max-width: 200px !important;
+  padding-left: 20px;
 }
-
 td.w2p_fw {
-    width: 300px;
+  width: 300px;
 }
 td.w2p_fc {
-    width: 20px;
+  width: 20px;
 }
 </style>
 
@@ -59,32 +29,37 @@ td.w2p_fc {
   {{=form.custom.begin}}
 {{pass}}
 <div id="frm_title">
-<table class="head" width="100%" cellpadding="0" cellspacing="0">
+<table style="background-color: #2B2B2B;" width="100%" cellpadding="0" cellspacing="0">
   <tr>
-    <td class="head_td" style="padding-left: 10px;">
-      <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.titleicon}}" />
-      <span style="vertical-align: middle;color: #FFD700;font-weight: bold;">{{=T("REPORTS")}}</span>
-    </td>
-    {{if response.description:}}
-      <td class="head_td" style="padding-top: 6px;padding-bottom: 2px;width: 150px;">
-        {{=response.cmd_preview}}
-      </td>
-    {{pass}}
-      <td class="head_td" width="15px" align="right" style="padding-top: 6px;padding-bottom: 2px;padding-right: 0px;">
-        {{=response.cmd_help}}
-      </td>
-    <td class="head_td" style="padding-top: 6px;padding-bottom: 2px;width: 15px;padding-left: 0px;">
-      {{=response.cmd_back}}
+    <td>
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="padding-left: 5px;vertical-align: middle;">
+            <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.titleicon}}" />
+            <span style="vertical-align: middle;color: #FFD700;font-weight: bold;">{{=T("REPORTS")}}</span>
+          </td>
+          {{if response.description:}}
+          <td style="width:150px;padding: 4px 20px 0px 0px;">
+            {{=response.cmd_preview}}
+          </td>
+          {{pass}}
+          <td style="width:45px;padding: 4px 0px 0px 0px;">
+            {{=response.cmd_help}}</td>
+          <td style="width: 45px;padding: 4px 0px 0px 0px;">
+            {{=response.cmd_back}}
+          </td>
+        </tr>
+      </table>
     </td>
   </tr>
   {{if response.description:}}
   <tr>
-    <td style="text-align: center;padding-top: 10px;padding-bottom: 2px;background-color: #DBDBDB;" colspan="4">
+    <td style="text-align: center;padding-top: 10px;padding-bottom: 2px;background-color: #DBDBDB;">
       <span style="vertical-align: middle;font-style: italic;font-weight: bold;">{{=response.subtitle}}</span>
     </td>
   </tr>
   <tr>
-    <td style="padding-top: 0px;padding-bottom: 10px;background-color: #DBDBDB;text-align: justify;padding-left: 10px;padding-right: 10px;" colspan="4">
+    <td style="padding: 0px 10px 10px 10px;background-color: #DBDBDB;text-align: justify;">
       <span style="vertical-align: middle;font-style: italic;">{{=response.description}}</span>
     </td>
   </tr>
@@ -94,7 +69,7 @@ td.w2p_fc {
 
 {{if response.description:}}
 <div id="nwc_input">
-  <table style="border-style: solid;border-width: 1px;border-color: #CCCCCC;border-top: none;" width="100%" cellpadding="0" cellspacing="0">
+  <table width="100%" cellpadding="0" cellspacing="0">
     {{if response.rtable:}}
     <tr>
       <td>
@@ -103,14 +78,15 @@ td.w2p_fc {
     </tr>
     {{pass}}
     <tr>
-      <td style="padding-top: 20px;">
+      <td style="padding: 10px;">
         {{=form[0]}}
       </td>
     </tr>
   </table>
-  {{=form.custom.end}}
 </div>
+  {{=form.custom.end}}
 {{else:}}
+  {{=sform}}
   {{=form}}
 {{pass}}
 </div>

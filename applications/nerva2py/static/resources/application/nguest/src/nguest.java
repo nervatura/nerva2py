@@ -43,7 +43,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 /*
-This file is part of the Nervatura Project
+This file is part of the Nervatura Framework
 http://www.nervatura.com
 Copyright © 2011-2013, Csaba Kappel
 License: LGPLv3
@@ -336,7 +336,7 @@ public class nguest {
         lb_icon.setIcon((new ImageIcon(nguest.class.getResource("icon24_ntura.png"), "Nervatura icon")));
         headerPane.add(lb_icon);
         JLabel website = new JLabel();
-        website.setText("<html><a style=\"text-decoration:none;\" href=\""+support_link+"\">Nervatura Project</a></html>");
+        website.setText("<html><a style=\"text-decoration:none;\" href=\""+support_link+"\">Nervatura Framework</a></html>");
         website.setCursor(new Cursor(Cursor.HAND_CURSOR));
         website.addMouseListener(new MouseAdapter() {
             @Override

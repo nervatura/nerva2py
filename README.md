@@ -10,6 +10,7 @@ The Nervatura Project includes:
 - Data Interface
 - Programming Interface
 - Web Client
+- Mobil Client
 - and other documents, resources, sample code and demo programs
 
 Developed by Nervatura Ltd. and can be used under the LGPLv3 License.

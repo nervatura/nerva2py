@@ -110,6 +110,19 @@ class MockTable(object):
         self.session_expiry = session_expiry
         self.with_lock = with_lock
 
+    def __call__(self, record_id):
+        # Support DAL shortcut query: table(record_id)
+
+        q = self.id  # This will call the __getattr__ below
+                     # returning a MockQuery
+
+        # Instructs MockQuery, to behave as db(table.id == record_id)
+        q.op = 'eq'
+        q.value = record_id
+
+        row = q.select()
+        return row[0] if row else Storage()
+
     def __getattr__(self, key):
         if key == 'id':
             #return a fake query. We need to query it just by id for normal operations
@@ -143,7 +156,6 @@ class MockTable(object):
             release_lock(self.r_server, key_lock, newid)
         return newid
 
-
 class MockQuery(object):
     """a fake Query object that supports querying by id
        and listing all keys. No other operation is supported
@@ -169,10 +181,12 @@ class MockQuery(object):
     def select(self):
         if self.op == 'eq' and self.field == 'id' and self.value:
             #means that someone wants to retrieve the key self.value
-            key = self.keyprefix + ':' + self.value
+            key = self.keyprefix + ':' + str(self.value)
             if self.with_lock:
                 acquire_lock(self.db, key + ':lock', self.value)
             rtn = self.db.hgetall(key)
+            if rtn:
+                rtn['update_record'] = self.update  # update record support
             return [Storage(rtn)] if rtn else []
         elif self.op == 'ge' and self.field == 'id' and self.value == 0:
             #means that someone wants the complete list
@@ -199,7 +213,7 @@ class MockQuery(object):
     def update(self, **kwargs):
         #means that the session has been found and needs an update
         if self.op == 'eq' and self.field == 'id' and self.value:
-            key = "%s:%s" % (self.keyprefix, self.value)
+            key = self.keyprefix + ':' + str(self.value)
             with self.db.pipeline() as pipe:
                 pipe.hmset(key, kwargs)
                 if self.session_expiry:

@@ -1,29 +1,12 @@
-{{left_sidebar_enabled=right_sidebar_enabled=False}}
 {{extend 'default/layout.html'}}
 
 <style>
-.sname {
-  background-color: #DAA520;
-  color: #FFFFFF;
-  font-weight: bold;
-  padding-left: 3px;
-  padding-right: 3px;
-  font-family: monospace;
-  font-size: 16px;
-  font-style: italic;
-}
-p {
-  font-family: Arial;
-  font-size: 13px;
-}
+  
 </style>
 
-<p>The purpose of <b>Nervatura Project</b> is to develop such data model,
+<p>The purpose of <b>Nervatura Framework</b> is to develop such data model,
 	tools and knowledge database which allows to build safe and flexible
-	management solutions quickly and at low cost. The outcome of the
-	project is primarily for use of developers and firms that provide
-	management service but surely it can be useful for any company for its
-	own management improvements.</p>
+	management solutions quickly and at low cost.</p>
 <p>The project consists of several sub-projects which are all based on
 	Nervatura’s own object model and intended to support its use for
 	various applications. The developments are open-source projects -
@@ -35,17 +18,23 @@ p {
 <h2>{{=T('Overview')}}</h2>
 
 <ul>
-	<li><a style="cursor: help;" title="{{=T('More info')}}"
-		onclick="var tb=document.getElementById('mom'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
-			<span class="sname">NOM</span>&nbsp;<b>Nervatura Object Model</b>
-	</a>&nbsp;
-		<p>
+	<li><a style="cursor: help;" title="{{=T('More info')}}" href="#mom" data-transition="turn" 
+	  data-inline="true" data-rel="popup" data-position-to="window">
+      <span class="sname">NOM</span>&nbsp;<b>Nervatura Object Model</b>
+    </a>
+		<p style="margin-top: 0px;text-align: left;">
+		  <a href="#mom" data-transition="turn" data-role="button" data-icon="info" data-theme="d"
+        data-inline="true" data-rel="popup" data-position-to="window" 
+        style="margin-left: 0px;color: #444444 !important;;">{{=T('More')}}</a>
+        
 			General data model, which can store all information generated during
-			the operation of a classic organization. 
-			<a class="w2p_trap buttontext button" title="{{=T('More info')}}"
-				onclick="var tb=document.getElementById('mom'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
-				<span class="icon plus"></span></a> 
-			<div id="mom" style="display: none;">
+			the operation of a classic organization.
+			 
+		<div data-role="popup" id="mom" class="ui-content more_popup" data-theme="d" data-overlay-theme="a">
+			<a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;left: -12px;top: -12px;">Close</a>
+			<hr style="margin-top: 0px;">
+			
 			<p>This includes all manufacturer, retailer and service companies (or
 				government units) which operation can be defined and described
 				within a GOODS (we want to sell or we supply) – CLIENT (we work for)
@@ -79,23 +68,37 @@ p {
 				gatherings, etc) and different technologies (HTML5, java, flash,
 				traditional programming languages, etc) in order to support their
 				processes.</p>
-			<p><b><i>For more information: </i></b>
-			  <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/nom/nom&content=view&lang=auto'}} target="_blank"><b><i>Nervatura Object Model</i></b></a></p>
+				
+			<hr style="margin-bottom: 3px;">
+      <div class="info_div">  
+        <p class="info_p"><b><i>For more information: </i></b>
+			    <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/nom/nom&content=view&lang=auto'}} target="_blank"><b><i>Nervatura Object Model</i></b></a></p>
+		  </div>
+      <hr style="margin-top: 3px;">
+		  <div align="right" style="">
+		  <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;right: -12px;bottom: 0px;">Close</a>
+      </div>
 		</div>
-		</p>
   </li>
 		
-	<li><a style="cursor: help;" title="{{=T('More info')}}"
-		onclick="var tb=document.getElementById('nas'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
+	<li><a style="cursor: help;" title="{{=T('More info')}}" href="#nas" data-transition="turn" 
+    data-inline="true" data-rel="popup" data-position-to="window">
 			<span class="sname">NAS</span>&nbsp;<b>Nervatura Application Server</b>
-	</a>&nbsp;
-		<p>
+	  </a>
+		<p style="margin-top: 0px;text-align: left;">
+      <a href="#nas" data-transition="turn" data-role="button" data-icon="info" data-theme="d"
+        data-inline="true" data-rel="popup" data-position-to="window" 
+        style="margin-left: 0px;color: #444444 !important;;">{{=T('More')}}</a>
+        
 			Receives and revises data sent by applications, passes them on to the
 			client layer in charge. 
-			<a class="w2p_trap buttontext button" title="{{=T('More info')}}"
-        onclick="var tb=document.getElementById('nas'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
-        <span class="icon plus"></span></a> 
-      <div id="nas" style="display: none;">
+			
+	  <div data-role="popup" id="nas" class="ui-content more_popup" data-theme="d" data-overlay-theme="a">
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;left: -12px;top: -12px;">Close</a>
+      <hr style="margin-top: 0px;">
+
       <p>Data of usage rights/levels and proper database access settings
 				are stored here. Further database independent, user or application
 				level functions can also be implemented here.<br>
@@ -117,26 +120,39 @@ p {
 				database accesses. Remote access of that could be limited because of
 				safety reasons.</p>
 				
-			<p><b><i>For more information: </i></b>
-        <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/nas/nas&content=view&lang=auto'}} target="_blank"><b><i>Nervatura Application Server</i></b></a> 
-      </p>
+			<hr style="margin-bottom: 3px;">
+      <div class="info_div">	
+			  <p class="info_p"><b><i>For more information: </i></b>
+          <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/nas/nas&content=view&lang=auto'}} target="_blank"><b><i>Nervatura Application Server</i></b></a> 
+        </p>
+      </div>
+      <hr style="margin-top: 3px;">
+      <div align="right" style="">
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;right: -12px;bottom: 0px;">Close</a>
+      </div>
     </div>
-    </p>
   </li>
 	
-	<li><a style="cursor: help;" title="{{=T('More info')}}"
-    onclick="var tb=document.getElementById('ndi'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
+	<li><a style="cursor: help;" title="{{=T('More info')}}" href="#ndi" data-transition="turn" 
+    data-inline="true" data-rel="popup" data-position-to="window">
       <span class="sname">NDI</span>&nbsp;<b>Nervatura Data Interface</b>
-  </a>&nbsp;
-    <p>
+    </a>
+    <p style="margin-top: 0px;text-align: left;">
+      <a href="#ndi" data-transition="turn" data-role="button" data-icon="info" data-theme="d"
+        data-inline="true" data-rel="popup" data-position-to="window" 
+        style="margin-left: 0px;color: #444444 !important;;">{{=T('More')}}</a>
+
 			The purpose was to create an easy to learn, simple and safe function
 			library. Its usage is mainly beneficial for those users who want to
 			query or transmit information to a Nervatura client database for any
-			purpose. 
-			<a class="w2p_trap buttontext button" title="{{=T('More info')}}"
-        onclick="var tb=document.getElementById('ndi'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
-        <span class="icon plus"></span></a> 
-      <div id="ndi" style="display: none;">
+			purpose.
+			
+		<div data-role="popup" id="ndi" class="ui-content more_popup" data-theme="d" data-overlay-theme="a">
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;left: -12px;top: -12px;">Close</a>
+      <hr style="margin-top: 0px;">
+      
 			<p>Potential utilization area for example: creating backups, data
 				migration, sending or receiving data to or from other applications
 				(for instance accounting systems, analytical data supply, etc), data
@@ -165,27 +181,42 @@ p {
 					built-in rule system also indicates the logical errors.</li>
 			</ul>
 			</p>
-      <p><b><i>For more information:</i></b> 
-        <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/ndi/ndi&content=view&lang=auto'}} target="_blank"><b><i>Nervatura Data Interface</i></b></a></p>
-      <p><b><i>Here you can try the preview:</i></b> 
-        <a href={{=URL( 'ndi_demo', 'index')}} target="_blank"><b><i>Nervatura Data Interface Demo</i></b></a></p>
+			
+			<hr style="margin-bottom: 3px;">
+			<div class="info_div"> 
+        <p class="info_p"><b><i>For more information:</i></b> 
+          <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/ndi/ndi&content=view&lang=auto'}} target="_blank"><b><i>Nervatura Data Interface</i></b></a></p>
+        <p class="info_p"><b><i>Here you can try the preview:</i></b> 
+          <a href={{=URL( 'ndi_demo', 'index')}} target="_blank"><b><i>Nervatura Data Interface Demo</i></b></a></p>
+      </div>
+      <hr style="margin-top: 3px;">
+      <div align="right" style="">
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;right: -12px;bottom: 0px;">Close</a>
+      </div>
     </div>
-    </p>
+
   </li>
   
-  <li><a style="cursor: help;" title="{{=T('More info')}}"
-    onclick="var tb=document.getElementById('npi'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
+  <li><a style="cursor: help;" title="{{=T('More info')}}" href="#npi" data-transition="turn" 
+    data-inline="true" data-rel="popup" data-position-to="window">
       <span class="sname">NPI</span>&nbsp;<b>Nervatura Programming Interface</b>
-  </a>&nbsp;
-    <p>
+    </a>
+    <p style="margin-top: 0px;text-align: left;">
+      <a href="#npi" data-transition="turn" data-role="button" data-icon="info" data-theme="d"
+        data-inline="true" data-rel="popup" data-position-to="window" 
+        style="margin-left: 0px;color: #444444 !important;;">{{=T('More')}}</a>
+
 			Ensures direct access to Nervatura databases at database management
 			level. In certain cases it enables faster and more efficient data
 			handling than the NDI, but its secure usage requires more substantial
 			database structure and programming knowledge.
-			<a class="w2p_trap buttontext button" title="{{=T('More info')}}"
-        onclick="var tb=document.getElementById('npi'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
-        <span class="icon plus"></span></a> 
-      <div id="npi" style="display: none;">
+			
+		<div data-role="popup" id="npi" class="ui-content more_popup" data-theme="d" data-overlay-theme="a">
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;left: -12px;top: -12px;">Close</a>
+      <hr style="margin-top: 0px;">
+
 			<p>With its help we can send and receive data without knowing the
 				exact location and type of the database but we have the possibility
 				also to use database-specific features. During the communication we
@@ -201,43 +232,51 @@ p {
 				created under Adobe Flash and was configured to take out and show
 				the most from advantages offered by <b>NPI</b> functions. It supports all
 				management tasks which are also part of <b>NWC</b>.</p>
-			<p><b><i>For more information: </i></b>
-			  <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/npi/npi&content=view&lang=auto'}} target="_blank"><b><i>Nervatura Programming Interface</i></b></a> 
-			</p>
-      <p><b><i>NervaFlex</i></b> can be tried here:: 
-        <a href={{=URL('ndr', 'getAppl')+'?appl=nflex/nervex.html'}} target="_blank"><b><i>NervaFlex</i></b></a><br>
-        Database: <b><i>demo</i></b>, Username: <b><i>demo</i></b>, Password: leave the field empty, not need<br>
-        Restricted DEMO MODE version! Restricted functions are: Database Settings, Access Rights and Change Password.
-      </p>
+			
+			<hr style="margin-bottom: 3px;">
+      <div class="info_div"> 
+        <p class="info_p"><b><i>For more information:</i></b> 
+          <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/npi/npi&content=view&lang=auto'}} target="_blank"><b><i>Nervatura Programming Interface</i></b></a>
+        <p class="info_p"><b><i>NervaFlex</i></b> can be tried here: 
+          <a href={{=URL('ndr', 'getAppl')+'?appl=nflex/nervex.html'}} target="_blank"><b><i>NervaFlex</i></b></a><br>
+          Database: <b><i>demo</i></b>, Username: <b><i>demo</i></b>, Password: leave the field empty, not need<br>
+          <i>Restricted DEMO MODE version! Restricted functions are: Database Settings, Access Rights and Change Password.</i>
+        </p>
+      </div>
+      <hr style="margin-top: 3px;">
+      <div align="right" style="">
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;right: -12px;bottom: 0px;">Close</a>
+      </div>
     </div>
-    </p>
   </li>
   
-  <li><a style="cursor: help;" title="{{=T('More info')}}"
-    onclick="var tb=document.getElementById('nwc'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
-      <span class="sname">NWC</span>&nbsp;<b>Nervatura Web Client</b>
-  </a>&nbsp;
-    <p>
-			General open-source management application using 
+  <li><a style="cursor: help;" title="{{=T('More info')}}" href="#nwc" data-transition="turn" 
+    data-inline="true" data-rel="popup" data-position-to="window">
+      <span class="sname">NWC</span>&nbsp;<b>Nervatura Clients</b>
+    </a>
+    <p style="margin-top: 0px;text-align: left;">
+      <a href="#nwc" data-transition="turn" data-role="button" data-icon="info" data-theme="d"
+        data-inline="true" data-rel="popup" data-position-to="window" 
+        style="margin-left: 0px;color: #444444 !important;;">{{=T('More')}}</a>
+
+			General open-source management applications using 
 			<a href="http://www.web2py.com/" target="_blank">WEB2PY</a> framework.
 			Its purpose is to introduce the possibilities of Nervatura within the
-			frames of HTML5 technology.  
-      <a class="w2p_trap buttontext button" title="{{=T('More info')}}"
-        onclick="var tb=document.getElementById('nwc'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
-        <span class="icon plus"></span></a> 
-      <div id="nwc" style="display: none;">
-			<p>The client is already operable on its own and it is a fully
-				functional device but it rather meant to be an easy to use and
-				customizable starting point for other developers. Using it as a
-				base, adding to or reducing its functionality they can simply create
-				their own user interfaces.</p>
-			<p>By its nature it can be used on any device by running an
+			frames of HTML5 technology.
+		
+		<div data-role="popup" id="nwc" class="ui-content more_popup" data-theme="d" data-overlay-theme="a">
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;left: -12px;top: -12px;">Close</a>
+      <hr style="margin-top: 0px;">
+        
+			<p><b><i>Nervatura Web Client:</i></b> By its nature it can be used on any device by running an
 				appropriate browser but its surfaces are primarily optimized for
-				office and desktop like (PC, laptop) usage. However it can be easily
-				supplemented for target tasks, for different input techniques and
-				scales (i.e.: touch screen, tablet, phone, etc.). These are not part
-				of the base <b>NWC</b> software, but can be downloaded from section
-				<a href={{=response.menu[1][2]}}><b>{{=response.menu[1][0]}}</b></a>.</p>
+				office and desktop like (PC, laptop) usage.</p>
+			<p><b><i>Nervatura Mobile Client:</i></b> Touch-optimized, 
+			  <a href="http://jquerymobile.com/" target="_blank">jQuery Mobile</a>-based user 
+			  interface for smartphones and tablets. The application works on all popular 
+			  smartphone, tablet, and desktop platforms.</p>
 			<p>The client application currently supports the following
 				management tasks: offers, orders, worksheets, rental, invoicing,
 				inventory control, bank and petty cash, projects, customer
@@ -245,27 +284,42 @@ p {
 				production, user right management, report creation, other software
 				and data settings surfaces, logging.</p>
 			
-      <p>The <b><i>Web Client</i></b> can be tried here: 
-        <a href={{=URL( 'nwc', 'index')}} target="_blank"><b><i>Nervatura Web Client</i></b></a><br>
-        Database: <b><i>demo</i></b>, Username: <b><i>demo</i></b>, Password: leave the field empty, not need<br>
-        Restricted DEMO MODE version! Restricted functions are: Database Settings, Access Rights and Change Password.
-      </p>
+			<hr style="margin-bottom: 3px;">
+      <div class="info_div"> 
+        <p class="info_p">The <b><i>Web Client</i></b> can be tried here: 
+          <a href={{=URL( 'nwc', 'index',vars={'desktop':'true'})}} target="_blank"><b><i>Nervatura Web Client</i></b></a><br>
+        <p class="info_p">The <b><i>Mobile Client</i></b> can be tried here: 
+          <a href={{=URL( 'nwc', 'index',vars={'mobile':'true'})}} target="_blank"><b><i>Nervatura Mobile Client</i></b></a><br>
+          Database: <b><i>demo</i></b>, Username: <b><i>demo</i></b>, Password: leave the field empty, not need<br>
+          <i>Restricted DEMO MODE version! Restricted functions are: Database Settings, Access Rights and Change Password.</i>
+        </p>
+      </div>
+      <hr style="margin-top: 3px;">
+      <div align="right" style="">
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;right: -12px;bottom: 0px;">Close</a>
+      </div>
     </div>
-    </p>
   </li>
   
-  <li><a style="cursor: help;" title="{{=T('More info')}}"
-    onclick="var tb=document.getElementById('ndr'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
+  <li><a style="cursor: help;" title="{{=T('More info')}}" href="#ndr" data-transition="turn" 
+    data-inline="true" data-rel="popup" data-position-to="window">
       <span class="sname">NDR</span>&nbsp;<b>Nervatura Data Representation</b>
-  </a>&nbsp;
-    <p>
+    </a>
+    <p style="margin-top: 0px;text-align: left;">
+      <a href="#ndr" data-transition="turn" data-role="button" data-icon="info" data-theme="d"
+        data-inline="true" data-rel="popup" data-position-to="window" 
+        style="margin-left: 0px;color: #444444 !important;">{{=T('More')}}</a>
+
 			Its task is to support data display surfaces and the standard data
 			outputs: i.e. printing, management reports, data backup, export of different data
-			types. 
-			<a class="w2p_trap buttontext button" title="{{=T('More info')}}"
-        onclick="var tb=document.getElementById('ndr'); if(tb.style.display == 'none'){tb.style.display = 'block';} else {tb.style.display = 'none'}">
-        <span class="icon plus"></span></a> 
-      <div id="ndr" style="display: none;">
+			types.
+			
+		<div data-role="popup" id="ndr" class="ui-content more_popup" data-theme="d" data-overlay-theme="a" >
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;left: -12px;top: -12px;">Close</a>
+      <hr style="margin-top: 0px;">
+      
 			<p>The functions of the <b>NDI</b> and <b>NPI</b> projects provide
 				possibilities for data management: making modifications and data
 				query. The purpose of <b>NWC</b> is similar; with its help we can make user
@@ -285,14 +339,22 @@ p {
 				  <li>routines that help printing data; local, network or Cloud Print printing</li>
 				</ul>
 			</p>
-			<p><b><i>For more information:</i></b> 
-        <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/ndr/ndr&content=view&lang=auto'}} 
+			
+			<hr style="margin-bottom: 3px;">
+      <div class="info_div"> 
+        <p class="info_p"><b><i>For more information:</i></b> 
+          <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/ndr/ndr&content=view&lang=auto'}} 
           target="_blank"><b><i>Nervatura Data Representation</i></b></a></p>
-		  <p><b><i>For further help: </i></b> 
-        <a href={{=URL( 'report2py', 'index')}} target="_blank"><b><i>Nervatura Report Help & Demo</i></b></a>
-      </p>
-		</div>
-    </p>
+        <p class="info_p"><b><i>For further help: </i></b> 
+          <a href={{=URL( 'report2py', 'index')}} target="_blank"><b><i>Nervatura Report Help & Demo</i></b></a>
+        </p>
+      </div>
+      <hr style="margin-top: 3px;">
+      <div align="right" style="">
+      <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" 
+        data-iconpos="notext" style="margin: 0px;right: -12px;bottom: 0px;">Close</a>
+      </div>
+    </div>
   </li>
   
 </ul>  

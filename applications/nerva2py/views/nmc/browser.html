@@ -1,0 +1,131 @@
+{{extend 'nmc/layout.html'}}
+
+<style>
+<!--
+div.ui-input-text {
+  margin: 0px;
+}
+-->
+</style>
+
+<script>
+//jQuery('#filter_date_filter_value_1').removeClass('date');
+
+var ms_err_rate_missing_ratetype = "{{=T('Missing type value!')}}";
+var ms_err_rate_missing_ratedate = "{{=T('Missing date value!')}}";
+
+var ms_err_price_missing_validfrom = "{{=T('Missing Start Date!')}}";
+var ms_err_price_missing_calcmode = "{{=T('Missing calculation mode!')}}";
+var ms_err_price_no_list = "{{=T('The relationship between a customer and a group can not be set at once. List price both left blank!')}}";
+
+var ms_err_missing_curr = "{{=T('Missing currency value!')}}";
+</script>
+
+{{block header}}
+  {{=response.cmd_menu}}
+  <h1 style="color: #FFD700;font-size: small;margin-bottom: 0px;margin-top: 5px;">{{=response.browsertype}}</h1>
+  <h1 style="margin-bottom: 5px;margin-top: 0px;"> {{=response.subtitle[:50]}}</h1>
+  {{=response.cmd_commands}}
+{{end}}
+
+{{if response.filter_form:}}
+  {{=response.filter_form}}
+{{pass}}
+
+{{if response.edit_form:}}
+<div id="edit_page" name="pages" style="max-width: 600px;display: none;" >
+  {{=response.edit_form.custom.begin}}
+  <div class="ui-bar-a" style="border-radius: 5px;padding: 5px;">
+    <span id="label_edit_id" style="color: #FFD700;padding-left: 10px;padding-right: 15px;">000000</span>
+    <span id="title_item" 
+                style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;"></span>
+  </div>
+  {{=response.edit_items}}
+  {{=response.edit_id}}
+  {{=response.edit_form.custom.end}}
+</div>
+{{pass}}
+
+<div id="view_page" name="pages" style="display: block;" >
+{{=form}}
+</div>
+
+<div id="local-menu" data-role="panel" data-position="right" data-position-fixed="true" data-display="overlay" data-theme="a">
+  <div data-role="header">
+    {{if response.cmd_back:}}
+      {{=response.cmd_back}}
+    {{else:}}
+      {{=response.cmd_home}}
+    {{pass}}
+    {{=response.cmd_close}}
+  </div>
+  <div data-role="content" style="margin-top:30px;padding:0px;margin-bottom: 20px;">
+    <hr style="border-width:0;background-color: #333333;">
+    <div id="ctr_view_page" style="display: block;">
+      <div id="ctr_data_filter" data-role="controlgroup" data-mini="false" style="display: block;margin-top:20px;padding:0px;">
+        {{if response.filter_form:}}
+          {{=response.cmd_filter}}
+          {{=response.cmd_clear_filter}}
+          {{if response.cmd_more_data:}}
+            <hr class="menu_separator">
+            {{=response.cmd_more_data}}
+          {{pass}}
+          <hr class="menu_separator">
+          {{=response.cmd_excel}}
+          {{=response.cmd_csv}}
+          {{if response.cmd_edit_new:}}
+            <hr class="menu_separator">
+            {{=response.cmd_edit_new}}
+          {{pass}}
+          {{if response.sfilter_label:}}
+            <hr class="menu_separator">
+            {{=response.sfilter_label}}
+          {{pass}}
+        {{else:}}
+          {{=response.cmd_excel}}
+          {{=response.cmd_csv}}
+          {{if response.cmd_edit_new:}}
+            <hr class="menu_separator">
+            {{=response.cmd_edit_new}}
+          {{pass}}
+        {{pass}}
+      </div>
+      <div id="ctr_cmd_filter" data-role="controlgroup" data-mini="false" style="display: block;margin-top:20px;padding:0px;">
+        {{if response.cmd_filter_type:}}
+          {{=response.cmd_filter_type}}
+        {{pass}}
+        {{if response.cmd_filter_number:}}
+          {{=response.cmd_filter_number}}
+        {{pass}}
+        {{if response.cmd_filter_date:}}
+          {{=response.cmd_filter_date}}
+        {{pass}}
+        {{if response.cmd_filter_data:}}
+          {{=response.cmd_filter_data}}
+        {{pass}}
+        {{if response.cmd_filter_total:}}
+          <hr class="menu_separator">
+          {{=response.cmd_filter_total}}
+        {{pass}}
+      </div>
+      <div id="ctr_cmd_filter" data-role="controlgroup" data-mini="false" style="display: block;margin-top:20px;padding:0px;">
+        {{for mnu in response.lo_menu:}}
+          {{=mnu}}
+        {{pass}}
+      </div>
+    </div>
+    <div id="ctr_edit_page" data-role="controlgroup" data-mini="false" style="display: none;margin-top:20px;padding:0px;">
+      <div data-role="controlgroup" >
+        {{=response.cmd_edit_update}}
+        {{if response.cmd_edit_delete:}}
+          {{=response.cmd_edit_delete}}
+          <hr class="menu_separator">
+          {{=response.cmd_edit_new}}
+        {{pass}}
+      </div>
+      <div data-role="controlgroup" style="margin-top:20px;">
+        {{=response.cmd_edit_close}}
+      </div>
+    </div>
+  </div>
+</div>

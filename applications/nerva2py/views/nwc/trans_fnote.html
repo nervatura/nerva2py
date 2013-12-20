@@ -1,74 +1,8 @@
-{{left_sidebar_enabled=right_sidebar_enabled=False}}
 {{extend 'nwc/layout.html'}}
-{{footer_enabled=False}}
 <style>
-body  {
-background: #808080;
-margin: 0;
-}
-.main {
-  padding: 10px 0 10px 0;
-}
-#frm_head {
-  background-color: #F2F2F2;
-  border-style: solid;
-  border-width: 5px;
-}
-td {
-  vertical-align: middle;
-}
-.label {
-  font-weight: bold;
-  padding: 5px;
-  padding-left: 10px;
-  padding-right: 30px;
-  background-color: #DBDBDB;
-  width: 100px;
-}
-.label_disabled {
-  padding: 5px;
-  background-color: #FFFFFF;
-  width: 96%;
-  height: 18px;
-  border: 1px solid #CCC;
-}
-.label_error {
-  padding: 5px;
-  background-color: #FF0000;
-  color: #FFFFFF;
-  width: 100%;
-  height: 18px;
-  border: 1px solid #CCC;
-}
-.td_label {
-  vertical-align: middle;
-  padding: 10px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
 #frm_head input[type="submit"] {
-  height: 25px !important;
   padding-top: 2px !important;
-  color: #008B00;
-  min-width: 80px;
 }
-input[class="double"] {
-  text-align: right;
-}
-input[class="integer"] {
-  text-align: right;
-}
-input[class="date"] {
-  text-align: center;
-}
-#trans_fnote {
-  width: 100%;
-}
-#cmb_temp {
-  width: 260px;
-  height: 28px;
-}
-
 </style>
 
 <script>
@@ -84,21 +18,21 @@ input[class="date"] {
 <div align="center" style="margin-top: 20px;"> 
 {{=form.custom.begin}}
 <div id="frm_head" style="width: 605px;">
-  <table width="100%" style="background-color: #2B2B2B;" 
-    cellpadding="0" cellspacing="0">
+  <table width="100%" style="background-color: #2B2B2B;" cellpadding="0" cellspacing="0">
      <tr>
-       <td style="padding-left: 10px;">
+       <td style="padding-left: 5px;vertical-align: middle;">
          <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.titleicon}}" />
          <span style="vertical-align: middle;color: #FFD700;font-weight: bold;">{{=response.title}}</span>
-         <span style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;">&nbsp;
+         <span style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;padding-left: 5px;">
            {{=response.transnumber}}</span>
        </td>
-       <td style="padding-top: 4px;padding-bottom: 0px;text-align: right;">
-         {{=form.custom.submit}}       
+       <td style="width: 120px;padding: 4px 20px 0px 0px;">
+         {{=form.custom.submit}}
        </td>
-       <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
-         {{=response.cmd_help}}
-	     {{=response.cmd_back}}
+       <td style="width:45px;padding: 4px 0px 0px 0px;">
+         {{=response.cmd_help}}</td>
+       <td style="width: 45px;padding: 4px 0px 0px 0px;">
+         {{=response.cmd_back}}
        </td>
      </tr>
    </table>
@@ -108,31 +42,32 @@ input[class="date"] {
       <td>
         <table width="100%" cellpadding="0" cellspacing="0">
           <tr>
-            <td style="padding-top: 10px;width: 100px;vertical-align: top;" class="td_label">
-              <div class="label">{{=T('Templates')}}</div></td>
-	        <td style="padding: 0px;padding-top: 10px;vertical-align: top;">
+            <td style="padding: 10px 5px 5px 10px;width: 100px;">
+              <div class="label">{{=T('Templates')}}</div>
+            </td>
+	        <td style="padding: 10px 5px 5px 10px;">
 	          {{=response.cmb_temp}}
 	        </td>
-	        <td style="padding: 0px;padding-top: 10px; padding-left:10px; vertical-align: middle;width: 200px;">
+	        <td style="padding: 0px;padding-top: 10px; padding-left:10px; vertical-align: middle;width: 180px;">
 	          <a class="w2p_trap buttontext button" href="#" 
 	            onclick="set_default_template();" 
-	            style="padding: 0px;padding-left: 3px;padding-right: 3px;" title="{{=T('Set default template')}}">
+	            style="padding: 2px 5px 2px 5px;" title="{{=T('Set default template')}}">
 	            <span class="icon home"></span></a>
 	          <a class="w2p_trap buttontext button" href="#" 
 	            onclick="javascript:var ctmp=document.getElementById('cmb_temp');if(ctmp.value==''){alert('{{=T('You have chosen a template!')}}')} else {if(confirm('{{=T('Do you want to load the template text?')}}')){loadTemplate();}};return false;" 
-	            style="padding: 0px;padding-left: 3px;padding-right: 3px;" title="{{=T('Load the selected template"')}}">
+	            style="padding: 2px 5px 2px 5px;" title="{{=T('Load the selected template"')}}">
 	            <span class="icon loop"></span></a>
 	          <a class="w2p_trap buttontext button" href="#" 
 	            onclick="save_template();" 
-	            style="padding: 0px;padding-left: 3px;padding-right: 3px;" title="{{=T('Save the text as a template"')}}">
+	            style="padding: 2px 5px 2px 5px;" title="{{=T('Save the text as a template"')}}">
 	            <span class="icon pen"></span></a>
 	          <a class="w2p_trap buttontext button" href="#" 
 	            onclick="javascript:var irow=document.getElementById('irow');if(irow.style.display == 'none'){irow.style.display = 'block';} else {irow.style.display = 'none';};return false;" 
-	            style="padding: 0px;padding-left: 3px;padding-right: 3px;" title="{{=T('Add a new template')}}">
+	            style="padding: 2px 5px 2px 5px;" title="{{=T('Add a new template')}}">
 	            <span class="icon plus"></span></a>
 	          <a class="w2p_trap buttontext button" href="#" 
 	            onclick="delete_template();" 
-	            style="padding: 0px;padding-left: 3px;padding-right: 3px;" title="{{=T('Delete the selected template"')}}">
+	            style="padding: 2px 5px 2px 5px;" title="{{=T('Delete the selected template"')}}">
 	            <span class="icon trash"></span></a>
 	        </td>
           </tr>
@@ -141,22 +76,22 @@ input[class="date"] {
     </tr>
     <tr>
 	  <td>
-	    <div id="irow" style="display: none;padding-top: 10px; padding-left: 10px;padding-bottom: 8px;border: solid;border-width: 7px;background-color: #808080; border-color: #CCCCCC;">
+	    <div id="irow" style="display: none;padding: 10px 0px 8px 10px;border: solid;border-width: 7px;background-color: #808080; border-color: #CCCCCC;">
 	    <span style="font-weight: bold;padding: 6px;padding-left: 10px;padding-right: 10px;background-color: #DBDBDB;color: green;">
 	      {{=T('New template name:')}}</span>
 	    <input style="width: 350px;" class="string" id="new_tempdesc" name="new_tempdesc" type="text" >
 	    <a class="w2p_trap buttontext button" href="#" 
 	            onclick="new_template();" 
-	            style="padding: 0px;padding-left: 3px;padding-right: 3px;" title="{{=T('Add a new template')}}">
+	            style="padding: 2px 5px 2px 5px;" title="{{=T('Add a new template')}}">
 	            <span class="icon plus"></span></a>
 	    </div>
 	  </td>
     </tr>
     <tr>
-      <td style="padding: 10px;padding-top: 4px;">{{=form.custom.widget.fnote}}{{=response.trans_id}}</td>
+      <td style="padding: 10px;padding-top: 0px;">{{=form.custom.widget.fnote}}{{=response.trans_id}}
+      </td>
     </tr>
   </table>
 </div>
 {{=form.custom.end}}
 </div>
-

@@ -1,6 +1,7 @@
 *.pyc
 *.pyo
 *.log
+*.table
 
 .project
 .pydevproject
@@ -12,9 +13,7 @@ GAID
 errors
 session
 private
-*.table
 session.sqlite
-sql.log
 storage.sqlite
 
 examples

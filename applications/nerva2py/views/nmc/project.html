@@ -1,0 +1,351 @@
+{{extend 'nmc/layout.html'}}
+
+<style>
+<!--
+
+-->
+</style>
+
+<script>
+  var ms_err_field_new = "{{=T('Missing Additional data name!')}}";
+  var ms_err_field_update = "{{=T('Read-only data!')}}";
+</script>
+
+{{block header}}
+  {{=response.cmd_menu}}
+  {{if form.formname!='project/create':}}
+    <h1 style="color: #FFD700;font-size: small;margin-bottom: 0px;margin-top: 5px;">{{=response.subtitle}}</h1>
+    <h1 style="margin-bottom: 5px;margin-top: 0px;">{{=response.pronumber}}</h1>
+  {{else:}}
+    <h1 style="color: #FFD700;font-size: small;margin-bottom: 13px;margin-top: 13px;">{{=response.subtitle}}</h1>
+  {{pass}}
+  {{=response.cmd_commands}}
+{{end}}
+
+{{=response.active_page}}
+
+<div id="project_page" name="pages" align="center" style="max-width: 600px;display: block;" >
+  {{=form.custom.begin}}
+  <table width="100%" cellpadding="0px;" cellspacing="5px;">
+    <tr>
+      <td><div class="label">{{=form.custom.label.pronumber}}</div></td>
+      <td>{{=form.custom.widget.pronumber}}</td>
+    </tr>
+    <tr>
+      <td><div class="label">{{=form.custom.label.startdate}}</div></td>
+      <td>{{=form.custom.widget.startdate}}</td>
+    </tr>
+    <tr>
+      <td><div class="label">{{=form.custom.label.enddate}}</div></td>
+      <td>{{=form.custom.widget.enddate}}</td>
+    </tr>
+    <tr>
+      <td><div class="label">{{=form.custom.label.description}}</div></td>
+      <td>{{=form.custom.widget.description}}</td>
+    </tr>
+    <tr>
+      <td colspan="2"><div class="label">{{=form.custom.label.customer_id}}</div></td>
+    </tr>
+    <tr>
+      <td colspan="2">{{=response.customer_control}}{{=response.customer_id}}</td>
+    </tr>
+    <tr>
+      <td colspan="2" style="padding-top: 10px;">
+        <table width="100%" cellpadding="0px;" cellspacing="0px;">
+          <tr>
+            <td style="padding-right: 5px;"><div class="label">{{=form.custom.label.notes}}</div></td>
+            <td class="label" style="width: 100px;">{{=form.custom.label.inactive}}</td>
+            <td class="td_checkbox">{{=form.custom.widget.inactive}}</td>
+          </tr>
+          <tr>
+            <td colspan="3">{{=form.custom.widget.notes}}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  {{=form.custom.end}}
+</div>
+
+{{if form.formname!='project/create':}}
+<div id="fieldvalue_page" name="pages" style="display: none;" >
+  <div class="ui-bar-a" style="border-radius: 5px;text-align: center;padding: 5px;"><span>{{=T('Additional Data')}}</span></div>
+  <table width="100%" cellpadding="0px;" cellspacing="5px;">
+    <tr>
+      <td>{{=response.cmb_fields}}</td>
+     </tr>
+  </table>
+  {{=response.view_fields}}
+</div>
+
+<div id="edit_fieldvalue" name="pages" style="max-width: 600px;display: none;" >
+  {{=response.fieldvalue_form.custom.begin}}
+  <div class="ui-bar-a" style="border-radius: 5px;padding: 5px;">
+    <span>{{=T('Edit Data')}}</span>
+    </div>
+  <table width="100%" cellpadding="0px;" cellspacing="5px;">
+    <tr>
+      <td>
+        <div id="fieldvalue_description" class="label" ></div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div id="fieldvalue_value_controls" style="min-height: 30px;vertical-align: middle;">
+          <input id="fieldvalue_value" type="hidden" name="value" value="">
+          <input id="fieldvalue_value_bool" 
+           type="checkbox" name="value_bool" class="boolean" value="true" checked="checked" style="display: none;width: 100%;">
+          <input id="fieldvalue_value_integer" 
+           type="text" name="value_integer" class="integer" value="" style="display: none;width: 100%;text-align: right;" >
+          <input id="fieldvalue_value_float" 
+           type="text" name="value_float" class="double" value="" style="display: none;width: 100%;text-align: right;" >
+          <input id="fieldvalue_value_date" 
+           type="text" name="value_date" class="date" value="" style="display: none;width: 100%;text-align: center;" >
+          <input id="fieldvalue_value_password" 
+           type="password" name="value_password" value="" style="display: none;width: 100%;" >
+          <input id="fieldvalue_value_text" 
+           type="text" name="value_text" value="" style="display: none;width: 100%;" >
+          <select id="fieldvalue_value_valuelist" class="generic-widget"
+           name="value_valuelist" style="width: 100%;display: none;">
+             <option value=""></option>
+           </select>
+          <textarea id="fieldvalue_value_notes" 
+           name="value_notes" class="text" style="width: 100%;height:auto;min-height:90px;display: none;"></textarea>
+          {{=response.fieldvalue_customer_selector}}
+          {{=response.fieldvalue_tool_selector}}
+          {{=response.fieldvalue_product_selector}}
+          {{=response.fieldvalue_transitem_selector}}
+          {{=response.fieldvalue_transpayment_selector}}
+          {{=response.fieldvalue_transmovement_selector}}
+          {{=response.fieldvalue_project_selector}}
+          {{=response.fieldvalue_employee_selector}}
+          {{=response.fieldvalue_place_selector}}
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="label">{{=response.fieldvalue_form.custom.label.notes}}</div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        {{=response.fieldvalue_form.custom.widget.notes}}
+      </td>
+    </tr>
+  </table>                  
+  {{=response.fieldvalue_id}}
+  {{=response.fieldvalue_ref_id}}
+  {{=response.fieldvalue_fieldname}}
+  {{=response.fieldvalue_fieldtype}}
+  {{=response.fieldvalue_readonly}}
+  {{=response.fieldvalue_form.custom.end}}
+</div>
+
+<div id="address_page" name="pages" style="display: none;" >
+  <div class="ui-bar-a" style="border-radius: 5px;text-align: center;padding: 5px;"><span>{{=T('Address Data')}}</span></div>
+  {{=response.view_address}}
+</div>
+
+<div id="address_edit" name="pages" style="max-width: 600px;display: none;" >
+  {{=response.address_form.custom.begin}}
+  <div class="ui-bar-a" style="border-radius: 5px;padding: 5px;">
+    <span id="label_address_id" style="color: #FFD700;padding-left: 10px;padding-right: 15px;">000000</span>
+    <span>{{=T('Edit Address')}}</span></div>
+  
+  <table width="100%" cellpadding="0px;" cellspacing="5px;">
+    <tr>
+      <td><div class="label">{{=response.address_form.custom.label.country}}</div></td>
+      <td>{{=response.address_form.custom.widget.country}}</td>
+    </tr>
+    <tr>
+      <td><div class="label">{{=response.address_form.custom.label.state}}</div></td>
+      <td>{{=response.address_form.custom.widget.state}}</td>
+    </tr>
+    <tr>
+      <td><div class="label">{{=response.address_form.custom.label.zipcode}}</div></td>
+      <td>{{=response.address_form.custom.widget.zipcode}}</td>
+    </tr>
+    <tr>
+      <td><div class="label">{{=response.address_form.custom.label.city}}</div></td>
+      <td>{{=response.address_form.custom.widget.city}}</td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <table width="100%" cellpadding="0px;" cellspacing="0px;">
+          <tr>
+            <td><div class="label">{{=response.address_form.custom.label.street}}</div></td>
+          </tr>
+          <tr>
+            <td>{{=response.address_form.custom.widget.street}}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <table width="100%" cellpadding="0px;" cellspacing="0px;">
+          <tr>
+            <td><div class="label">{{=response.address_form.custom.label.notes}}</div></td>
+          </tr>
+          <tr>
+            <td>{{=response.address_form.custom.widget.notes}}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  {{=response.address_id}}
+  {{=response.address_ref_id}}
+  {{=response.address_nervatype}}
+  {{=response.address_form.custom.end}}    
+</div>
+
+<div id="contact_page" name="pages" style="display: none;" >
+  <div class="ui-bar-a" style="border-radius: 5px;text-align: center;padding: 5px;"><span>{{=T('Contact Info')}}</span></div>
+  {{=response.view_contact}}
+</div>
+
+<div id="contact_edit" name="pages" style="max-width: 600px;display: none;" >
+  {{=response.contact_form.custom.begin}}
+  <div class="ui-bar-a" style="border-radius: 5px;padding: 5px;">
+    <span id="label_contact_id" style="color: #FFD700;padding-left: 10px;padding-right: 15px;">000000</span>
+    <span>{{=T('Edit Contact')}}</span></div>
+  
+  <table width="100%" cellpadding="0px;" cellspacing="5px;">
+    <tr>
+      <td><div class="label">{{=response.contact_form.custom.label.firstname}}</div></td>
+      <td>{{=response.contact_form.custom.widget.firstname}}</td>
+    </tr>
+    <tr>
+      <td><div class="label">{{=response.contact_form.custom.label.surname}}</div></td>
+      <td>{{=response.contact_form.custom.widget.surname}}</td>
+    </tr>
+    <tr>
+      <td><div class="label">{{=response.contact_form.custom.label.status}}</div></td>
+      <td>{{=response.contact_form.custom.widget.status}}</td>
+    </tr>
+    <tr>
+      <td><div class="label">{{=response.contact_form.custom.label.email}}</div></td>
+      <td>{{=response.contact_form.custom.widget.email}}</td>
+    </tr>
+    <tr>
+      <td><div class="label">{{=response.contact_form.custom.label.phone}}</div></td>
+      <td>{{=response.contact_form.custom.widget.phone}}</td>
+    </tr>
+    <tr>
+      <td><div class="label">{{=response.contact_form.custom.label.fax}}</div></td>
+      <td>{{=response.contact_form.custom.widget.fax}}</td>
+    </tr>
+    <tr>
+      <td><div class="label">{{=response.contact_form.custom.label.mobil}}</div></td>
+      <td>{{=response.contact_form.custom.widget.mobil}}</td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <table width="100%" cellpadding="0px;" cellspacing="0px;">
+          <tr>
+            <td><div class="label">{{=response.contact_form.custom.label.notes}}</div></td>
+          </tr>
+          <tr>
+            <td>{{=response.contact_form.custom.widget.notes}}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  {{=response.contact_id}}
+  {{=response.contact_ref_id}}
+  {{=response.contact_nervatype}}
+  {{=response.contact_form.custom.end}}
+</div>
+
+<div id="event_page" name="pages" style="display: none;" >
+  <div class="ui-bar-a" style="border-radius: 5px;text-align: center;padding: 5px;">
+    <span>{{=T('Project Events')}}</span>
+  </div>
+  {{=response.view_event}}
+</div>
+
+<div id="trans_page" name="pages" style="display: none;" >
+  <div class="ui-bar-a" style="border-radius: 5px;text-align: center;padding: 5px;">
+    <span>{{=T('Documents')}}</span>
+  </div>
+  {{=response.view_trans}}
+</div>
+{{pass}}
+
+<div id="local-menu" data-role="panel" data-position="right" data-position-fixed="true" data-display="overlay" data-theme="a">
+  <div data-role="header">
+    {{=response.cmd_back}}
+    {{=response.cmd_close}}
+  </div>
+  <div data-role="content" style="margin-top:30px;padding:0px;margin-bottom: 20px;">
+    <hr style="border-width:0;background-color: #333333;">
+    <div id="ctr_project_page" data-role="controlgroup" data-mini="false" style="display: block;margin-top:20px;padding:0px;">
+      {{=form.custom.submit}}
+      {{if form.formname!='project/create':}}
+        {{=response.cmd_delete}}
+        <hr class="menu_separator">
+        {{=response.cmd_report}}
+      {{pass}}
+    </div>
+    {{if form.formname!='project/create':}}
+    <div id="ctr_fieldvalue_page" data-role="controlgroup" data-mini="false" style="display: none;margin-top:20px;padding:0px;">
+      {{=response.cmd_fieldvalue_new}}
+      {{=response.cmd_fields}}
+    </div>
+    <div id="ctr_edit_fieldvalue" style="display: none;margin-top:20px;padding:0px;">
+      <div data-role="controlgroup" >
+        {{=response.cmd_fieldvalue_update}}
+        {{=response.cmd_fieldvalue_delete}}
+      </div>
+      <div data-role="controlgroup" style="margin-top:20px;">
+        {{=response.cmd_fieldvalue_close}}
+      </div>
+    </div>
+    <div id="ctr_address_page" data-role="controlgroup" data-mini="false" style="display: none;margin-top:20px;padding:0px;">
+      {{=response.cmd_address_new}}
+    </div>
+    <div id="ctr_address_edit" style="display: none;margin-top:20px;padding:0px;">
+      <div data-role="controlgroup" >
+        {{=response.cmd_address_update}}
+        {{=response.cmd_address_delete}}
+        <hr class="menu_separator">
+        {{=response.cmd_address_new}}
+      </div>
+      <div data-role="controlgroup" style="margin-top:20px;">
+        {{=response.cmd_address_close}}
+      </div>
+    </div>
+    <div id="ctr_contact_page" data-role="controlgroup" data-mini="false" style="display: none;margin-top:20px;padding:0px;">
+      {{=response.cmd_contact_new}}
+    </div>
+    <div id="ctr_contact_edit" style="display: none;margin-top:20px;padding:0px;">
+      <div data-role="controlgroup" >
+        {{=response.cmd_contact_update}}
+        {{=response.cmd_contact_delete}}
+        <hr class="menu_separator">
+        {{=response.cmd_contact_new}}
+      </div>
+      <div data-role="controlgroup" style="margin-top:20px;">
+        {{=response.cmd_contact_close}}
+      </div>
+
+    </div>
+    <div id="ctr_event_page" data-role="controlgroup" data-mini="false" style="display: none;margin-top:20px;padding:0px;">
+      {{=response.cmd_event_new}}
+    </div>
+    {{pass}}
+    <div id="ctr_local_menu" data-role="controlgroup" data-mini="false" style="display: block;margin-top:20px;padding:0px;">
+      {{=response.menu_project}}
+      {{=response.menu_fields}}
+      {{=response.menu_address}}
+      {{=response.menu_contact}}
+      {{if not response.event_disabled:}}
+        {{=response.menu_event}}
+      {{pass}}
+      {{=response.menu_trans}}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,147 @@
+{{extend 'nmc/layout.html'}}
+
+<style>
+<!--
+
+-->
+</style>
+
+<script>
+  var ms_err_missing_wh = "{{=T('Missing Warehause!')}}";
+  var ms_err_missing_date = "{{=T('Missing Shipping Date!')}}";
+</script>
+
+{{block header}}
+  {{=response.cmd_menu}}
+  <h1 style="color: #FFD700;font-size: small;margin-bottom: 0px;margin-top: 5px;">{{=response.subtitle}}</h1>
+  <h1 style="margin-bottom: 5px;margin-top: 0px;"> {{=response.transnumber}}</h1>
+  {{=response.cmd_commands}}
+{{end}}
+
+{{=response.active_page}}
+
+<div style="max-width: 600px;display: block;" >
+  <table width="100%" cellpadding="5px;" cellspacing="0px;">
+    <tr>
+      <td><div class="label">{{=response.transnumber}}</div></td>
+      <td><div class="label">{{=T('Direction: ')}}<span style="color: green;">{{=response.direction}}</span></div></td>
+    </tr>
+  </table>
+  <table width="100%" cellpadding="5px;" cellspacing="0px;">
+    <tr>
+      <td><div class="label">{{=T('Customer')}}</div></td>
+      <td>{{=response.customer}}</td>
+    </tr>
+  </table>
+</div>
+
+<div id="item_page" name="pages" align="center" style="max-width: 600px;display: block;padding-top: 5px;" >
+  <div class="ui-bar-a" style="border-top-left-radius: 5px;border-top-right-radius: 5px;padding: 5px;">
+    <span>{{=T('Document Items')}}</span>
+  </div>
+  <div style="border-style: solid;border-width: 5px;border-color: #CCCCCC;border-bottom-radius: 5px;padding: 5px;padding-bottom: 0px;">
+  {{=response.filter.custom.begin}}
+  <table width="100%" cellpadding="0px;" cellspacing="0px;">
+    <tr>
+      <td style="padding-right:5px;"><div class="label">{{=response.filter.custom.label.product}}</div></td>
+      <td><div class="label">{{=response.filter.custom.label.nocomp}}</div></td>
+      <td class="td_checkbox">{{=response.filter.custom.widget.nocomp}}</td>
+    </tr>
+    <tr>
+      <td colspan="3">{{=response.filter.custom.widget.product}}</td>
+    </tr>
+  </table>
+  {{=response.filter.custom.end}}
+  </div>
+  {{=response.view_oitems}}
+</div>
+
+<div id="create_page" name="pages" align="center" style="max-width: 600px;display: none;padding-top: 5px;" >
+  <div class="ui-bar-a" style="border-top-left-radius: 5px;border-top-right-radius: 5px;padding: 5px;">
+    <span>{{=T('Create Delivery')}}</span>
+  </div>
+  <div style="border-style: solid;border-width: 5px;border-color: #CCCCCC;border-bottom-radius: 5px;padding: 5px;">
+	  <table width="100%" cellpadding="0px;" cellspacing="0px;">
+	    <tr>
+	      <td style="padding-right:5px;padding-bottom: 5px;"><div class="label">{{=T('Shipping Date')}}</div></td>
+	      <td>{{=response.shippingdate}}</td>
+	    </tr>
+	    <tr>
+        <td colspan="2"><div class="label">{{=T('Warehouse')}}</div></td>
+      </tr>
+	    <tr>
+        <td colspan="2" style="padding-top: 5px;">{{=response.place_control}}{{=response.place_id}}{{=response.trans_id}}{{=response.item_id}}{{=response.product_id}}</td>
+      </tr>
+	  </table>
+  </div>
+  <div id="items_table" style="padding-top: 2px;">{{=response.items_table}}</div>
+</div>
+
+<div id="delivery_page" name="pages" align="center" style="max-width: 600px;display: none;padding-top: 5px;" >
+  <div class="ui-bar-a" style="border-radius: 5px;padding: 5px;">
+    <span>{{=T('Delivery Items')}}</span>
+  </div>
+  {{=response.view_trans}}
+</div>
+
+<div id="local-menu" data-role="panel" data-position="right" data-position-fixed="true" data-display="overlay" data-theme="a">
+  <div data-role="header">
+    {{=response.cmd_back}}
+    {{=response.cmd_close}}
+  </div>
+  <div data-role="content" style="margin-top:30px;padding:0px;margin-bottom: 20px;">
+    <hr style="border-width:0;background-color: #333333;">
+    <div id="ctr_item_page" data-role="controlgroup" data-mini="false" style="display: block;margin-top:20px;padding:0px;">
+      {{=response. cmd_filter}}
+      {{=response.cmd_oitems_add}}
+    </div>
+    <div id="ctr_create_page" data-role="controlgroup" data-mini="false" style="display: block;margin-top:20px;padding:0px;">
+      {{=response.cmd_oitems_remove}}
+      {{=response.cmd_create}}
+    </div>
+  </div>
+  <div id="ctr_local_menu" data-role="controlgroup" data-mini="false" style="display: block;margin-top:20px;padding:0px;">
+      {{=response.menu_item}}
+      {{=response.menu_create}}
+      {{=response.menu_delivery}}
+    </div>
+</div>
+
+<div id="popup_stock_info" data-role="popup" data-theme="d" data-overlay-theme="a" data-position-to="#appl_url"
+  data-tolerance="15,5" style="padding:10px;border-radius:10px;min-width: 290px;min-height: 20px;">
+  <div data-role="header" data-theme="a" class="ui-corner-top" style="margin:0px;">
+    <a style="top:1px;" href="#" data-icon="delete" data-iconpos="notext" data-theme="a" data-rel="back">{{=T("Close")}}</a>
+    <h1 style="color: #FFD700;font-size: small;">{{=T("STOCKS")}}</h1>
+  </div>
+  <div id="stock_info"></div>
+</div>
+
+<div id="popup_edit_item" data-role="popup" data-theme="d" data-overlay-theme="a" data-position-to="#appl_url"
+  data-tolerance="15,5" style="padding:10px;border-radius:10px;min-width: 290px;min-height: 20px;">
+  <div data-role="header" data-theme="a" class="ui-corner-top" style="margin:0px;">
+    <a style="top:1px;" href="#" data-icon="delete" data-iconpos="notext" data-theme="a" data-rel="back">{{=T("Close")}}</a>
+    <h1 style="color: #FFD700;font-size: small;">{{=T("STOCKS")}}</h1>
+  </div>
+  <table width="100%" cellpadding="0px;" cellspacing="0px;">
+    <tr>
+      <td colspan="2">
+        <div id="partnumber" class="label" style="text-align: center;"></div>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding-right:5px;"><div class="label">{{=T('Batch No.')}}</div></td>
+      <td><input id="batch" class="string" type="text" value="" name="batch" width="100px;"></td>
+    </tr>
+    <tr>
+      <td style="padding-right:5px;"><div class="label">{{=T('Qty')}}</div></td>
+      <td><input id="qty" class="double" type="text" value="" name="qty"></td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <div data-role="controlgroup" style="background-color: #393939;padding: 10px;">
+          {{=response.cmd_update}}
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>

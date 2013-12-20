@@ -2,7 +2,7 @@
 #-*- coding: utf-8 -*-
 
 """
-This file is part of the Nervatura Project
+This file is part of the Nervatura Framework
 http://www.nervatura.com
 Copyright © 2011-2013, Csaba Kappel
 License: LGPLv3

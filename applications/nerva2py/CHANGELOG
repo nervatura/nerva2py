@@ -1,2 +1,7 @@
-
+0.9.8
+- new base look and feel
+- Mobil Client: new ui
+- Web Client: rewritten and optimized code and style
+- update web2py to 2.7.4
+- many bug fixes
 

@@ -1,116 +1,22 @@
-{{left_sidebar_enabled=right_sidebar_enabled=False}}
 {{extend 'nwc/layout.html'}}
-{{footer_enabled=False}}
 
 <style>
-body  {
-  background: #808080;
-  margin: 0;
+
+input[type="submit"] {
+  padding-top: 3px !important;
 }
-.main {
-  padding: 10px 0 10px 0;
-}
-.label {
-  font-weight: bold;
-  padding: 5px;
-  padding-top: 3px;
-  padding-bottom: 3px;
-  background-color: #DBDBDB;
-}
-.label_disabled {
-  padding: 4px;
-  background-color: #FFFFFF;
-  height: 17px;
-  border: 1px solid #CCC;
-}
-.td_label {
-  vertical-align: middle;
-  padding: 10px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-#filter_div select {
-  width: 100%;
-  height: 27px;
-}
-#filter_div input[type="submit"] {
-  height: 25px !important;
-  padding-top: 2px !important;
-  padding-bottom: 2px !important;
-  color: #008B00;
-  width: 100%; 
-}
-#filter_div input[type="text"] {
-  height: 13px !important;
-  width: 100%;
-}
-#frm_head {
-  background-color: #F2F2F2;
-  border-style: solid;
-  border-width: 5px;
-}
-.web2py_grid {
-  background-color: #FFFFFF;
-  font-size: 100%;
-}
-.web2py_grid tbody td {
-  height:34px;
-  border-bottom: 1px solid #DDDDDD;
-  border-right: 1px solid #DDDDDD;
-}
-.head_td {
-  padding-top: 4px;
-  padding-bottom:  4px;
-  padding-left: 15px;
-  padding-right: 5px;
-  vertical-align: middle;
-}
- .container{ 
+.container{ 
   margin: 0px;  
 } 
 .container .sixteen.columns {
   width: auto;
   padding-right: 10px;
 }
-.web2py_search_actions {
-  width: auto;
-}
-.web2py_counter {
-  float: left;
-  text-align: left;
-  padding-left: 10px;
-}
-{{if response.filter_form or response.edit_form:}}
-.web2py_console {
-    min-height: 27px;
-}
-{{pass}}
 
 #frm_head_edit {
   background-color: #F2F2F2;
   border-style: solid;
   border-width: 5px;
-}
-#cmd_edit_submit {
-  height: 25px !important;
-  padding-top: 2px !important;
-  color: #008B00;
-  width: 100%;
-}
-#edit_form select {
-  width: 100%;
-  height: 27px;
-}
-#edit_form input[type="text"] {
-  width: 100%;
-}
-#edit_form input[class="double"] {
-  width: 100%;
-  text-align: right;
-}
-#edit_form input[class="date"] {
-  width: 100%;
-  text-align: center;
 }
 
 </style>
@@ -134,16 +40,19 @@ var ms_err_missing_curr = "{{=T('Missing currency value!')}}";
       <div id="menu" align="center" >
         <table cellpadding="0" cellspacing="0">
           <tr>
-            <td >
+            <td style="vertical-align: middle;white-space: nowrap;" >
               <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.titleicon}}" />
               <span style="vertical-align: middle;color: #FFD700;font-weight: bold;">{{=response.browsertype}}</span>
-              <span style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;">&nbsp;
+              <span style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;padding-left: 5px;white-space: nowrap;">
                 {{=response.subtitle[:50]}}</span>
             </td>
             <td style="padding-left: 50px;padding-right: 50px;">
-              {{=MENU(response.lo_menu, _class='mobile-menu' if is_mobile else 'sf-menu',mobile=is_mobile)}}
-            </td>
-            
+              <div class="navbar navbar-inverse">
+                <div class="nav">
+                  {{=MENU(response.lo_menu, _class='nav',mobile=False,li_class='dropdown',ul_class='dropdown-menu')}}
+                </div><!--/.nav-collapse -->
+              </div>
+            </td>     
             <td style="padding-left:0px;padding-right: 0px;">
               <a style="text-align:center; height: 19px;padding-top: 2px; padding-bottom: 2px;" 
 	              class="w2p_trap buttontext button" href="{{=response.export_excel}}" 
@@ -153,11 +62,11 @@ var ms_err_missing_curr = "{{=T('Missing currency value!')}}";
             <td style="padding-left:0px;padding-right: 0px;">
               <a style="text-align:center; height: 19px;padding-top: 2px; padding-bottom: 2px;" 
 	              class="w2p_trap buttontext button" href="{{=response.export_csv}}"
-	              target="_blank" title="{{=T('Export to csv fájl')}}">
+	              target="_blank" title="{{=T('Export to csv file')}}">
 	            <span style="font-weight: bold;">{{=T('CSV')}}</span></a>
             </td>
             
-            <td style="width: 16px;padding-left:30px;padding-right: 0px;">
+            <td style="width: auto;padding-left:30px;padding-right: 0px;">
               <a style="height: 15px;" class="w2p_trap buttontext button" href="{{=URL('w2help?page=browser')}}" 
 	            target="_blank" title="{{=T('Help')}}">
 	              {{=response.icon_help}}</a>
@@ -191,17 +100,17 @@ var ms_err_missing_curr = "{{=T('Missing currency value!')}}";
       <div id="frm_head_edit">
         <table width="100%" style="background-color: #2B2B2B;" cellpadding="0" cellspacing="0">
           <tr>
-            <td style="padding-left: 10px;vertical-align: middle;">
+            <td style="padding-left: 5px;vertical-align: middle;">
               <img style="vertical-align: middle;"  height="16px" width="16px" src="{{=response.edit_icon}}" />
               <span style="vertical-align: middle;color: #FFD700;font-weight: bold;padding-right: 10px;">{{=response.edit_title}}</span>
               <span id="title_item" 
-                style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;"></span>
+                style="vertical-align: middle;color: #FFFFFF;font-weight: bold;font-style: italic;font-size: large;padding-left: 0px;"></span>
             </td>
-            <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
-              {{=response.cmd_edit_submit}}
+            <td style="width: 120px;padding: 4px 20px 0px 0px;">
+              {{=response.cmd_edit_update}}
             </td>
-            <td style="text-align: right;padding-right: 5px;padding-bottom: 0px;padding-top: 4px;">
-                {{=response.cmd_edit_cancel}}
+            <td style="width: 45px;padding: 4px 0px 0px 0px;">
+              {{=response.cmd_edit_cancel}}
             </td>
           </tr>
         </table>

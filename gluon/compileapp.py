@@ -13,33 +13,32 @@ FOR INTERNAL USE ONLY
 """
 
 import re
-import sys
 import fnmatch
 import os
 import copy
 import random
 import __builtin__
-from storage import Storage, List
-from template import parse_template
-from restricted import restricted, compile2
-from fileutils import mktree, listdir, read_file, write_file
-from myregex import regex_expose
-from languages import translator
-from dal import BaseAdapter, SQLDB, SQLField, DAL, Field
-from sqlhtml import SQLFORM, SQLTABLE
-from cache import Cache
-from globals import current, Response
-import settings
-from cfs import getcfs
-import html
-import validators
-from http import HTTP, redirect
+from gluon.storage import Storage, List
+from gluon.template import parse_template
+from gluon.restricted import restricted, compile2
+from gluon.fileutils import mktree, listdir, read_file, write_file
+from gluon.myregex import regex_expose
+from gluon.languages import translator
+from gluon.dal import BaseAdapter, SQLDB, SQLField, DAL, Field
+from gluon.sqlhtml import SQLFORM, SQLTABLE
+from gluon.cache import Cache
+from gluon.globals import current, Response
+from gluon import settings
+from gluon.cfs import getcfs
+from gluon import html
+from gluon import validators
+from gluon.http import HTTP, redirect
 import marshal
 import shutil
 import imp
 import logging
 logger = logging.getLogger("web2py")
-import rewrite
+from gluon import rewrite
 from custom_import import custom_import_install
 
 try:
@@ -167,15 +166,15 @@ def LOAD(c=None, f='index', args=None, vars=None,
             elif timeout <= 0:
                 raise ValueError(
                     "Timeout argument must be greater than zero or None")
-            statement = "web2py_component('%s','%s', %s, %s);" \
+            statement = "$.web2py.component('%s','%s', %s, %s);" \
                 % (url, target, timeout, times)
+            attr['_data-w2p_timeout'] = timeout
+            attr['_data-w2p_times'] = times
         else:
-            statement = "web2py_component('%s','%s');" % (url, target)
-        script = SCRIPT(statement, _type="text/javascript")
-        if not content is None:
-            return TAG[''](script, DIV(content, **attr))
-        else:
-            return TAG[''](script)
+            statement = "$.web2py.component('%s','%s');" % (url, target)
+        attr['_data-w2p_remote'] = url
+        if not target is None:
+            return DIV(content, **attr)
 
     else:
         if not isinstance(args, (list, tuple)):
@@ -226,7 +225,7 @@ def LOAD(c=None, f='index', args=None, vars=None,
             link = URL(request.application, c, f, r=request,
                        args=args, vars=vars, extension=extension,
                        user_signature=user_signature)
-            js = "web2py_trap_form('%s','%s');" % (link, target)
+            js = "$.web2py.trap_form('%s','%s');" % (link, target)
         script = js and SCRIPT(js, _type="text/javascript") or ''
         return TAG[''](DIV(XML(page), **attr), script)
 
@@ -254,7 +253,7 @@ class LoadFactory(object):
             url = url or html.URL(request.application, c, f, r=request,
                                   args=args, vars=vars, extension=extension,
                                   user_signature=user_signature)
-            script = html.SCRIPT('web2py_component("%s","%s")' % (url, target),
+            script = html.SCRIPT('$.web2py.component("%s","%s")' % (url, target),
                                  _type="text/javascript")
             return html.TAG[''](script, html.DIV(content, **attr))
         else:
@@ -305,7 +304,7 @@ class LoadFactory(object):
                 link = html.URL(request.application, c, f, r=request,
                                 args=args, vars=vars, extension=extension,
                                 user_signature=user_signature)
-                js = "web2py_trap_form('%s','%s');" % (link, target)
+                js = "$.web2py.trap_form('%s','%s');" % (link, target)
             script = js and html.SCRIPT(js, _type="text/javascript") or ''
             return html.TAG[''](html.DIV(html.XML(page), **attr), script)
 
@@ -381,7 +380,6 @@ _base_environment_['SQLFORM'] = SQLFORM
 _base_environment_['SQLTABLE'] = SQLTABLE
 _base_environment_['LOAD'] = LOAD
 
-
 def build_environment(request, response, session, store_current=True):
     """
     Build the environment dictionary into which web2py files are executed.
@@ -393,8 +391,11 @@ def build_environment(request, response, session, store_current=True):
         request.env = Storage()
     # Enable standard conditional models (i.e., /*.py, /[controller]/*.py, and
     # /[controller]/[function]/*.py)
-    response.models_to_run = [r'^\w+\.py$', r'^%s/\w+\.py$' % request.controller,
-                              r'^%s/%s/\w+\.py$' % (request.controller, request.function)]
+    response.models_to_run = [
+        r'^\w+\.py$', 
+        r'^%s/\w+\.py$' % request.controller,
+        r'^%s/%s/\w+\.py$' % (request.controller, request.function)
+        ]
 
     t = environment['T'] = translator(os.path.join(request.folder,'languages'),
                                       request.env.http_accept_language)
@@ -453,12 +454,12 @@ def compile_views(folder):
     """
 
     path = pjoin(folder, 'views')
-    for file in listdir(path, '^[\w/\-]+(\.\w+)*$'):
+    for fname in listdir(path, '^[\w/\-]+(\.\w+)*$'):
         try:
-            data = parse_template(file, path)
+            data = parse_template(fname, path)
         except Exception, e:
-            raise Exception("%s in %s" % (e, file))
-        filename = ('views/%s.py' % file).replace('/', '_').replace('\\', '_')
+            raise Exception("%s in %s" % (e, fname))
+        filename = 'views.%s.py' % fname.replace(os.path.sep, '.')
         filename = pjoin(folder, 'compiled', filename)
         write_file(filename, data)
         save_pyc(filename)
@@ -471,9 +472,10 @@ def compile_models(folder):
     """
 
     path = pjoin(folder, 'models')
-    for file in listdir(path, '.+\.py$'):
-        data = read_file(pjoin(path, file))
-        filename = pjoin(folder, 'compiled', 'models', file)
+    for fname in listdir(path, '.+\.py$'):
+        data = read_file(pjoin(path, fname))
+        modelfile = 'models.'+fname.replace(os.path.sep,'.')
+        filename = pjoin(folder, 'compiled', modelfile)
         mktree(filename)
         write_file(filename, data)
         save_pyc(filename)
@@ -486,20 +488,21 @@ def compile_controllers(folder):
     """
 
     path = pjoin(folder, 'controllers')
-    for file in listdir(path, '.+\.py$'):
+    for fname in listdir(path, '.+\.py$'):
         ### why is this here? save_pyc(pjoin(path, file))
-        data = read_file(pjoin(path, file))
+        data = read_file(pjoin(path, fname))
         exposed = regex_expose.findall(data)
         for function in exposed:
             command = data + "\nresponse._vars=response._caller(%s)\n" % \
                 function
-            filename = pjoin(folder, 'compiled', ('controllers/'
-                                     + file[:-3]).replace('/', '_')
-                             + '_' + function + '.py')
+            filename = pjoin(folder, 'compiled', 
+                             'controllers.%s.%s.py' % (fname[:-3],function))
             write_file(filename, command)
             save_pyc(filename)
             os.unlink(filename)
 
+def model_cmp(a,b):
+    return cmp(a.count('.'),b.count('.')) or cmp(a,b)
 
 def run_models_in(environment):
     """
@@ -509,34 +512,40 @@ def run_models_in(environment):
 
     folder = environment['request'].folder
     c = environment['request'].controller
-    f = environment['request'].function
+    f = environment['request'].function    
+    response = environment['response']
+
+    path = pjoin(folder, 'models')
     cpath = pjoin(folder, 'compiled')
-    if os.path.exists(cpath):
-        for model in listdir(cpath, '^models_\w+\.pyc$', 0):
-            restricted(read_pyc(model), environment, layer=model)
-        path = pjoin(cpath, 'models')
-        models = listdir(path, '^\w+\.pyc$', 0, sort=False)
-        compiled = True
+    compiled = os.path.exists(cpath)
+    if compiled:
+        models = sorted(listdir(cpath, '^models[_.][\w.]+\.pyc$', 0),model_cmp)
     else:
-        path = pjoin(folder, 'models')
-        models = listdir(path, '^\w+\.py$', 0, sort=False)
-        compiled = False
-    n = len(path) + 1
+        models = sorted(listdir(path, '^\w+\.py$', 0, sort=False),model_cmp)
+
+    models_to_run = None    
     for model in models:
-        regex = environment['response'].models_to_run
-        if isinstance(regex, list):
-            regex = re_compile('|'.join(regex))
-        file = model[n:].replace(os.path.sep, '/').replace('.pyc', '.py')
-        if not regex.search(file) and c != 'appadmin':
-            continue
-        elif compiled:
-            code = read_pyc(model)
-        elif is_gae:
-            code = getcfs(model, model,
-                          lambda: compile2(read_file(model), model))
-        else:
-            code = getcfs(model, model, None)
-        restricted(code, environment, layer=model)
+        if response.models_to_run != models_to_run:
+            regex = models_to_run = response.models_to_run
+            if isinstance(regex, list):
+                regex = re_compile('|'.join(regex))
+        if models_to_run:
+            if compiled:
+                n = len(cpath)+8
+                fname = model[n:-4].replace('.','/')+'.py'
+            else:
+                n = len(path)+1
+                fname = model[n:].replace(os.path.sep,'/')        
+            if not regex.search(fname) and c != 'appadmin':
+                continue
+            elif compiled:
+                code = read_pyc(model)
+            elif is_gae:
+                code = getcfs(model, model,
+                              lambda: compile2(read_file(model), model))
+            else:
+                code = getcfs(model, model, None)
+            restricted(code, environment, layer=model)
 
 
 def run_controller_in(controller, function, environment):
@@ -552,12 +561,17 @@ def run_controller_in(controller, function, environment):
     badc = 'invalid controller (%s/%s)' % (controller, function)
     badf = 'invalid function (%s/%s)' % (controller, function)
     if os.path.exists(path):
-        filename = pjoin(path, 'controllers_%s_%s.pyc'
+        filename = pjoin(path, 'controllers.%s.%s.pyc'
                          % (controller, function))
         if not os.path.exists(filename):
-            raise HTTP(404,
-                       rewrite.THREAD_LOCAL.routes.error_message % badf,
-                       web2py_error=badf)
+            ### for backward compatibility
+            filename = pjoin(path, 'controllers_%s_%s.pyc'
+                             % (controller, function))
+            ### end for backward compatibility
+            if not os.path.exists(filename):                
+                raise HTTP(404,
+                           rewrite.THREAD_LOCAL.routes.error_message % badf,
+                           web2py_error=badf)
         restricted(read_pyc(filename), environment, layer=filename)
     elif function == '_TEST':
         # TESTING: adjust the path to include site packages
@@ -632,11 +646,15 @@ def run_view_in(environment):
                                context=environment)
         restricted(ccode, environment, 'file stream')
     elif os.path.exists(path):
+        x = view.replace('/', '.')
+        files = ['views.%s.pyc' % x]
+        if allow_generic:
+            files.append('views.generic.%s.pyc' % request.extension)
+        # for backward compatibility
         x = view.replace('/', '_')
-        files = ['views_%s.pyc' % x]
+        files.append('views_%s.pyc' % x)
         if allow_generic:
             files.append('views_generic.%s.pyc' % request.extension)
-        # for backward compatibility
         if request.extension == 'html':
             files.append('views_%s.pyc' % x[:-5])
             if allow_generic:

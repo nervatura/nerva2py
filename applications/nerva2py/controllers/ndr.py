@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This file is part of the Nervatura Project
+This file is part of the Nervatura Framework
 http://www.nervatura.com
 Copyright © 2011-2013, Csaba Kappel
 License: LGPLv3
@@ -391,7 +391,7 @@ def createDataBackup():
     lst_nom = []
 
   retbc = dbfu.createDataBackup(ns, ndi, alias=request.vars.database, btype=request.vars.btype, lst_nom=lst_nom, 
-                                bformat=bformat, filename=request.vars.filename)
+                                bformat=bformat, filename=request.vars.filename,verNo=response.verNo)
   if request.vars.filename == "download":
     if (not str(retbc).startswith("<span")) and (not str(retbc).startswith("<div")):
       response.headers['Content-Type']='application/octet-stream'

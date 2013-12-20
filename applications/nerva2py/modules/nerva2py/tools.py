@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This file is part of the Nervatura Project
+This file is part of the Nervatura Framework
 http://www.nervatura.com
 Copyright © 2011-2013, Csaba Kappel
 License: LGPLv3
@@ -20,6 +20,7 @@ from StringIO import StringIO
 import os, subprocess
 import datetime
 from gluon.html import SPAN, DIV, P, BR, A, URL
+from gluon.http import redirect
 
 from xml.dom.minidom import Document, parseString
 from zlib import compress, decompress
@@ -38,7 +39,26 @@ class dict2obj(dict):
 
   def __getattr__(self, key):
     return self[key]
-  
+
+class auth_ini(object):
+  def __init__(self,session,login_url):
+    self.session = session
+    self.login_url = login_url
+  def requires_login(self):
+    def decorator(action):
+      def f(*a, **b):
+        try:
+          if self.session.alias==None or self.session.auth.user.alias != self.session.alias:
+            redirect(self.login_url)
+        except Exception:
+          redirect(self.login_url)
+        return action(*a, **b)
+      f.__doc__ = action.__doc__
+      f.__name__ = action.__name__
+      f.__dict__.update(action.__dict__)
+      return f
+    return decorator
+    
 class NervaTools(object):
 
   def checkValues(self, ns, params):
@@ -695,7 +715,7 @@ class NervaTools(object):
                "ui_applview","ui_viewfields","ui_filter","ui_groupinput", "ui_language","ui_locale","ui_message",
                "ui_zipcatalog","ui_numtotext","ui_userconfig","ui_audit"]
     
-  def createDataBackup(self, ns, ndi, alias, btype, lst_nom=[], bformat="backup", filename=""):
+  def createDataBackup(self, ns, ndi, alias, btype, lst_nom=[], bformat="backup", filename="",verNo="?"):
     rs = DIV()
     try:
       dbref = ns.lstore(ns.lstore.databases.alias == alias).select()
@@ -738,7 +758,7 @@ class NervaTools(object):
       doc = Document()
       data = doc.createElement("data")
       data.setAttribute("timestamp",str(datetime.datetime.now()))
-      data.setAttribute("verno",ns.CLASS_VERSION)
+      data.setAttribute("verno",verNo)
       data.setAttribute("type",btype)
       doc.appendChild(data)
       
@@ -1271,5 +1291,52 @@ class NervaTools(object):
       else:
         return {"state":False, "error_message":ns.T("Unsupported platform: "+system)}
     
-    return printer_prop    
-      
+    return printer_prop
+  
+  def splitThousands(self, s, tSep=',', dSep='.'):
+    if s == None:
+      return 0
+    if not isinstance( s, str ):
+      s = str( s )
+    cnt=0
+    numChars=dSep+'0123456789'
+    ls=len(s)
+    while cnt < ls and s[cnt] not in numChars: cnt += 1
+    lhs = s[ 0:cnt ]
+    s = s[ cnt: ]
+    if dSep == '':
+      cnt = -1
+    else:
+      cnt = s.rfind( dSep )
+    if cnt > 0:
+      rhs = dSep + s[ cnt+1: ]
+      s = s[ :cnt ]
+    else:
+      rhs = ''
+    splt=''
+    while s != '':
+      splt= s[ -3: ] + tSep + splt
+      s = s[ :-3 ]
+    return lhs + splt[ :-1 ] + rhs    
+  
+  def formatNumber(self, value):
+    try:
+      return DIV(self.splitThousands(float(value)," ","."), _align="right", _width="100%")
+    except Exception:
+      pass
+  def formatInteger(self, value):
+    try:
+      return DIV(self.splitThousands(int(value)," ","."), _align="right", _width="100%")
+    except Exception:
+      pass
+  def formatDate(self, value):
+    try:
+      if type(value) is datetime.datetime:
+        return DIV(value.date(), _align="center", _width="100%")
+      elif type(value).__name__=="unicode":
+        return DIV(datetime.datetime.strptime(str(value).split(" ")[0], str('%Y-%m-%d')).date(), _align="center", _width="100%")
+      else:
+        return value
+    except Exception:
+      pass
+    

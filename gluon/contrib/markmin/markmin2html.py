@@ -6,6 +6,12 @@
 import re
 from cgi import escape
 from string import maketrans
+try:
+   from ast import parse as ast_parse
+   import ast
+except ImportError: # python 2.5
+    from compiler import parse
+    import compiler.ast as ast
 
 """
 TODO: next version should use MathJax
@@ -532,7 +538,7 @@ LINK = '\x07'
 DISABLED_META = '\x08'
 LATEX = '<img src="http://chart.apis.google.com/chart?cht=tx&chl=%s" />'
 regex_URL=re.compile(r'@/(?P<a>\w*)/(?P<c>\w*)/(?P<f>\w*(\.\w+)?)(/(?P<args>[\w\.\-/]+))?')
-regex_env=re.compile(r'@\{(?P<a>[\w\-\.]+?)(\:(?P<b>.*?))?\}')
+regex_env2=re.compile(r'@\{(?P<a>[\w\-\.]+?)(\:(?P<b>.*?))?\}')
 regex_expand_meta = re.compile('('+META+'|'+DISABLED_META+'|````)')
 regex_dd=re.compile(r'\$\$(?P<latex>.*?)\$\$')
 regex_code = re.compile('('+META+'|'+DISABLED_META+r'|````)|(``(?P<t>.+?)``(?::(?P<c>[a-zA-Z][_a-zA-Z\-\d]*)(?:\[(?P<p>[^\]]*)\])?)?)',re.S)
@@ -553,6 +559,53 @@ regex_markmin_escape = re.compile(r"(\\*)(['`:*~\\[\]{}@\$+\-.#\n])")
 regex_backslash = re.compile(r"\\(['`:*~\\[\]{}@\$+\-.#\n])")
 ttab_in  = maketrans("'`:*~\\[]{}@$+-.#\n", '\x0b\x0c\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x05')
 ttab_out = maketrans('\x0b\x0c\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x05',"'`:*~\\[]{}@$+-.#\n")
+regex_quote = re.compile('(?P<name>\w+?)\s*\=\s*')
+
+def make_dict(b):
+    return '{%s}' % regex_quote.sub("'\g<name>':",b)
+    
+def safe_eval(node_or_string, env):
+    """
+    Safely evaluate an expression node or a string containing a Python
+    expression.  The string or node provided may only consist of the following
+    Python literal structures: strings, numbers, tuples, lists, dicts, booleans,
+    and None.
+    """
+    _safe_names = {'None': None, 'True': True, 'False': False}
+    _safe_names.update(env)
+    if isinstance(node_or_string, basestring):
+        node_or_string = ast_parse(node_or_string, mode='eval')
+    if isinstance(node_or_string, ast.Expression):
+        node_or_string = node_or_string.body
+    def _convert(node):
+        if isinstance(node, ast.Str):
+            return node.s
+        elif isinstance(node, ast.Num):
+            return node.n
+        elif isinstance(node, ast.Tuple):
+            return tuple(map(_convert, node.elts))
+        elif isinstance(node, ast.List):
+            return list(map(_convert, node.elts))
+        elif isinstance(node, ast.Dict):
+            return dict((_convert(k), _convert(v)) for k, v
+                        in zip(node.keys, node.values))
+        elif isinstance(node, ast.Name):
+            if node.id in _safe_names:
+                return _safe_names[node.id]
+        elif isinstance(node, ast.BinOp) and \
+             isinstance(node.op, (Add, Sub)) and \
+             isinstance(node.right, Num) and \
+             isinstance(node.right.n, complex) and \
+             isinstance(node.left, Num) and \
+             isinstance(node.left.n, (int, long, float)):
+            left = node.left.n
+            right = node.right.n
+            if isinstance(node.op, Add):
+                return left + right
+            else:
+                return left - right
+        raise ValueError('malformed string')
+    return _convert(node_or_string)
 
 def markmin_escape(text):
     """ insert \\ before markmin control characters: '`:*~[]{}@$ """
@@ -571,15 +624,22 @@ def replace_at_urls(text,url):
     return regex_URL.sub(u1,text)
 
 def replace_components(text,env):
+    # not perfect but acceptable
     def u2(match, env=env):
         f = env.get(match.group('a'), match.group(0))
         if callable(f):
+            b = match.group('b')
             try:
-                f = f(match.group('b'))
+                b = safe_eval(make_dict(b),env)
+            except:
+                pass
+            try:
+                f = f(**b) if isinstance(b,dict) else f(b)
             except Exception, e:
                 f = 'ERROR: %s' % e
             return str(f)
-    return regex_env.sub(u2, text)
+    text = regex_env2.sub(u2, text)
+    return text
 
 def autolinks_simple(url):
     """
@@ -685,8 +745,8 @@ def render(text,
     >>> render("----\\nhello world\\n----\\n")
     '<blockquote>hello world</blockquote>'
 
-    >>> render('[[http://example.com]]')
-    '<p><span class="anchor" id="markmin_http://example.com"></span></p>'
+    >>> render('[[myanchor]]')
+    '<p><span class="anchor" id="markmin_myanchor"></span></p>'
 
     >>> render('[[ http://example.com]]')
     '<p><a href="http://example.com">http://example.com</a></p>'
@@ -842,6 +902,9 @@ def render(text,
     '<p>this is <span style="color: green;">a green text</span></p>'
 
     >>> render("**@{probe:1}**", environment=dict(probe=lambda t:"test %s" % t))
+    '<p><strong>test 1</strong></p>'
+
+    >>> render("**@{probe:t=a}**", environment=dict(probe=lambda t:"test %s" % t, a=1))
     '<p><strong>test 1</strong></p>'
 
     >>> render('[[id1 [span **messag** in ''markmin''] ]] ... [[**link** to id [link\\\'s title] #mark1]]')
@@ -1014,8 +1077,8 @@ def render(text,
         # - is empty -> this is an <hr /> tag
         # - consists '|' -> table
         # - consists other characters -> blockquote
-        if ( lineno+1 >= strings_len or
-             not (s.count('-') == len(s) and len(s)>3) ):
+        if (lineno+1 >= strings_len or
+            not(s.count('-') == len(s) and len(s)>3)):
            return (s, mtag, lineno)
 
         lineno+=1
@@ -1034,7 +1097,8 @@ def render(text,
                 while lineno < strings_len:
                     s = strings[lineno].strip()
                     if s[:1] == '=':
-                        if s.count('=')==len(s) and len(s)>3:  # header or footer
+                        # header or footer
+                        if s.count('=')==len(s) and len(s)>3:  
                             if not thead: # if thead list is empty:
                                 thead = tout
                             else:
@@ -1054,16 +1118,16 @@ def render(text,
                        tr = '<tr class="even">'
                     else:
                        tr = '<tr class="first">' if rownum == 0 else '<tr>'
-                    tout.append(tr+''.join(['<td%s>%s</td>'% \
-                                              (' class="num"'
-                                                  if regex_num.match(f)
-                                                  else '',
-                                               f.strip()
-                                              ) for f in s.split('|')])+'</tr>'+pp)
+                    tout.append(tr + ''.join(['<td%s>%s</td>' % (
+                                    ' class="num"' 
+                                    if regex_num.match(f) else '',
+                                    f.strip()
+                                    ) for f in s.split('|')])+'</tr>'+pp)
                     rownum+=1
                     lineno+=1
 
-                t_cls = ' class="%s%s"'%(class_prefix, t_cls) if t_cls and t_cls != 'id' else ''
+                t_cls = ' class="%s%s"'%(class_prefix, t_cls) \
+                    if t_cls and t_cls != 'id' else ''
                 t_id  = ' id="%s%s"'%(id_prefix, t_id) if t_id else ''
                 s = ''
                 if thead:
@@ -1080,7 +1144,7 @@ def render(text,
             else:
                 # parse blockquote:
                 bq_begin=lineno
-                t_mode = False # embidded table
+                t_mode = False # embedded table
                 t_cls = ''
                 t_id = ''
 
@@ -1090,13 +1154,15 @@ def render(text,
                     if not t_mode:
                         m = regex_tq.match(s)
                         if m:
-                            if lineno+1 == strings_len or '|' not in strings[lineno+1]:
+                            if (lineno+1 == strings_len or 
+                                '|' not in strings[lineno+1]):
                                t_cls = m.group('c') or ''
                                t_id = m.group('p') or ''
                                break
 
                         if regex_bq_headline.match(s):
-                            if lineno+1 < strings_len and strings[lineno+1].strip():
+                            if (lineno+1 < strings_len and 
+                                strings[lineno+1].strip()):
                                     t_mode = True
                             lineno+=1
                             continue
@@ -1107,25 +1173,15 @@ def render(text,
 
                     lineno+=1
 
-                t_cls = ' class="%s%s"'%(class_prefix,t_cls) if t_cls and t_cls != 'id' else ''
-                t_id  = ' id="%s%s"'%(id_prefix,t_id) if t_id else ''
+                t_cls = ' class="%s%s"'%(class_prefix,t_cls) \
+                    if t_cls and t_cls != 'id' else ''
+                t_id  = ' id="%s%s"'%(id_prefix,t_id) \
+                    if t_id else ''
+                
                 s = '<blockquote%s%s>%s</blockquote>%s' \
                          % (t_cls,
                             t_id,
-                            render('\n'.join(strings[bq_begin:lineno]),
-                                   extra,
-                                   allowed,
-                                   'br',
-                                   URL,
-                                   environment,
-                                   latex,
-                                   autolinks,
-                                   protolinks,
-                                   class_prefix,
-                                   id_prefix,
-                                   pretty_print),
-                            pp
-                           )
+                            '\n'.join(strings[bq_begin:lineno]),pp)
                 mtag='q'
         else:
             s = '<hr />'
@@ -1313,7 +1369,7 @@ def render(text,
     def expand_meta(m):
         code,b,p,s = segments.pop(0)
         if code==None or m.group() == DISABLED_META:
-           return escape(s)
+            return escape(s)
         if b in extra:
             if code[:1]=='\n': code=code[1:]
             if code[-1:]=='\n': code=code[:-1]
@@ -1323,8 +1379,8 @@ def render(text,
                 return str(extra[b](code))
         elif b=='cite':
             return '['+','.join('<a href="#%s" class="%s">%s</a>' \
-                  % (d,b,d) \
-                  for d in escape(code).split(','))+']'
+                                   % (id_prefix+d,b,d) \
+                                   for d in escape(code).split(','))+']'
         elif b=='latex':
             return LATEX % code.replace('"','\"').replace('\n',' ')
         elif b in html_colors:
@@ -1440,4 +1496,4 @@ if __name__ == '__main__':
         print "       file.markmin  [file.css] - process file.markmin + built in file.css (optional)"
         print "       file.markmin  [@path_to/css] - process file.markmin + link path_to/css (optional)"
         run_doctests()
-
+        

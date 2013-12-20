@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This file is part of the Nervatura Project
+This file is part of the Nervatura Framework
 http://www.nervatura.com
 Copyright © 2011-2013, Csaba Kappel
 License: LGPLv3
@@ -19,12 +19,6 @@ from gluon.http import redirect
 import os
 
 response.title='Nervatura Framework'
-response.menu = [
-    (T('HOME'), False, URL('default','startpage'), []),
-    (T('DOCUMENTATION & RESOURCES'), False, URL('default','ndoc'), []),
-    (T('ABOUT'), False, URL('default','about'), []),
-    (T('NAS ADMIN'), False, URL('nas','index'), [])
-    ]
 
 def index():
   redirect(URL('nas','index'))

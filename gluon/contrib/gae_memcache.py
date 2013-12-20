@@ -37,7 +37,7 @@ class MemcacheClient(object):
                 self.client.delete(key)
         else:
             value = f()
-            self.client.set(key, (time.time(), value))
+            self.client.set(key, (time.time(), value), time=time_expire)
         return value
 
     def increment(self, key, value=1):
@@ -47,6 +47,9 @@ class MemcacheClient(object):
             value = obj[1] + value
         self.client.set(key, (time.time(), value))
         return value
+
+    def incr(self, key, value=1):
+        return self.increment(key, value)
 
     def clear(self, key=None):
         if key:
@@ -59,10 +62,10 @@ class MemcacheClient(object):
         return self.client.delete(*a, **b)
 
     def get(self, *a, **b):
-        return self.client.delete(*a, **b)
+        return self.client.get(*a, **b)
 
     def set(self, *a, **b):
-        return self.client.delete(*a, **b)
+        return self.client.set(*a, **b)
 
     def flush_all(self, *a, **b):
         return self.client.delete(*a, **b)

@@ -6,9 +6,8 @@ License: LGPLv3 (http://www.gnu.org/licenses/lgpl.html)
 
 import os
 import sys
-import socket
 import platform
-from storage import Storage
+from gluon.storage import Storage
 
 global_settings = Storage()
 settings = global_settings  # legacy compatibility
@@ -36,3 +35,6 @@ global_settings.is_jython = \
     'java' in sys.platform.lower() or \
     hasattr(sys, 'JYTHON_JAR') or \
     str(sys.copyright).find('Jython') > 0
+
+global_settings.is_source = os.path.exists(os.path.join(
+        global_settings.gluon_parent,'web2py.py'))

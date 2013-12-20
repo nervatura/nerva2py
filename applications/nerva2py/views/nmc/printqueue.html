@@ -1,0 +1,134 @@
+{{extend 'nmc/layout.html'}}
+
+<style>
+<!--
+table {
+  width: 100%;
+}
+.row_buttons .ui-checkbox input {
+  position: static;
+}
+-->
+</style>
+
+<script>
+  var ms_err_missing_printer = "{{=T('Missing server printer name!')}}";
+  var ms_err_missing_local_printer_support = "{{=T('Missing or disabled Nervatura Client Additions!')}}";
+  var ms_err_local_printer = "{{=T('Error during printing!')}}";
+  var ms_ok_export = "{{=T('% row(s) exported!')}}";
+  var ms_ok_print = "{{=T('% row(s) printed!')}}";
+</script>
+
+{{block header}}
+  {{=response.cmd_menu}}
+  <h1 style="color: #FFD700;">{{=response.subtitle}}</h1>
+  {{=response.cmd_commands}}
+{{end}}
+
+<div>
+<div style="max-width: 600px;" >
+  {{=form.custom.begin}}
+  <table width="100%" cellpadding="0px;" cellspacing="0px;">
+    <tr>
+      <td>
+        {{=view_printqueue}}
+      </td>
+    </tr>
+  </table>
+  <input id="nervatype" type="hidden" value="" name="nervatype">
+  <input id="transnumber" type="hidden" value="" name="transnumber">
+  <input id="fromdate" type="hidden" value="" name="fromdate">
+  <input id="enddate" type="hidden" value="" name="enddate">
+  <input id="username" type="hidden" value="" name="username">
+  
+  <input id="printer_type" type="hidden" value="" name="printer_type">
+  <input id="printer" type="hidden" value="" name="printer">
+  <input id="size" type="hidden" value="" name="cmb_size">
+  <input id="orientation" type="hidden" value="" name="cmb_orientation">
+  {{=form.custom.end}}
+</div>
+
+<div id="popup_filter" data-role="popup" data-theme="d" data-overlay-theme="a" data-position-to="#appl_url"
+  data-tolerance="15,5" style="padding:10px;border-radius:10px;min-width: 290px;min-height: 20px;">
+  <div data-role="header" data-theme="a" class="ui-corner-top" style="margin:0px;">
+    <a style="top:1px;" href="#" data-icon="delete" data-iconpos="notext" data-theme="a" data-rel="back">{{=T("Close")}}</a>
+    <h1 style="color: #FFD700;font-size: small;">{{=T("Filter data")}}</h1>
+  </div>
+  <table width="100%" cellpadding="0px;" cellspacing="0px;">
+    <tr>
+      <td style="padding-right:5px;"><div class="label">{{=form.custom.label.nervatype}}</div></td>
+      <td>{{=form.custom.widget.nervatype}}</td>
+    </tr>
+    <tr>
+      <td style="padding-right:5px;"><div class="label">{{=T('Date')}}</div></td>
+      <td>{{=form.custom.widget.fromdate}}</td>
+    </tr>
+    <tr>
+      <td style="padding-right:5px;"></td>
+      <td>{{=form.custom.widget.enddate}}</td>
+    </tr>
+    <tr>
+      <td style="padding-right:5px;"><div class="label">{{=form.custom.label.transnumber}}</div></td>
+      <td>{{=form.custom.widget.transnumber}}</td>
+    </tr>
+    <tr>
+      <td style="padding-right:5px;"><div class="label">{{=form.custom.label.username}}</div></td>
+      <td>{{=form.custom.widget.username}}</td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <div data-role="controlgroup" style="background-color: #393939;padding: 10px;">
+          {{=response.cmd_filter}}
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<div id="popup_print" data-role="popup" data-theme="d" data-overlay-theme="a" data-position-to="#appl_url"
+  data-tolerance="15,5" style="padding:10px;border-radius:10px;min-width: 290px;min-height: 20px;">
+  <div data-role="header" data-theme="a" class="ui-corner-top" style="margin:0px;">
+    <a style="top:1px;" href="#" data-icon="delete" data-iconpos="notext" data-theme="a" data-rel="back">{{=T("Close")}}</a>
+    <h1 style="color: #FFD700;font-size: small;">{{=T("Printing")}}</h1>
+  </div>
+  <table width="100%" cellpadding="0px;" cellspacing="0px;">
+    <tr>
+      <td style="padding-right:5px;"><div class="label">{{=T("Printer Mode: ")}}</div></td>
+      <td>{{=response.cmb_printer_type}}</td>
+    </tr>
+    <tr>
+      <td style="padding-right:5px;"><div class="label">{{=T("Server printer: ")}}</div></td>
+      <td>{{=response.cmb_printers}}</td>
+    </tr>
+    <tr>
+      <td style="padding-right:5px;">{{=response.cmb_size}}</td>
+      <td>{{=response.cmb_orientation}}</td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <div data-role="controlgroup" style="background-color: #393939;padding: 10px;">
+          {{=response.cmd_print_selected}}
+          {{=response.cmd_print_filter}}
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+</div>
+
+<div id="local-menu" data-role="panel" data-position="right" data-position-fixed="true" data-display="overlay" data-theme="a">
+  <div data-role="header">
+    {{=response.cmd_back}}
+    {{=response.cmd_close}}
+  </div>
+  <div data-role="content" style="margin-top:30px;padding:0px;margin-bottom: 20px;">
+    <hr style="border-width:0;background-color: #333333;">
+    <div data-role="controlgroup" style="margin-top:20px;padding:0px;">
+      {{=response.cmd_filter_pop}}
+    </div>
+    <div data-role="controlgroup" style="margin-top:20px;padding:0px;">
+      {{=response.cmd_print_pop}}
+    </div>
+  </div>
+</div>
+

@@ -14,20 +14,22 @@ Contains the classes for the global used variables:
 
 """
 
-from storage import Storage, List
-from streamer import streamer, stream_file_or_304_or_206, DEFAULT_CHUNK_SIZE
-from xmlrpc import handler
-from contenttype import contenttype
-from html import xmlescape, TABLE, TR, PRE, URL
-from http import HTTP, redirect
-from fileutils import up
-from serializers import json, custom_json
-import settings
-from utils import web2py_uuid, secure_dumps, secure_loads
-from settings import global_settings
+from gluon.storage import Storage, List
+from gluon.streamer import streamer, stream_file_or_304_or_206, DEFAULT_CHUNK_SIZE
+from gluon.xmlrpc import handler
+from gluon.contenttype import contenttype
+from gluon.html import xmlescape, TABLE, TR, PRE, URL
+from gluon.http import HTTP, redirect
+from gluon.fileutils import up
+from gluon.serializers import json, custom_json
+import gluon.settings as settings
+from gluon.utils import web2py_uuid, secure_dumps, secure_loads
+from gluon.settings import global_settings
 import hashlib
 import portalocker
 import cPickle
+from pickle import Pickler, MARK, DICT, EMPTY_DICT
+from types import DictionaryType
 import cStringIO
 import datetime
 import re
@@ -36,6 +38,11 @@ import os
 import sys
 import traceback
 import threading
+import cgi
+import copy
+import tempfile
+from gluon.cache import CacheInRam
+from gluon.fileutils import copystream
 
 FMT = '%a, %d-%b-%Y %H:%M:%S PST'
 PAST = 'Sat, 1-Jan-1971 00:00:00'
@@ -46,6 +53,14 @@ try:
     have_minify = True
 except ImportError:
     have_minify = False
+
+try:
+    import simplejson as sj #external installed library
+except:
+    try:
+        import json as sj #standard installed library
+    except:
+        import gluon.contrib.simplejson as sj #pure python library
 
 regex_session_id = re.compile('^([\w\-]+/)?[\w\-\.]+$')
 
@@ -61,6 +76,69 @@ less_template = '<link href="%s" rel="stylesheet/less" type="text/css" />'
 css_inline = '<style type="text/css">\n%s\n</style>'
 js_inline = '<script type="text/javascript">\n%s\n</script>'
 
+# IMPORTANT:
+# this is required so that pickled dict(s) and class.__dict__
+# are sorted and web2py can detect without ambiguity when a session changes
+class SortingPickler(Pickler):
+    def save_dict(self, obj):
+        self.write(EMPTY_DICT if self.bin else MARK+DICT)
+        self.memoize(obj)
+        self._batch_setitems([(key,obj[key]) for key in sorted(obj)])
+
+SortingPickler.dispatch = copy.copy(Pickler.dispatch)
+SortingPickler.dispatch[DictionaryType] = SortingPickler.save_dict
+
+def sorting_dumps(obj, protocol=None):
+    file = cStringIO.StringIO()
+    SortingPickler(file, protocol).dump(obj)
+    return file.getvalue()
+# END #####################################################################
+
+def copystream_progress(request, chunk_size=10 ** 5):
+    """
+    copies request.env.wsgi_input into request.body
+    and stores progress upload status in cache_ram
+    X-Progress-ID:length and X-Progress-ID:uploaded
+    """
+    env = request.env
+    if not env.get('CONTENT_LENGTH', None):
+        return cStringIO.StringIO()
+    source = env['wsgi.input']
+    try:
+        size = int(env['CONTENT_LENGTH'])
+    except ValueError:
+        raise HTTP(400, "Invalid Content-Length header")
+    try: # Android requires this
+        dest = tempfile.NamedTemporaryFile()
+    except NotImplementedError: # and GAE this
+        dest = tempfile.TemporaryFile()
+    if not 'X-Progress-ID' in request.get_vars:
+        copystream(source, dest, size, chunk_size)
+        return dest
+    cache_key = 'X-Progress-ID:' + request.get_vars['X-Progress-ID']
+    cache_ram = CacheInRam(request)  # same as cache.ram because meta_storage
+    cache_ram(cache_key + ':length', lambda: size, 0)
+    cache_ram(cache_key + ':uploaded', lambda: 0, 0)
+    while size > 0:
+        if size < chunk_size:
+            data = source.read(size)
+            cache_ram.increment(cache_key + ':uploaded', size)
+        else:
+            data = source.read(chunk_size)
+            cache_ram.increment(cache_key + ':uploaded', chunk_size)
+        length = len(data)
+        if length > size:
+            (data, length) = (data[:size], size)
+        size -= length
+        if length == 0:
+            break
+        dest.write(data)
+        if length < chunk_size:
+            break
+    dest.seek(0)
+    cache_ram(cache_key + ':length', None)
+    cache_ram(cache_key + ':uploaded', None)
+    return dest
 
 class Request(Storage):
 
@@ -81,14 +159,16 @@ class Request(Storage):
     - restful()
     """
 
-    def __init__(self):
+    def __init__(self, env):
         Storage.__init__(self)
-        self.wsgi = Storage()  # hooks to environ and start_response
-        self.env = Storage()
+        self.env = Storage(env)
+        self.env.web2py_path = global_settings.applications_parent
+        self.env.update(global_settings)
         self.cookies = Cookie.SimpleCookie()
-        self.get_vars = Storage()
-        self.post_vars = Storage()
-        self.vars = Storage()
+        self._get_vars = None
+        self._post_vars = None
+        self._vars = None
+        self._body = None
         self.folder = None
         self.application = None
         self.function = None
@@ -100,6 +180,108 @@ class Request(Storage):
         self.is_https = False
         self.is_local = False
         self.global_settings = settings.global_settings
+
+
+    def parse_get_vars(self):
+        query_string = self.env.get('QUERY_STRING','')
+        dget = cgi.parse_qs(query_string, keep_blank_values=1)
+        get_vars = self._get_vars = Storage(dget)
+        for (key, value) in get_vars.iteritems():
+            if isinstance(value,list) and len(value)==1:
+                get_vars[key] = value[0]
+
+    def parse_post_vars(self):
+        env = self.env
+        post_vars = self._post_vars = Storage()
+        body = self.body
+        #if content-type is application/json, we must read the body
+        is_json = env.get('content_type', '')[:16] == 'application/json'
+
+        if is_json:
+            try:
+                json_vars = sj.load(body)
+            except:
+                # incoherent request bodies can still be parsed "ad-hoc"
+                json_vars = {}
+                pass
+            # update vars and get_vars with what was posted as json
+            if isinstance(json_vars, dict):
+                post_vars.update(json_vars)
+
+            body.seek(0)
+
+        # parse POST variables on POST, PUT, BOTH only in post_vars
+        if (body and not is_json
+            and env.request_method in ('POST', 'PUT', 'DELETE', 'BOTH')):
+            query_string = env.pop('QUERY_STRING',None)
+            dpost = cgi.FieldStorage(fp=body, environ=env, keep_blank_values=1)
+            try:
+                post_vars.update(dpost)
+            except: pass
+            if query_string is not None:
+                env['QUERY_STRING'] = query_string
+            # The same detection used by FieldStorage to detect multipart POSTs
+            body.seek(0)
+
+            def listify(a):
+                return (not isinstance(a, list) and [a]) or a
+            try:
+                keys = sorted(dpost)
+            except TypeError:
+                keys = []
+            for key in keys:
+                if key is None:
+                    continue  # not sure why cgi.FieldStorage returns None key
+                dpk = dpost[key]
+                # if an element is not a file replace it with 
+                # its value else leave it alone
+                
+                pvalue = listify([(_dpk if _dpk.filename else _dpk.value) 
+                                  for _dpk in dpk] 
+                                 if isinstance(dpk, list) else
+                                 (dpk if dpk.filename else dpk.value))
+                if len(pvalue):
+                    post_vars[key] = (len(pvalue) > 1 and pvalue) or pvalue[0]
+
+    @property
+    def body(self):
+        if self._body is None:
+            try:
+                self._body = copystream_progress(self)
+            except IOError:
+                raise HTTP(400, "Bad Request - HTTP body is incomplete")
+        return self._body
+
+    def parse_all_vars(self):
+        self._vars = copy.copy(self.get_vars)
+        for key,value in self.post_vars.iteritems():
+            if not key in self._vars:
+                self._vars[key] = value
+            else:
+                if not isinstance(self._vars[key],list):
+                    self._vars[key] = [self._vars[key]]
+                self._vars[key] += value if isinstance(value,list) else [value]
+
+    @property
+    def get_vars(self):
+        "lazily parse the query string into get_vars"
+        if self._get_vars is None:
+            self.parse_get_vars()
+        return self._get_vars
+
+    @property
+    def post_vars(self):
+        "lazily parse the body into post_vars"
+        if self._post_vars is None:
+            self.parse_post_vars()
+        return self._post_vars
+
+    @property
+    def vars(self):
+        "lazily parse all get_vars and post_vars to fill vars"
+        if self._vars is None:
+            self.parse_all_vars()
+        return self._vars
 
     def compute_uuid(self):
         self.uuid = '%s/%s.%s.%s' % (
@@ -137,25 +319,21 @@ class Request(Storage):
             current.session.forget()
             redirect(URL(scheme='https', args=self.args, vars=self.vars))
 
-
-
     def restful(self):
         def wrapper(action, self=self):
             def f(_action=action, _self=self, *a, **b):
                 self.is_restful = True
                 method = _self.env.request_method
                 if len(_self.args) and '.' in _self.args[-1]:
-                    _self.args[-
-                               1], _self.extension = _self.args[-1].rsplit('.', 1)
+                    _self.args[-1], _, self.extension = self.args[-1].rpartition('.')
                     current.response.headers['Content-Type'] = \
-                        contenttype(_self.extension.lower())
-                if not method in ['GET', 'POST', 'DELETE', 'PUT']:
-                    raise HTTP(400, "invalid method")
+                        contenttype('.' + _self.extension.lower())
                 rest_action = _action().get(method, None)
-                if not rest_action:
+                if not (rest_action and method==method.upper() 
+                        and callable(rest_action)):
                     raise HTTP(400, "method not supported")
                 try:
-                    return rest_action(*_self.args, **_self.vars)
+                    return rest_action(*_self.args, **getattr(_self,'vars',{}))
                 except TypeError, e:
                     exc_type, exc_value, exc_traceback = sys.exc_info()
                     if len(traceback.extract_tb(exc_traceback)) == 1:
@@ -445,7 +623,7 @@ class Response(Storage):
     def toolbar(self):
         from html import DIV, SCRIPT, BEAUTIFY, TAG, URL, A
         BUTTON = TAG.button
-        admin = URL("admin", "default", "design",
+        admin = URL("admin", "default", "design", extension='html',
                     args=current.request.application)
         from gluon.dal import DAL
         dbstats = []
@@ -459,6 +637,12 @@ class Response(Storage):
                                lazy=v['dbtables']['lazy'] or '[no lazy tables]')
         u = web2py_uuid()
         backtotop = A('Back to top', _href="#totop-%s" % u)
+        # Convert lazy request.vars from property to Storage so they
+        # will be displayed in the toolbar.
+        request = copy.copy(current.request)
+        request.update(vars=current.request.vars,
+            get_vars=current.request.get_vars,
+            post_vars=current.request.post_vars)
         return DIV(
             BUTTON('design', _onclick="document.location='%s'" % admin),
             BUTTON('request',
@@ -471,7 +655,7 @@ class Response(Storage):
                    _onclick="jQuery('#db-tables-%s').slideToggle()" % u),
             BUTTON('db stats',
                    _onclick="jQuery('#db-stats-%s').slideToggle()" % u),
-            DIV(BEAUTIFY(current.request), backtotop,
+            DIV(BEAUTIFY(request), backtotop,
                 _class="hidden", _id="request-%s" % u),
             DIV(BEAUTIFY(current.session), backtotop,
                 _class="hidden", _id="session-%s" % u),
@@ -486,9 +670,35 @@ class Response(Storage):
 
 
 class Session(Storage):
-
     """
     defines the session object and the default values of its members (None)
+
+        response.session_storage_type   : 'file', 'db', or 'cookie'
+        response.session_cookie_compression_level :
+        response.session_cookie_expires : cookie expiration
+        response.session_cookie_key     : for encrypted sessions in cookies
+        response.session_id             : a number or None if no session
+        response.session_id_name        :
+        response.session_locked         :
+        response.session_masterapp      :
+        response.session_new            : a new session obj is being created
+        response.session_hash           : hash of the pickled loaded session
+        response.session_pickled        : picked session
+
+    if session in cookie:
+
+        response.session_data_name      : name of the cookie for session data
+
+    if session in db:
+
+        response.session_db_record_id   :
+        response.session_db_table       :
+        response.session_db_unique_key  :
+
+    if session in file:
+
+        response.session_file           :
+        response.session_filename       :
     """
 
     def connect(
@@ -510,109 +720,103 @@ class Session(Storage):
         and it is used to determine a session prefix.
         separate can be True and it is set to session_name[-2:]
         """
-        if request is None:
-            request = current.request
-        if response is None:
-            response = current.response
-        if separate is True:
-            separate = lambda session_name: session_name[-2:]
+        request = request or current.request
+        response = response or current.response
+        masterapp = masterapp or request.application
+        cookies = request.cookies
+
         self._unlock(response)
-        if not masterapp:
-            masterapp = request.application
+
+        response.session_masterapp = masterapp
         response.session_id_name = 'session_id_%s' % masterapp.lower()
         response.session_data_name = 'session_data_%s' % masterapp.lower()
         response.session_cookie_expires = cookie_expires
-
-        # Load session data from cookie
-        cookies = request.cookies
+        response.session_client = str(request.client).replace(':', '.')
+        response.session_cookie_key = cookie_key
+        response.session_cookie_compression_level = compression_level
 
         # check if there is a session_id in cookies
-        if response.session_id_name in cookies:
-            response.session_id = \
-                cookies[response.session_id_name].value
-        else:
-            response.session_id = None
-
-        # check if there is session data in cookies
-        if response.session_data_name in cookies:
-            session_cookie_data = cookies[response.session_data_name].value
-        else:
-            session_cookie_data = None
+        try:            
+            old_session_id = cookies[response.session_id_name].value
+        except KeyError:
+            old_session_id = None
+        response.session_id = old_session_id
 
         # if we are supposed to use cookie based session data
         if cookie_key:
             response.session_storage_type = 'cookie'
-            response.session_cookie_key = cookie_key
-            response.session_cookie_compression_level = compression_level
+        elif db:
+            response.session_storage_type = 'db'
+        else:
+            response.session_storage_type = 'file'
+            # why do we do this?
+            # because connect may be called twice, by web2py and in models.
+            # the first time there is no db yet so it should do nothing
+            if (global_settings.db_sessions is True or
+                masterapp in global_settings.db_sessions):
+                return
+
+        if response.session_storage_type == 'cookie':
+            # check if there is session data in cookies
+            if response.session_data_name in cookies:
+                session_cookie_data = cookies[response.session_data_name].value
+            else:
+                session_cookie_data = None
             if session_cookie_data:
                 data = secure_loads(session_cookie_data, cookie_key,
                                     compression_level=compression_level)
                 if data:
                     self.update(data)
+            response.session_id = True
+
         # else if we are supposed to use file based sessions
-        elif not db:
-            response.session_storage_type = 'file'
-            if global_settings.db_sessions is True \
-                    or masterapp in global_settings.db_sessions:
-                return
+        elif response.session_storage_type == 'file':
             response.session_new = False
-            client = request.client and request.client.replace(':', '.')
+            response.session_file = None
+            # check if the session_id points to a valid sesion filename
             if response.session_id:
-                if regex_session_id.match(response.session_id):
+                if not regex_session_id.match(response.session_id):
+                    response.session_id = None
+                else:
                     response.session_filename = \
                         os.path.join(up(request.folder), masterapp,
                                      'sessions', response.session_id)
-                else:
-                    response.session_id = None
-            # do not try load the data from file is these was data in cookie
-            if response.session_id and not session_cookie_data:
-                # os.path.exists(response.session_filename):
-                try:
-                    response.session_file = \
-                        open(response.session_filename, 'rb+')
                     try:
+                        response.session_file = \
+                            open(response.session_filename, 'rb+')
                         portalocker.lock(response.session_file,
                                          portalocker.LOCK_EX)
                         response.session_locked = True
                         self.update(cPickle.load(response.session_file))
                         response.session_file.seek(0)
-                        oc = response.session_filename.split('/')[-1]\
-                            .split('-')[0]
-                        if check_client and client != oc:
+                        oc = response.session_filename.split('/')[-1].split('-')[0]
+                        if check_client and response.session_client != oc:
                             raise Exception("cookie attack")
                     except:
                         response.session_id = None
-                    finally:
-                        pass
-                        #This causes admin login to break. Must find out why.
-                        #self._close(response)
-                except:
-                    response.session_file = None
             if not response.session_id:
                 uuid = web2py_uuid()
-                response.session_id = '%s-%s' % (client, uuid)
+                response.session_id = '%s-%s' % (response.session_client, uuid)
+                separate = separate and (lambda session_name: session_name[-2:])
                 if separate:
                     prefix = separate(response.session_id)
-                    response.session_id = '%s/%s' % \
-                        (prefix, response.session_id)
+                    response.session_id = '%s/%s' % (prefix, response.session_id)
                 response.session_filename = \
                     os.path.join(up(request.folder), masterapp,
                                  'sessions', response.session_id)
                 response.session_new = True
+
         # else the session goes in db
-        else:
-            response.session_storage_type = 'db'
+        elif response.session_storage_type == 'db':
             if global_settings.db_sessions is not True:
                 global_settings.db_sessions.add(masterapp)
+            # if had a session on file alreday, close it (yes, can happen)
             if response.session_file:
                 self._close(response)
+            # if on GAE tickets go also in DB
             if settings.global_settings.web2py_runtime_gae:
-                # in principle this could work without GAE
                 request.tickets_db = db
-            if masterapp == request.application:
-                table_migrate = migrate
-            else:
-                table_migrate = False
+            table_migrate = (masterapp == request.application)
             tname = tablename + '_' + masterapp
             table = db.get(tname, None)
             Field = db.Field
@@ -629,50 +833,164 @@ class Session(Storage):
                     migrate=table_migrate,
                 )
                 table = db[tname]  # to allow for lazy table
-            try:
-
-                # Get session data out of the database
-                (record_id, unique_key) = response.session_id.split(':')
-                if record_id == '0':
-                    raise Exception('record_id == 0')
-                        # Select from database
-                if not session_cookie_data:
-                    rows = db(table.id == record_id).select()
-                    # Make sure the session data exists in the database
-                    if len(rows) == 0 or rows[0].unique_key != unique_key:
-                        raise Exception('No record')
-                    # rows[0].update_record(locked=True)
-                    # Unpickle the data
-                    session_data = cPickle.loads(rows[0].session_data)
-                    self.update(session_data)
-            except Exception:
-                record_id = None
-                unique_key = web2py_uuid()
-                session_data = {}
-            response.session_id = '%s:%s' % (record_id, unique_key)
             response.session_db_table = table
-            response.session_db_record_id = record_id
-            response.session_db_unique_key = unique_key
-        rcookies = response.cookies
-        rcookies[response.session_id_name] = response.session_id
-        rcookies[response.session_id_name]['path'] = '/'
-        if cookie_expires:
-            rcookies[response.session_id_name][
-                'expires'] = cookie_expires.strftime(FMT)
-        # if not cookie_key, but session_data_name in cookies
-        # expire session_data_name from cookies
-        if session_cookie_data:
-            rcookies[response.session_data_name] = 'expired'
-            rcookies[response.session_data_name]['path'] = '/'
-            rcookies[response.session_data_name]['expires'] = PAST
+            if response.session_id:
+                # Get session data out of the database
+                try:
+                    (record_id, unique_key) = response.session_id.split(':')
+                    record_id = long(record_id)
+                except (TypeError,ValueError):
+                    record_id = None
+
+                # Select from database
+                if record_id:
+                    row = table(record_id) #,unique_key=unique_key)
+                    # Make sure the session data exists in the database
+                    if row:
+                        # rows[0].update_record(locked=True)
+                        # Unpickle the data
+                        session_data = cPickle.loads(row.session_data)
+                        self.update(session_data)
+                    else:
+                        record_id = None
+                if record_id:
+                    response.session_id = '%s:%s' % (record_id, unique_key)
+                    response.session_db_unique_key = unique_key
+                    response.session_db_record_id = record_id
+                else:
+                    response.session_id = None
+                    response.session_new = True
+            # if there is no session id yet, we'll need to create a 
+            # new session
+            else:
+                response.session_new = True
+
+        # set the cookie now if you know the session_id so user can set
+        # cookie attributes in controllers/models
+        # cookie will be reset later
+        # yet cookie may be reset later
+        #   Removed comparison between old and new session ids - should send
+        #    the cookie all the time
+        if isinstance(response.session_id,str):
+            response.cookies[response.session_id_name] = response.session_id
+            response.cookies[response.session_id_name]['path'] = '/'
+            if cookie_expires:
+                response.cookies[response.session_id_name]['expires'] = \
+                    cookie_expires.strftime(FMT)
+
+        session_pickled = cPickle.dumps(self)
+        response.session_hash = hashlib.md5(session_pickled).hexdigest()
+
         if self.flash:
             (response.flash, self.flash) = (self.flash, None)
 
+
+    def renew(self, clear_session=False):
+
+        if clear_session:
+            self.clear()
+
+        request = current.request
+        response = current.response
+        session = response.session
+        masterapp = response.session_masterapp
+        cookies = request.cookies
+
+        if response.session_storage_type == 'cookie':
+            return
+
+        # if the session goes in file
+        if response.session_storage_type == 'file':
+            self._close(response)
+            uuid = web2py_uuid()
+            response.session_id = '%s-%s' % (response.session_client, uuid)
+            separate = (lambda s: s[-2:]) if session and response.session_id[2:3]=="/" else None
+            if separate:
+                prefix = separate(response.session_id)
+                response.session_id = '%s/%s' % \
+                    (prefix, response.session_id)
+            response.session_filename = \
+                os.path.join(up(request.folder), masterapp,
+                             'sessions', response.session_id)
+            response.session_new = True
+
+        # else the session goes in db
+        elif response.session_storage_type == 'db':
+            table = response.session_db_table
+
+            # verify that session_id exists
+            if response.session_file:
+                self._close(response)
+            if response.session_new:
+                return
+            # Get session data out of the database
+            if response.session_id is None:
+                return
+            (record_id, sep, unique_key) = response.session_id.partition(':')
+
+            if record_id.isdigit() and long(record_id)>0:
+                new_unique_key = web2py_uuid()
+                row = table(record_id)
+                if row and row.unique_key==unique_key:
+                    table._db(table.id==record_id).update(unique_key=new_unique_key)
+                else:
+                    record_id = None
+            if record_id:
+                response.session_id = '%s:%s' % (record_id, unique_key)
+                response.session_db_record_id = record_id
+                response.session_db_unique_key = new_unique_key
+            else:
+                response.session_new = True
+
+    def _fixup_before_save(self):
+        response = current.response
+        rcookies = response.cookies
+        if self._forget and response.session_id_name in rcookies:
+            del rcookies[response.session_id_name]
+        elif self._secure and response.session_id_name in rcookies:
+            rcookies[response.session_id_name]['secure'] = True
+
+    def clear_session_cookies(sefl):
+        request = current.request
+        response = current.response
+        session = response.session
+        masterapp = response.session_masterapp
+        cookies = request.cookies
+        rcookies = response.cookies
+        # if not cookie_key, but session_data_name in cookies
+        # expire session_data_name from cookies
+        if response.session_data_name in cookies:
+            rcookies[response.session_data_name] = 'expired'
+            rcookies[response.session_data_name]['path'] = '/'
+            rcookies[response.session_data_name]['expires'] = PAST
+        if response.session_id_name in rcookies:
+            del rcookies[response.session_id_name]
+
+    def save_session_id_cookie(self):
+        request = current.request
+        response = current.response
+        session = response.session
+        masterapp = response.session_masterapp
+        cookies = request.cookies
+        rcookies = response.cookies
+
+        # if not cookie_key, but session_data_name in cookies
+        # expire session_data_name from cookies
+        if response.session_data_name in cookies:
+            rcookies[response.session_data_name] = 'expired'
+            rcookies[response.session_data_name]['path'] = '/'
+            rcookies[response.session_data_name]['expires'] = PAST
+        if response.session_id:
+            rcookies[response.session_id_name] = response.session_id
+            rcookies[response.session_id_name]['path'] = '/'
+            expires = response.session_cookie_expires
+            if isinstance(expires,datetime.datetime):
+                expires = expires.strftime(FMT)
+            if expires:
+                rcookies[response.session_id_name]['expires'] = expires
+
     def clear(self):
-        previous_session_hash = self.pop('_session_hash', None)
         Storage.clear(self)
-        if previous_session_hash:
-            self._session_hash = previous_session_hash
 
     def is_new(self):
         if self._start_timestamp:
@@ -698,84 +1016,101 @@ class Session(Storage):
         self._forget = True
 
     def _try_store_in_cookie(self, request, response):
-        if response.session_storage_type != 'cookie':
+        if self._forget or self._unchanged(response):
+            # self.clear_session_cookies()
+            self.save_session_id_cookie()
             return False
         name = response.session_data_name
-        value = secure_dumps(dict(self), response.session_cookie_key, compression_level=response.session_cookie_compression_level)
-        expires = response.session_cookie_expires
+        compression_level = response.session_cookie_compression_level
+        value = secure_dumps(dict(self),
+                             response.session_cookie_key,
+                             compression_level=compression_level)
         rcookies = response.cookies
         rcookies.pop(name, None)
         rcookies[name] = value
         rcookies[name]['path'] = '/'
+        expires = response.session_cookie_expires
+        if isinstance(expires,datetime.datetime):
+            expires = expires.strftime(FMT)
         if expires:
-            rcookies[name]['expires'] = expires.strftime(FMT)
+            rcookies[name]['expires'] = expires
         return True
 
-    def _unchanged(self):
-        previous_session_hash = self.pop('_session_hash', None)
-        if not previous_session_hash and not \
-                any(value is not None for value in self.itervalues()):
-            return True
-        session_pickled = cPickle.dumps(dict(self))
+    def _unchanged(self,response):
+        session_pickled = cPickle.dumps(self)
+        response.session_pickled = session_pickled
         session_hash = hashlib.md5(session_pickled).hexdigest()
-        if previous_session_hash == session_hash:
-            return True
-        else:
-            self._session_hash = session_hash
-            return False
+        return response.session_hash == session_hash
 
     def _try_store_in_db(self, request, response):
         # don't save if file-based sessions,
         # no session id, or session being forgotten
-        # or no changes to session
-        if response.session_storage_type != 'db' or not response.session_id \
-                or self._forget or self._unchanged():
+        # or no changes to session (Unless the session is new)
+        if (not response.session_db_table or 
+            self._forget or 
+            (self._unchanged(response) and not response.session_new)):
+            if (not response.session_db_table and
+                global_settings.db_sessions is not True and
+                response.session_masterapp in global_settings.db_sessions):
+                global_settings.db_sessions.remove(response.session_masterapp)
+            # self.clear_session_cookies()
+            self.save_session_id_cookie()
             return False
 
         table = response.session_db_table
         record_id = response.session_db_record_id
-        unique_key = response.session_db_unique_key
+        if response.session_new:
+            unique_key = web2py_uuid()
+        else:
+            unique_key = response.session_db_unique_key
+
+        session_pickled = response.session_pickled or cPickle.dumps(self)
 
         dd = dict(locked=False,
-                  client_ip=request.client.replace(':', '.'),
+                  client_ip=response.session_client,
                   modified_datetime=request.now,
-                  session_data=cPickle.dumps(dict(self)),
+                  session_data=session_pickled,
                   unique_key=unique_key)
         if record_id:
-            table._db(table.id == record_id).update(**dd)
-        else:
+            if not table._db(table.id==record_id).update(**dd):
+                record_id = None
+        if not record_id:
             record_id = table.insert(**dd)
+            response.session_id = '%s:%s' % (record_id, unique_key)
+            response.session_db_unique_key = unique_key
+            response.session_db_record_id = record_id
 
-        cookies, session_id_name = response.cookies, response.session_id_name
-        cookies[session_id_name] = '%s:%s' % (record_id, unique_key)
-        cookies[session_id_name]['path'] = '/'
+        self.save_session_id_cookie()
         return True
 
     def _try_store_in_cookie_or_file(self, request, response):
-        return \
-            self._try_store_in_cookie(request, response) or \
-            self._try_store_in_file(request, response)
+        if response.session_storage_type == 'file':
+            return self._try_store_in_file(request, response)
+        if response.session_storage_type == 'cookie':
+            return self._try_store_in_cookie(request, response)
 
     def _try_store_in_file(self, request, response):
-        if response.session_storage_type != 'file':
-            return False
         try:
-            if not response.session_id or self._forget or self._unchanged():
+            if (not response.session_id or self._forget 
+                or self._unchanged(response)):
+                # self.clear_session_cookies()
+                self.save_session_id_cookie()
                 return False
             if response.session_new or not response.session_file:
                 # Tests if the session sub-folder exists, if not, create it
                 session_folder = os.path.dirname(response.session_filename)
-                if not os.path.exists(session_folder):
-                    os.mkdir(session_folder)
+                if not os.path.exists(session_folder): os.mkdir(session_folder)
                 response.session_file = open(response.session_filename, 'wb')
                 portalocker.lock(response.session_file, portalocker.LOCK_EX)
                 response.session_locked = True
-
             if response.session_file:
-                cPickle.dump(dict(self), response.session_file)
+                session_pickled = response.session_pickled or cPickle.dumps(self)
+                response.session_file.write(session_pickled)
                 response.session_file.truncate()
         finally:
             self._close(response)
+
+        self.save_session_id_cookie()
         return True
 
     def _unlock(self, response):

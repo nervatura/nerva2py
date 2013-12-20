@@ -1,0 +1,42 @@
+{{extend 'nmc/layout.html'}}
+
+<style>
+<!--
+.vernum {
+  background-color: #444444;
+  color: #FFFFFF;
+  font-weight: bold;
+  padding: 2px;
+  font-family: sans-serif;
+  font-size: 12px;
+  font-style: italic;
+  vertical-align: middle;
+}
+-->
+</style>
+ 
+  <div align="center">
+    <p style="font-weight: bold;">Nervatura Mobil Client</p>
+    <p>
+      <span style="font-weight: bold;">{{=T('Database: ')}}</span>{{=response.alias}}<br>
+      <span style="font-weight: bold;">{{=T('Username: ')}}</span>{{=response.username}}
+    </p>      
+    <p><span class="vernum">Ver.No: {{=response.verNo}}</span></p>
+    <table cellpadding="0" cellspacing="0">
+      <tr>
+        <td style="width: 64px;padding-right: 0px;">
+          <img style="vertical-align: bottom;" src="{{=URL('static','images/icon64_ntura_te.png')}}" />
+        </td>
+        <td style="width: 120px;color: #616161;vertical-align: middle;font-size: 13px;font-weight: bold;">
+          OPEN SOURCE<br>
+          BUSINESS<br> 
+          MANAGEMENT
+        </td>
+      </tr>
+    </table>
+    <p><a href="http://www.nervatura.com" target="_blank" title="Nervatura" 
+             style="font-weight: bold;">©2011-2013 Nervatura Framework</a></p>
+    
+  </div>
+  
+

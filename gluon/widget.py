@@ -22,27 +22,13 @@ import math
 import logging
 import newcron
 import getpass
-import main
+import gluon.main as main
 
-from fileutils import read_file, write_file, create_welcome_w2p
-from settings import global_settings
-from shell import run, test
-from utils import is_valid_ip_address, is_loopback_ip_address, getipaddrinfo
+from gluon.fileutils import read_file, write_file, create_welcome_w2p
+from gluon.settings import global_settings
+from gluon.shell import run, test
+from gluon.utils import is_valid_ip_address, is_loopback_ip_address, getipaddrinfo
 
-try:
-    import Tkinter
-    import tkMessageBox
-    import contrib.taskbar_widget
-    from winservice import register_service_handler, Web2pyService
-    have_winservice = True
-except:
-    have_winservice = False
-
-
-try:
-    BaseException
-except NameError:
-    BaseException = Exception
 
 ProgramName = 'web2py Web Framework'
 ProgramAuthor = 'Created by Massimo Di Pierro, Copyright 2007-' + str(
@@ -53,8 +39,8 @@ ProgramInfo = '''%s
                  %s
                  %s''' % (ProgramName, ProgramAuthor, ProgramVersion)
 
-if not sys.version[:3] in ['2.4', '2.5', '2.6', '2.7']:
-    msg = 'Warning: web2py requires Python 2.4, 2.5 (recommended), 2.6 or 2.7 but you are running:\n%s'
+if not sys.version[:3] in ['2.5', '2.6', '2.7']:
+    msg = 'Warning: web2py requires Python 2.5, 2.6 or 2.7 but you are running:\n%s'
     msg = msg % sys.version
     sys.stderr.write(msg)
 
@@ -77,11 +63,13 @@ def run_system_tests(options):
             if options.with_coverage:
                 try:
                     import coverage
-                    coverage_config = os.environ.get("COVERAGE_PROCESS_START",
-                                        os.path.join('gluon', 'tests', 'coverage.ini')
-                                    )
-                    call_args = ['coverage', 'run', '--rcfile=%s' % coverage_config, 
-                                    '-m', 'unittest', '-v', 'gluon.tests']
+                    coverage_config = os.environ.get(
+                        "COVERAGE_PROCESS_START",
+                        os.path.join('gluon', 'tests', 'coverage.ini'))
+
+                    call_args = ['coverage', 'run', '--rcfile=%s' %
+                                 coverage_config,
+                                 '-m', 'unittest', '-v', 'gluon.tests']
                 except:
                     sys.stderr.write('Coverage was not installed, skipping\n')
             sys.stderr.write("Python 2.7\n")
@@ -143,6 +131,7 @@ def start_browser(url, startup=False):
 
 def presentation(root):
     """ Draw the splash screen """
+    import Tkinter
 
     root.withdraw()
 
@@ -162,7 +151,7 @@ def presentation(root):
     canvas.pack()
     root.update()
 
-    logo = 'splashlogo.gif'
+    logo = os.path.join('extras','icons','splashlogo.gif')
     if os.path.exists(logo):
         img = Tkinter.PhotoImage(file=logo)
         pnl = Tkinter.Label(canvas, image=img, background='white', bd=0)
@@ -170,7 +159,8 @@ def presentation(root):
         # Prevent garbage collection of img
         pnl.image = img
 
-    def add_label(text='Change Me', font_size=12, foreground='#195866', height=1):
+    def add_label(text='Change Me', font_size=12,
+                  foreground='#195866', height=1):
         return Tkinter.Label(
             master=canvas,
             width=250,
@@ -199,6 +189,9 @@ class web2pyDialog(object):
     def __init__(self, root, options):
         """ web2pyDialog constructor  """
 
+        import Tkinter
+        import tkMessageBox
+
         root.title('web2py server')
         self.root = Tkinter.Toplevel(root)
         self.options = options
@@ -206,7 +199,7 @@ class web2pyDialog(object):
         self.menu = Tkinter.Menu(self.root)
         servermenu = Tkinter.Menu(self.menu, tearoff=0)
         httplog = os.path.join(self.options.folder, 'httpserver.log')
-        iconphoto = 'web2py.gif'
+        iconphoto = os.path.join('extras','icons','web2py.gif')
         if os.path.exists(iconphoto):
             img = Tkinter.PhotoImage(file=iconphoto)
             self.root.tk.call('wm', 'iconphoto', self.root._w, img)
@@ -326,7 +319,8 @@ class web2pyDialog(object):
         self.button_stop.configure(state='disabled')
 
         if options.taskbar:
-            self.tb = contrib.taskbar_widget.TaskBarIcon()
+            import gluon.contrib.taskbar_widget
+            self.tb = gluon.contrib.taskbar_widget.TaskBarIcon()
             self.checkTaskBar()
 
             if options.password != '<ask>':
@@ -340,11 +334,13 @@ class web2pyDialog(object):
         apps = []
         available_apps = [arq for arq in os.listdir('applications/')]
         available_apps = [arq for arq in available_apps
-                          if os.path.exists('applications/%s/models/scheduler.py' % arq)]
+                          if os.path.exists(
+                'applications/%s/models/scheduler.py' % arq)]
         if start:
             #the widget takes care of starting the scheduler
             if self.options.scheduler and self.options.with_scheduler:
-                apps = [app.strip() for app in self.options.scheduler.split(',')
+                apps = [app.strip() for app
+                        in self.options.scheduler.split(',')
                         if app in available_apps]
         for app in apps:
             self.try_start_scheduler(app)
@@ -428,12 +424,13 @@ class web2pyDialog(object):
         """ Connect pages """
         #reset the menu
         available_apps = [arq for arq in os.listdir('applications/')
-                          if os.path.exists('applications/%s/__init__.py' % arq)]
+                          if os.path.exists(
+                'applications/%s/__init__.py' % arq)]
         self.pagesmenu.delete(0, len(available_apps))
         for arq in available_apps:
             url = self.url + arq
-            self.pagesmenu.add_command(label=url,
-                                       command=lambda u=url: start_browser(u))
+            self.pagesmenu.add_command(
+                label=url, command=lambda u=url: start_browser(u))
 
     def quit(self, justHide=False):
         """ Finish the program execution """
@@ -465,6 +462,7 @@ class web2pyDialog(object):
     def error(self, message):
         """ Show error message """
 
+        import tkMessageBox
         tkMessageBox.showerror('web2py start server', message)
 
     def start(self):
@@ -486,7 +484,8 @@ class web2pyDialog(object):
             return self.error('invalid port number')
 
         # Check for non default value for ssl inputs
-        if (len(self.options.ssl_certificate) > 0) or (len(self.options.ssl_private_key) > 0):
+        if (len(self.options.ssl_certificate) > 0 or
+            len(self.options.ssl_private_key) > 0):
             proto = 'https'
         else:
             proto = 'http'
@@ -504,9 +503,10 @@ class web2pyDialog(object):
                 password,
                 pid_filename=options.pid_filename,
                 log_filename=options.log_filename,
-                profiler_filename=options.profiler_filename,
+                profiler_dir=options.profiler_dir,
                 ssl_certificate=options.ssl_certificate,
                 ssl_private_key=options.ssl_private_key,
+                ssl_ca_certificate=options.ssl_ca_certificate,
                 min_threads=options.minthreads,
                 max_threads=options.maxthreads,
                 server_name=options.server_name,
@@ -528,8 +528,8 @@ class web2pyDialog(object):
         self.button_stop.configure(state='normal')
 
         if not options.taskbar:
-            thread.start_new_thread(start_browser,
-                                    (get_url(ip, proto=proto, port=port), True))
+            thread.start_new_thread(
+                start_browser, (get_url(ip, proto=proto, port=port), True))
 
         self.password.configure(state='readonly')
         [ip.configure(state='disabled') for ip in self.ips.values()]
@@ -865,9 +865,9 @@ def console():
 
     parser.add_option('-F',
                       '--profiler',
-                      dest='profiler_filename',
+                      dest='profiler_dir',
                       default=None,
-                      help='profiler filename')
+                      help='profiler dir')
 
     parser.add_option('-t',
                       '--taskbar',
@@ -914,7 +914,7 @@ def console():
                       dest='run_system_tests',
                       default=False,
                       help=msg)
-    
+
     msg = ('adds coverage reporting (needs --run_system_tests), '
            'python 2.7 and the coverage module installed. '
            'You can alter the default path setting the environmental '
@@ -925,7 +925,7 @@ def console():
                       dest='with_coverage',
                       default=False,
                       help=msg)
-                      
+
     if '-A' in sys.argv:
         k = sys.argv.index('-A')
     elif '--args' in sys.argv:
@@ -1005,7 +1005,7 @@ def console():
         if not os.path.exists('applications/__init__.py'):
             write_file('applications/__init__.py', '')
 
-    return (options, args)
+    return options, args
 
 
 def check_existent_app(options, appname):
@@ -1022,7 +1022,7 @@ def get_code_for_scheduler(app, options):
         code = code % ("','".join(app[1:]))
     app_ = app[0]
     if not check_existent_app(options, app_):
-        print "Application '%s' doesn't exist, skipping" % (app_)
+        print "Application '%s' doesn't exist, skipping" % app_
         return None, None
     return app_, code
 
@@ -1100,11 +1100,11 @@ def start(cron=True):
             if hasattr(options, key):
                 setattr(options, key, getattr(options2, key))
 
-    if False and not os.path.exists('logging.conf') and \
-            os.path.exists('logging.example.conf'):
+    logfile0 = os.path.join('extras','examples','logging.example.conf')
+    if not os.path.exists('logging.conf') and os.path.exists(logfile0):
         import shutil
         sys.stdout.write("Copying logging.conf.example to logging.conf ... ")
-        shutil.copyfile('logging.example.conf', 'logging.conf')
+        shutil.copyfile('logging.example.conf', logfile0)
         sys.stdout.write("OK\n")
 
     # ## if -T run doctests (no cron)
@@ -1117,7 +1117,8 @@ def start(cron=True):
         if not options.args is None:
             sys.argv[:] = options.args
         run(options.shell, plain=options.plain, bpython=options.bpython,
-            import_models=options.import_models, startfile=options.run)
+            import_models=options.import_models, startfile=options.run,
+            cronjob=options.cronjob)
         return
 
     # ## if -C start cron run (extcron) and exit
@@ -1146,12 +1147,13 @@ def start(cron=True):
     # ## if -W install/start/stop web2py as service
     if options.winservice:
         if os.name == 'nt':
-            if have_winservice:
+            try:
+                from winservice import register_service_handler, Web2pyService
                 register_service_handler(
                     argv=['', options.winservice],
                     opt_file=options.config,
                     cls=Web2pyService)
-            else:
+            except ImportError:
                 print 'Error: Missing python module winservice'
                 sys.exit(1)
         else:
@@ -1192,6 +1194,7 @@ def start(cron=True):
             logger.warn(
                 'GUI not available because Tk library is not installed')
             havetk = False
+            options.nogui = True
 
         if options.password == '<ask>' and havetk or options.taskbar and havetk:
             try:
@@ -1260,12 +1263,31 @@ end tell
         print '\t', url
         print 'use "kill -SIGTERM %i" to shutdown the web2py server' % os.getpid()
 
+    # enhance linecache.getline (used by debugger) to look at the source file
+    # if the line was not found (under py2exe & when file was modified)
+    import linecache
+    py2exe_getline = linecache.getline
+    def getline(filename, lineno, *args, **kwargs):
+        line = py2exe_getline(filename, lineno, *args, **kwargs)
+        if not line:                
+            f = open(filename, "r")
+            try:
+                for i, line in enumerate(f):
+                    if lineno == i + 1:
+                        break
+                else:
+                    line = None
+            finally:
+                f.close()
+        return line
+    linecache.getline = getline
+
     server = main.HttpServer(ip=ip,
                              port=port,
                              password=options.password,
                              pid_filename=options.pid_filename,
                              log_filename=options.log_filename,
-                             profiler_filename=options.profiler_filename,
+                             profiler_dir=options.profiler_dir,
                              ssl_certificate=options.ssl_certificate,
                              ssl_private_key=options.ssl_private_key,
                              ssl_ca_certificate=options.ssl_ca_certificate,

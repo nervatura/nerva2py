@@ -1,0 +1,38 @@
+{{extend 'nmc/layout.html'}}
+
+<style>
+<!--
+td.w2p_fl {
+  text-align: left;
+  padding: 5px;
+  font-weight: bold;
+}
+.ui-submit {
+  text-align: center;
+}
+-->
+</style>
+
+{{block header}}
+  {{=response.cmd_menu}}
+  <h1 style="color: #FFD700;font-size: small;margin-bottom: 0px;margin-top: 5px;">{{=T("PARAMETERS")}}</h1>
+  <h1 style="margin-bottom: 5px;margin-top: 0px;"> {{=response.description}}</h1>
+{{end}}
+
+<div align="center" style="max-width: 600px;" >
+  <table width="100%" cellpadding="0px;" cellspacing="0px;">
+    <tr>
+	  {{if not response.return_value:}}
+	    <td>
+	      {{=form.custom.begin}}
+	      {{=form[0]}}
+	      {{=form.custom.end}}
+	    </td>
+	  {{else:}}  
+	    <td>      
+	      {{=response.return_value}}
+	    </td>
+	  {{pass}}
+	  </tr>
+  </table>
+</div>

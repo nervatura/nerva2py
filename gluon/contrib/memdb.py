@@ -236,7 +236,7 @@ class Table(DALStorage):
                                                             field.name))
             elif not field.type in self._db._translator\
                     or not self._db._translator[field.type]:
-                raise SyntaxError('Field: unkown field type %s' % field.type)
+                raise SyntaxError('Field: unknown field type %s' % field.type)
         self._tableobj = self._db.client
         return None
 
@@ -298,6 +298,9 @@ class Table(DALStorage):
 
     def __str__(self):
         return self._tablename
+
+    def __call__(self, id):
+        return self.get(id)
 
 
 class Expression(object):
@@ -502,9 +505,8 @@ class Query(object):
                 'Query: right side of filter must be a value or entity')
         if isinstance(left, Field) and left.name == 'id':
             if op == '=':
-                self.get_one = \
-                    QueryException(tablename=left._tablename,
-                                   id=long(right))
+                self.get_one = QueryException(
+                    tablename=left._tablename, id=long(right or 0))
                 return
             else:
                 raise SyntaxError('only equality by id is supported')

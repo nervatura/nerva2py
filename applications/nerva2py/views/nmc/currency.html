@@ -1,0 +1,77 @@
+{{extend 'nmc/layout.html'}}
+
+<style>
+<!--
+table {
+  width: 100%;
+}
+-->
+</style>
+
+<script>
+</script>
+
+{{block header}}
+  {{=response.cmd_menu}}
+  <h1 style="color: #FFD700;font-size: small;margin-bottom: 0px;margin-top: 5px;">{{=response.title}}</h1>
+  <h1 style="margin-bottom: 5px;margin-top: 0px;"> {{=response.subtitle}}</h1>
+  {{if response.edit:}}
+    {{=response.cmd_commands}}
+  {{pass}}
+{{end}}
+
+{{if response.edit:}}
+<div id="currency_page" name="pages" align="center" style="max-width: 600px;" >
+  {{=form[0].custom.begin}}
+  <table width="100%" cellpadding="0px;" cellspacing="0px;">
+    <tr>
+      <td style="padding-right: 5px;"><div class="label">{{=form[0].custom.label.curr}}</div></td>
+      <td>{{=form[0].custom.widget.curr}}</td>
+    </tr>
+    <tr>
+      <td style="padding-right: 5px;"><div class="label">{{=form[0].custom.label.description}}</div></td>
+      <td>{{=form[0].custom.widget.description}}</td>
+    </tr>
+    <tr>
+      <td colspan="2" style="padding-top: 5px;">
+        <table width="100%" cellpadding="0px;" cellspacing="0px;">
+          <tr>
+            <td style="padding-right: 5px;"><div class="label">{{=form[0].custom.label.digit}}</div></td>
+            <td style="padding-right: 5px;"><div class="label">{{=form[0].custom.label.cround}}</div></td>
+            <td><div class="label">{{=form[0].custom.label.defrate}}</div></td>
+          </tr>
+          <tr>
+            <td style="padding-right: 5px;">{{=form[0].custom.widget.digit}}</td>
+            <td style="padding-right: 5px;">{{=form[0].custom.widget.cround}}</td>
+            <td>{{=form[0].custom.widget.defrate}}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  {{=form[0].custom.end}}
+</div>
+{{else:}}
+  {{=sform}}
+  {{=form}}
+{{pass}}
+
+{{if response.edit:}}
+<div id="local-menu" data-role="panel" data-position="right" data-position-fixed="true" data-display="overlay" data-theme="a">
+  <div data-role="header">
+    {{=response.cmd_home}}
+    {{=response.cmd_close}}
+  </div>
+  <div data-role="content" style="margin-top:30px;padding:0px;margin-bottom: 20px;">
+    <hr style="border-width:0;background-color: #333333;">
+     <div id="ctr_edit_currency" style="margin-top:20px;padding:0px;"> 
+       <div data-role="controlgroup" >
+         {{=form[0].custom.submit}}
+       </div>
+       <div data-role="controlgroup" style="margin-top:20px;">
+         {{=response.cmd_currency_close}}
+       </div>
+     </div>
+  </div>
+</div>
+{{pass}}
