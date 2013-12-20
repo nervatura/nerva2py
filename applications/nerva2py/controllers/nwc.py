@@ -47,11 +47,14 @@ if request.user_agent()["browser"]["name"]=="Microsoft Internet Explorer":
   if int(str(request.user_agent()["browser"]["version"]).split(".")[0])<9:
     jqload_hack = 'alert("'+T('Please wait!')+'");'
 if not session.mobile:
+  if request.user_agent()["is_mobile"] or request.user_agent()["is_tablet"]:
+    session.mobile = True
+  else:
+    session.mobile = False
+if request.vars.has_key("desktop"):
   session.mobile = False
-if ((request.user_agent()["is_mobile"] or request.user_agent()["is_tablet"]) and not request.vars.has_key("desktop")) or request.vars.has_key("mobile"):
+elif request.vars.has_key("mobile"):
   session.mobile = True
-elif request.vars.has_key("desktop"):
-  session.mobile = False
         
 def get_audit_filter(nervatype, transtype=None):
   if not session.auth:
