@@ -44,3 +44,9 @@ def about():
 def licenses():
   response.subtitle=T('License Agreement')
   return dict()
+
+def licenses2():
+  response.nomenu = True
+  response.view='default/licenses.html'
+  response.subtitle=T('License Agreement')
+  return dict()

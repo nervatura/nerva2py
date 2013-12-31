@@ -143,6 +143,7 @@ $(document).bind("mobileinit", function(){
   <!--[if (gt IE 9)|!(IE)]><!--> 
   <body> <!--<![endif]-->
     <div data-role="header" data-fullscreen="false" data-position="fixed">
+      {{if not response.nomenu:}}
       <div data-role="navbar">
         <ul>
           <li><a data-icon="home" data-ajax="false" data-theme="b" href={{=URL('default','start')}}>{{=T('HOME')}}</a></li>
@@ -151,6 +152,7 @@ $(document).bind("mobileinit", function(){
           <li><a data-icon="wrench" data-ajax="false" data-theme="e" href={{=URL('nas','index')}}>{{=T('NAS ADMIN')}}</a></li>
         </ul>
       </div><!-- /navbar -->
+      {{pass}}
     </div>
     <div id="container">
       <table width="100%" cellpadding="5px;" cellspacing="0" style="background-color: #F5F5DC;">
@@ -169,9 +171,11 @@ $(document).bind("mobileinit", function(){
             <h1 style="font-variant: small-caps;font-weight: bold;margin: 0px;">NERVATURA</h1>
             <span class="vernum" >Ver.No: {{=response.verNo}}</span>
           </div>
+          {{if not response.nomenu:}}
           <div style="float: right;margin: 3px;">
             {{=translate()}}
           </div>
+          {{pass}}
         </td></tr>
       </table>
       <hr>

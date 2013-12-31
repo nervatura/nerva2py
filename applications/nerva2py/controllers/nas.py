@@ -30,8 +30,6 @@ from nerva2py.nervastore import NervaStore
 from nerva2py.tools import NervaTools
 from nerva2py.ndi import Ndi
 from nerva2py.localstore import setEngine
-
-response.DEMO_MODE = False
     
 def get_back_button(url,title= T('Back to Admin menu')):
   return A(SPAN(_class="icon leftarrow"), _style="padding-top: 8px;padding-bottom: 8px;font-size: 14px;", 

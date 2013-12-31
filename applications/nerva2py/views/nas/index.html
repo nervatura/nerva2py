@@ -67,10 +67,6 @@ label, label.ui-input-text {
       {{if not 'request_reset_password' in response.auth.settings.actions_disabled:}}
         <br/><a href="{{=URL(r=request,args='request_reset_password')}}">Lost password?</a>
       {{pass}}
-      {{if response.DEMO_MODE:}}
-	      <br/>Username: <span style="font-weight: bold;">demo</span> 
-	              Password: <span style="font-weight: bold;">demo</span>
-	    {{pass}}
 	  {{pass}}
   </div>
 	
