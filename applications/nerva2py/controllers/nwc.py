@@ -31,11 +31,11 @@ import gluon.contrib.simplejson as json
 
 from storage import Storage #@UnresolvedImport
 
-from nerva2py.nervastore import NervaStore
-from nerva2py.localstore import setEngine
-from nerva2py.tools import NervaTools, dict2obj, auth_ini
-from nerva2py.simplegrid import SimpleGrid
-from nerva2py.te import JqueryTeWidget
+from nerva2py.nervastore import NervaStore  # @UnresolvedImport
+from nerva2py.localstore import setEngine  # @UnresolvedImport
+from nerva2py.tools import NervaTools, dict2obj, auth_ini  # @UnresolvedImport
+from nerva2py.simplegrid import SimpleGrid  # @UnresolvedImport
+from nerva2py.te import JqueryTeWidget  # @UnresolvedImport
 
 import os, datetime, math, base64, re
 from StringIO import StringIO
@@ -15834,7 +15834,7 @@ def set_counter_bug(form):
       counter[0][0] = ""
 
 def export2excel(sheetname,query,left,fields,orderby,keywords,join=None,groupfields=None,groupby=None,having=None):
-  from xlwt import Workbook
+  from xlwt import Workbook  # @UnresolvedImport
   
   output = StringIO()
   book = Workbook(encoding='utf-8')

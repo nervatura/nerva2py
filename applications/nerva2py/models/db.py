@@ -17,6 +17,7 @@ if 0:
 import sys,os
 from gluon.sql import DAL, Field
 from gluon.validators import IS_IN_DB
+from gluon.html import FORM, SELECT, URL, OPTION
 
 response.google_analytics_id = None
   
@@ -58,6 +59,26 @@ try:
   analytics_id.close()
 except:
   pass
+
+current_language = 'en'
+languages=[('en','English'),
+           ('hu','Magyar')]
+
+session._language = request.vars._language or session._language or current_language
+T.force(session._language)
+if T.accepted_language != session._language:
+  import re
+  lang = re.compile('\w{2}').findall(session._language)[0]
+  response.files.append(URL(r=request,c='static',f='js/jquery.translate.min.js'))
+  response.files.append(URL(r=request,c='ndr',f='translate',args=lang+'.js'))
+
+def translate():
+  return FORM(SELECT(
+    _id="translate",
+    _onchange="document.location='%s?_language='+jQuery(this).val()" \
+        % URL(r=request,args=request.args),
+    value=session._language,
+    *[OPTION(k,_value=v) for v,k in languages]))
 
 def createTable(table):
     query = db._adapter.create_table(table,migrate=False,fake_migrate=False)

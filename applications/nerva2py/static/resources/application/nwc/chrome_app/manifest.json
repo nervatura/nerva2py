@@ -1,12 +1,12 @@
 {
   "name": "Nervatura Web Client",
   "description": "Open Source Business Management Client",
-  "version": "1",
+  "version": "1.1",
   "manifest_version": 2,
   "app": {
     "launch": {
       "container": "tab",
-      "web_url": "http://nervatura.com/nerva2py/nwc/"
+      "web_url": "http://nervatura.com/nerva2py/nwc?desktop"
     }
   },
   "icons": {
