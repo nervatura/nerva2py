@@ -636,7 +636,9 @@ def user():
   return dict(form=ns_auth())
 
 def w2help():
-  if request.vars.page:
+  if DEMO_MODE:
+    redirect("http://www.nervatura.com")
+  elif request.vars.page:
     lang = session._language if session._language else "en"
     file_name = os.path.join(request.folder, dir_help, lang, str(request.vars.page)+'.html')
     if not os.path.isfile(file_name):
