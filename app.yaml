@@ -1,5 +1,5 @@
 
-application: nerva2py   # change the field to the project name or app id!
+application: <your-app-id>   # change the field to the project name or app id!
 version: 1
 api_version: 1
 runtime: python27
