@@ -3,6 +3,7 @@
 *.log
 *.pid
 *.table
+*.w2p
 
 .project
 .pydevproject
@@ -12,7 +13,7 @@ parameters_8000.py
 parameters_8080.py
 GAID
 errors
-session
+sessions
 private
 session.sqlite
 storage.sqlite

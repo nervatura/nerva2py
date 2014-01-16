@@ -12,8 +12,8 @@ import os
 
 def setEngine(ns, database, check_ndi=False, created=False):
   arows = ns.lstore(ns.lstore.databases.alias == database).select()
-  if len(arows)==0:  
-    ns.error_message = ns.T("Unknown database name!")
+  if len(arows)==0:
+    ns.error_message = ns.T("Missing database: ") + database
     return False
   if arows[0].request_enabled_lst==None or arows[0].request_enabled_lst=="":
     pass

@@ -26,10 +26,10 @@ from gluon.html import URL
 from storage import Storage #@UnresolvedImport
 import os
 
-from nerva2py.nervastore import NervaStore
-from nerva2py.tools import NervaTools
-from nerva2py.ndi import Ndi
-from nerva2py.localstore import setEngine
+from nerva2py.nervastore import NervaStore  # @UnresolvedImport
+from nerva2py.tools import NervaTools  # @UnresolvedImport
+from nerva2py.ndi import Ndi  # @UnresolvedImport
+from nerva2py.localstore import setEngine  # @UnresolvedImport
     
 def get_back_button(url,title= T('Back to Admin menu')):
   return A(SPAN(_class="icon leftarrow"), _style="padding-top: 8px;padding-bottom: 8px;font-size: 14px;", 
@@ -178,8 +178,8 @@ def create_menu():
   ns_menu_dbs[3].append((T('Database Backup'), False, URL("createBackup"), []))
   ns_menu_dbs[3].append((T('Restore the Database'), False, URL("restoreBackup"), []))
   return ns_menu
-  
-auth = Auth(db, hmac_key=Auth.get_or_create_key(), controller="nas") 
+   
+auth = Auth(db, controller="nas")
 crud = Crud(db)
 
 auth.define_tables(username=True, migrate=False, fake_migrate=False) 
