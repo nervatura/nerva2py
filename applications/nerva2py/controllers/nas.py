@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2013, Csaba Kappel
+Copyright © 2011-2014, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -23,13 +23,11 @@ from gluon.html import BR, HR, SELECT, OPTION, P, IMG, TABLE, TR, TD
 from gluon.validators import IS_NOT_EMPTY
 from gluon.tools import Auth, Crud
 from gluon.html import URL
-from storage import Storage #@UnresolvedImport
+from gluon.storage import Storage 
 import os
 
-from nerva2py.nervastore import NervaStore  # @UnresolvedImport
-from nerva2py.tools import NervaTools  # @UnresolvedImport
-from nerva2py.ndi import Ndi  # @UnresolvedImport
-from nerva2py.localstore import setEngine  # @UnresolvedImport
+from nerva2py.nervastore import NervaStore
+from nerva2py.tools import DatabaseTools
     
 def get_back_button(url,title= T('Back to Admin menu')):
   return A(SPAN(_class="icon leftarrow"), _style="padding-top: 8px;padding-bottom: 8px;font-size: 14px;", 
@@ -87,7 +85,15 @@ def set_htmltable_style(table, tbl_id=None, priority="0", columntoggle=True):
     table["_data-mode"] = "columntoggle"
     table["_data-column-btn-text"] = T("Columns to display...")
     table["_data-column-popup-theme"] = "a"
-  head = table[0][0]
+  thead = table.elements("thead")
+  if len(thead)>0:
+    head = thead[0][0]
+  else:
+    colgroup = table.elements("col")
+    if len(colgroup)==0:    
+      head = table[0][0]
+    else:
+      head = table[1][0]
   head["_class"] = "ui-bar-d"
   pnum=1
   for i in range(len(head)):
@@ -144,6 +150,10 @@ def get_form(query,field_id,orderby,fields=None,headers={},frm_type="view",prior
       set_htmltable_style(htable[0][0],"form_search",priority)
       htable[0][0]["_width"]="100%"
   set_counter_bug(gform)
+  if gform[len(gform)-1]["_class"].startswith("web2py_paginator"):
+    pages = gform[len(gform)-1].elements("a")
+    for i in range(len(pages)):
+      pages[i]["_data-ajax"] = "false"
   return gform
 
 def login_methods(username, password):
@@ -200,9 +210,8 @@ response.auth = auth
 if db(db.auth_user.id > 0).count() > 0:
   auth.settings.actions_disabled.append('register')
     
-ns = NervaStore(request, T, db)
-ns.admin_user = True
-dbfu = NervaTools()
+ns = NervaStore(request, session, T, db)
+dbtool = DatabaseTools(ns)
 response.title=T('NAS ADMIN')
 response.cmd_menu = get_mobil_button(label=T("MENU"), href="#main-menu",
                                              icon="bars", cformat="ui-btn-left", ajax="true", iconpos="left")
@@ -237,7 +246,7 @@ def index():
                           _style="width: 64px;padding-right: 0px;"),
                        TD("OPEN SOURCE",BR(),"BUSINESS",BR(),"MANAGEMENT",
                           _style="width: 120px;color: #616161;vertical-align: middle;font-size: 13px;"))),
-              P(A("©2011-2013 Nervatura Framework", _href="http://www.nervatura.com", _target="_blank", 
+              P(A("©2011-2014 Nervatura Framework", _href="http://www.nervatura.com", _target="_blank", 
                   _title="Nervatura", _style="font-weight: bold;")),
               _align="center", _style="padding-top:30px;")
   if len(request.args)>0:        
@@ -340,7 +349,7 @@ def createDb():
              HR(),
              P(SPAN(T('1. Create a new database alias. See ')),A("Customer Databases",_href=URL("databases"),_style="color:#0069D6;font-style: italic;"),
                BR(),
-               SPAN(T('2. The sqlite databases are created automatically.')),
+               SPAN(T('2. The sqlite and Google SQL databases are created automatically.')),
                BR(),
                SPAN(T('3. Other types of databases must be created manually before.')),
                BR(),
@@ -359,43 +368,34 @@ def createBackup():
   response.subtitle = T("Create a Backup")
   response.view='nas/index.html'
   alias = db().select(db.databases.id,db.databases.alias,orderby=db.databases.alias).as_list()
-  cmb_alias = SELECT(*[OPTION(field["alias"],_value=field["alias"]) for field in alias], _id="cmb_alias", _style="width: 400px;height: 25px;")
+  cmb_alias = SELECT(*[OPTION(field["alias"],_value=field["alias"]) for field in alias], _id="cmb_alias")
   if len(cmb_alias)==0:
     cmb_alias.insert(0, OPTION("", _value=""))
-  cmb_btype = SELECT([OPTION(T("customer"), _value="customer"),OPTION(T("settings"), _value="settings")], _id="cmb_btype",_style="width: 100px;height: 25px;")
-  if len(cmb_btype)==0:
-    cmb_btype.insert(0, OPTION("", _value=""))
-  cmb_format = SELECT([OPTION(T("backup"), _value="backup"),OPTION(T("XML"), _value="xml")], _id="cmb_format",_style="width: 100px;height: 25px;")
+  cmb_format = SELECT([OPTION(T("backup"), _value="backup"),OPTION(T("XML"), _value="xml")], _id="cmb_format")
   if len(cmb_format)==0:
     cmb_format.insert(0, OPTION("", _value=""))
   cmb_filename = SELECT([OPTION(T("Alias"), _value=""),OPTION(T("Download"), _value="download"),
-                         OPTION(T("Custom"), _value="custom")], _id="cmb_filename",_style="width: 100px;height: 25px;")
-  if len(cmb_filename)==0:
-    cmb_filename.insert(0, OPTION("", _value=""))
-  cmb_nom = SELECT([OPTION(T("All"), _value=""),
-                         OPTION(T("Custom"), _value="custom")], _id="cmb_nom",_style="width: 100px;height: 25px;")
-  if len(cmb_nom)==0:
-    cmb_nom.insert(0, OPTION("", _value=""))
+                         OPTION(T("Custom"), _value="custom")], _id="cmb_filename")
+  if request.env.web2py_runtime_gae:
+    cmb_filename = SELECT([OPTION(T("Download"), _value="download")], _id="cmb_filename")
+    cust_filename = ""
+  else:
+    cust_filename = INPUT(_type="text",_value="",_id="cust_filename")
   gform = DIV(
              HR(),
-             P(SPAN(T('Customer backup: '), _style="color:brown;"),BR(),
-               SPAN(T('NOM objects: '), _style="color:green;"),SPAN("address, barcode, contact, currency, customer, deffield, employee, event, groups, item, link, \
-               movement, numberdef, pattern, payment, place, price, product, project, rate, tax, tool, trans, setting"),BR(),
-              SPAN(T('Not included: '), _style="color:red;"),SPAN("log, user interface objects (starting with the ui_) and deleted rows (deleted flag)"),BR(),BR(),
-              SPAN(T('Settings backup: '), _style="color:brown;"),BR(),
+             P(SPAN(T('Nervatura backup: '), _style="color:brown;"),BR(),
+               SPAN(T('NOM objects: '), _style="color:green;"),SPAN("address, barcode, contact, currency, customer, deffield, employee, event, fieldvalue, groups, item, link, \
+               log, movement, numberdef, pattern, payment, place, price, product, project, rate, tax, tool, trans"),BR(),
               SPAN(T('Settings objects: '), _style="color:green;"),SPAN("ui_audit, ui_applview, ui_filter, ui_groupinput, ui_language, \
                 ui_locale, ui_menu, ui_menufields, ui_message, ui_numtotext, ui_report, ui_reportfields, \
                 ui_reportsources, ui_userconfig, ui_viewfields, ui_zipcatalog"),BR(),
-              SPAN(T('Not included: '), _style="color:red;"),SPAN("ui_printqueue and other NOM objects"),BR(),BR(),
+              SPAN(T('Not included: '), _style="color:red;"),SPAN("ui_printqueue"),BR(),BR(),
               SPAN(T("Independent from the database type and version of the NAS server."),_style="font-style: italic;")),
              DIV(
                DIV(SPAN(T('Database alias:'),_style="padding-right: 15px;padding-left: 15px;"),cmb_alias),
                DIV(SPAN(T('Filename:') ,_style="padding-right: 15px;padding-left: 15px;"),cmb_filename, SPAN(" "),
-               INPUT(_type="text",_value="",_id="cust_filename",_style="width: 327px;height: 12px;"), _style="padding-top: 10px;"),
-               DIV(SPAN(T('NOM objects:'),_style="padding-right: 15px;padding-left: 15px;"),cmb_nom, SPAN(" "),
-               INPUT(_type="text",_value="",_id="cust_nom",_style="width: 300px;height: 10px;"),_style="padding-top: 10px;"), 
-               DIV(SPAN(T('Backup type:'),_style="padding-right: 15px;padding-left: 15px;"),cmb_btype,
-                   SPAN(T('Backup format:'),_style="padding-right: 15px;padding-left: 15px;"),cmb_format, _style="padding-top: 10px;"),
+               cust_filename, _style="padding-top: 10px;"), 
+               DIV(SPAN(T('Backup format:'),_style="padding-right: 15px;padding-left: 15px;"),cmb_format, _style="padding-top: 10px;"),
              P(SPAN(get_mobil_button(label=T("Start"), href="#", onclick="createDataBackup();", icon="check", theme="a",
                                  title=ns.T('Start customer backup creation')),
                     SPAN(T('Starting the process?'),_style="padding-left: 15px;", _id="msg_result"),_style="font-style: italic;"),
@@ -414,23 +414,20 @@ def restoreBackup():
   if request.post_vars:
     if request.post_vars.alias==None or request.post_vars.alias=="":
       msg_result = T("Error: Missing alias parameter!")
-    ndi = Ndi(ns)
-    if setEngine(ns, request.vars.alias,True, False)==False:
-      msg_result = str("Error: "+ns.error_message)
-    elif request.post_vars.has_key("frm_file"):
+    if request.post_vars.has_key("frm_file"):
       if request.post_vars.bfile=="":
         msg_result = T("Error: Missing upload file!")
       else:
-        msg_result = dbfu.loadBackupData(ns, ndi, bfile=request.post_vars.bfile)
+        msg_result = dbtool.loadBackupData(alias=request.vars.alias, bfile=request.post_vars.bfile)
     else:
       if request.post_vars.filename=="":
         msg_result = T("Error: Missing upload filename!")
       else:
-        msg_result = dbfu.loadBackupData(ns, ndi, filename=request.post_vars.filename)
+        msg_result = dbtool.loadBackupData(alias=request.vars.alias, filename=request.post_vars.filename)
     request.post_vars = None
   
   alias = db().select(db.databases.id,db.databases.alias,orderby=db.databases.alias).as_list()
-  cmb_alias = SELECT(*[OPTION(field["alias"],_value=field["alias"]) for field in alias], _name="alias", _id="cmb_alias", _style="width: 362px;height: 25px;")
+  cmb_alias = SELECT(*[OPTION(field["alias"],_value=field["alias"]) for field in alias], _name="alias", _id="cmb_alias")
   if len(cmb_alias)==0:
     cmb_alias.insert(0, OPTION("", _value=""))
   dfiles = os.listdir(os.path.join(ns.request.folder, 'static/backup'))
@@ -439,7 +436,7 @@ def restoreBackup():
     if str(dfile).endswith(".backup") or str(dfile).endswith(".xml"):
       files.append(dfile)
   files.sort()
-  cmb_files = SELECT(*files, _id="cmb_files", _name="filename", _style="width: 400px;height: 25px;")
+  cmb_files = SELECT(*files, _id="cmb_files", _name="filename")
   if len(cmb_files)==0:
     cmb_files.insert(0, OPTION("", _value=""))
   cmd_filename=INPUT(_type="submit",_name="frm_filename", _title= ns.T('Start restore from local backup file'),
@@ -450,10 +447,25 @@ def restoreBackup():
                              _value=T("Upload and Start restore"),_onclick="msg_result.innerHTML='"+T("Process started. Waiting for the server to respond ...")+"';")
   cmd_file["_data-theme"] = "a"
   cmd_file["_data-icon"] = "check"
-  gform = DIV(
+  cmd_file["_data-ajax"] = "false"
+  if request.env.web2py_runtime_gae:
+    gform = DIV(
               HR(),
-              P(SPAN(T('It is recommended to create the database before restoring! See ')),
-                A("Create a new Nervatura database",_href=URL("createDb"),_style="color:#0069D6;font-style: italic;")),
+              P(SPAN(T('The sqlite and Google SQL databases are created automatically. Other types of databases must be created manually before.'))),
+              FORM(
+                   DIV(SPAN(T('Database alias:'),_style="padding-right: 15px;padding-left: 15px;"),cmb_alias),
+                   DIV(SPAN(T('File:') ,_style="padding-right: 15px;padding-left: 15px;"),
+                       INPUT(_type='file', _name='bfile', _id='bfile', _requires=IS_NOT_EMPTY()), SPAN("",_style="padding-left: 15px;"),
+                       cmd_file,
+                       _style="padding-top: 8px;"), 
+                   _id="frm_upload_files",_name="frm_upload", **{"_data-ajax":"false"}),
+              P(SPAN(msg_result, _id="msg_result",_style="padding-left: 15px;font-style: italic;padding-top: 5px;")),
+              HR()
+              ,_style="font-weight: bold;", _align="left")
+  else:
+    gform = DIV(
+              HR(),
+              P(SPAN(T('The sqlite and Google SQL databases are created automatically. Other types of databases must be created manually before.'))),
               FORM(
                    DIV(SPAN(T('Database alias:'),_style="padding-right: 15px;padding-left: 15px;"),cmb_alias),
                    DIV(SPAN(T('Filename:') ,_style="padding-right: 15px;padding-left: 15px;"),cmb_files,
@@ -476,33 +488,25 @@ def createDatabase():
     return P(SPAN(T("Demo user: This action is not allowed!"),_style="color:red;"))
   if request.vars.alias==None:
     return str(T("Error: Missing alias parameter!"))
-  return P(dbfu.createDatabase(ns, request.vars.alias))
+  return P(dbtool.createDatabase(request.vars.alias))
 
 @auth.requires_login()
 def createDataBackup():
   if request.vars.alias==None:
     return P(str(T("Error: Missing alias parameter!")))
-  if request.vars.btype==None or request.vars.btype not in("customer","settings"):
-    return P(str(T("Error: Missing backup type parameter!")))
   if request.vars.bformat:
-    bformat = request.vars.bformat
+    bformat = str(request.vars.bformat)
   else:
     bformat = "backup"
-  if request.vars.lst_nom:
-    if request.vars.bformat:
-      return P(str(T("Error: The setting is set, the backup only when all objects are allowed!!")))
-    lst_nom = str(request.vars.lst_nom).split(",")
-  else:
-    lst_nom = []
-  if setEngine(ns, request.vars.alias,True, False)==False:
-    return P(str("Error: "+ns.error_message))
-  ndi = Ndi(ns)
-  retbc = dbfu.createDataBackup(ns, ndi, alias=request.vars.alias, btype=request.vars.btype, lst_nom=lst_nom, 
-                                        bformat=bformat, filename=request.vars.filename,verNo=response.verNo)
+  if ns.local.setEngine(request.vars.alias,True, False)==False:
+    return P("Error: "+str(ns.error_message))
+  retbc = dbtool.createDataBackup(alias=request.vars.alias, bformat=bformat, filename=request.vars.filename,verNo=response.verNo)
   if request.vars.filename == "download":
     if (not str(retbc).startswith("<span")) and (not str(retbc).startswith("<div")):
+      import time
       response.headers['Content-Type']='application/octet-stream'
-      response.headers['Content-Disposition'] = 'attachment;filename="'+request.vars.alias+'.'+bformat+'"'
+      response.headers['Content-Disposition'] = 'attachment;filename="'+str(request.vars.alias)+'_'+time.strftime("%Y%m%d_%H%M")+'.'+bformat+'"'
+      return retbc
   return P(retbc)
   
 @auth.requires_login()

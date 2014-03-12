@@ -1,3 +1,4 @@
+
 """
 Developed by Massimo Di Pierro
 Released under the web2py license (LGPL)
@@ -48,18 +49,6 @@ class WebClient(object):
         self.sessions = {}
         self.session_regex = session_regex and re.compile(session_regex)
 
-    def web2py_url_encode(self, data):
-        output = []
-        for var in data:
-            val = data[var]
-            if type(val)==list:
-                for item in val:
-                    output += ['%s=%s' % (urllib.quote_plus(var), urllib.quote_plus(item)),]
-            else:
-                output += ['%s=%s' % (urllib.quote_plus(var), urllib.quote_plus(val)),]
-        
-        return '&'.join(output)
-    
     def get(self, url, cookies=None, headers=None, auth=None):
         return self.post(url, data=None, cookies=cookies,
                          headers=headers, method='GET')
@@ -117,9 +106,9 @@ class WebClient(object):
         # assume everything is ok and make http request
         error = None
         try:
-            if isinstance(data,str):
+            if isinstance(data, str):
                 self.method = 'POST' if method=='auto' else method
-            if isinstance(data, dict):
+            elif isinstance(data, dict):
                 self.method = 'POST' if method=='auto' else method
                 # if there is only one form, set _formname automatically
                 if not '_formname' in data and len(self.forms) == 1:
@@ -131,7 +120,7 @@ class WebClient(object):
                     data['_formkey'] = self.forms[data['_formname']]
 
                 # time the POST request
-                data = self.web2py_url_encode(data)
+                data = urllib.urlencode(data, doseq=True)
             else:
                 self.method = 'GET' if method=='auto' else method
                 data = None

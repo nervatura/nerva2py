@@ -4,6 +4,7 @@
 # recreated by Vladyslav Kozlovskyy
 # license MIT/BSD/GPL
 import re
+import urllib
 from cgi import escape
 from string import maketrans
 try:
@@ -466,7 +467,7 @@ You can use Google charts to render the formula:
 
 ``
 LATEX = '<img src="http://chart.apis.google.com/chart?cht=tx&chl=%s" />'
-markmin2html(text,{'latex':lambda code: LATEX % code.replace('"','\\\\"')})
+markmin2html(text,{'latex':lambda code: LATEX % urllib.quote(code)})
 ``
 
 ### Code with syntax highlighting
@@ -550,7 +551,7 @@ regex_list=re.compile('^(?:(?:(#{1,6})|(?:(\.+|\++|\-+)(\.)?))\s*)?(.*)$')
 regex_bq_headline=re.compile('^(?:(\.+|\++|\-+)(\.)?\s+)?(-{3}-*)$')
 regex_tq=re.compile('^(-{3}-*)(?::(?P<c>[a-zA-Z][_a-zA-Z\-\d]*)(?:\[(?P<p>[a-zA-Z][_a-zA-Z\-\d]*)\])?)?$')
 regex_proto = re.compile(r'(?<!["\w>/=])(?P<p>\w+):(?P<k>\w+://[\w\d\-+=?%&/:.]+)', re.M)
-regex_auto = re.compile(r'(?<!["\w>/=])(?P<k>\w+://[\w\d\-+_=?%&/:.,;#]+\w)',re.M)
+regex_auto = re.compile(r'(?<!["\w>/=])(?P<k>\w+://[\w\d\-+_=?%&/:.,;#]+\w|[\w\-.]+@[\w\-.]+)',re.M)
 regex_link=re.compile(r'('+LINK+r')|\[\[(?P<s>.+?)\]\]',re.S)
 regex_link_level2=re.compile(r'^(?P<t>\S.*?)?(?:\s+\[(?P<a>.+?)\])?(?:\s+(?P<k>\S+))?(?:\s+(?P<p>popup))?\s*$',re.S)
 regex_media_level2=re.compile(r'^(?P<t>\S.*?)?(?:\s+\[(?P<a>.+?)\])?(?:\s+(?P<k>\S+))?\s+(?P<p>img|IMG|left|right|center|video|audio|blockleft|blockright)(?:\s+(?P<w>\d+px))?\s*$',re.S)
@@ -647,7 +648,9 @@ def autolinks_simple(url):
     image, video or audio tag
     """
     u_url=url.lower()
-    if u_url.endswith(('.jpg','.jpeg','.gif','.png')):
+    if '@' in url and not '://' in url:
+        return '<a href="mailto:%s">%s</a>' % (url, url)
+    elif u_url.endswith(('.jpg','.jpeg','.gif','.png')):
         return '<img src="%s" controls />' % url
     elif u_url.endswith(('.mp4','.mpeg','.mov','.ogv')):
         return '<video src="%s" controls></video>' % url
@@ -671,6 +674,9 @@ def protolinks_simple(proto, url):
     elif proto == 'qr':
         return '<img style="width:100px" src="http://chart.apis.google.com/chart?cht=qr&chs=100x100&chl=%s&choe=UTF-8&chld=H" alt="QR Code" title="QR Code" />'%url
     return proto+':'+url
+
+def email_simple(email):
+   return '<a href="mailto:%s">%s</a>' % (email, email)
 
 def render(text,
            extra={},
@@ -779,7 +785,7 @@ def render(text,
     'xaaax'
 
     >>> print render(r"$$\int_a^b sin(x)dx$$")
-    <img src="http://chart.apis.google.com/chart?cht=tx&chl=\\int_a^b sin(x)dx" />
+    <img src="http://chart.apis.google.com/chart?cht=tx&chl=%5Cint_a%5Eb%20sin%28x%29dx" />
 
     >>> markmin2html(r"use backslash: \[\[[[mess\[[ag\]]e link]]\]]")
     '<p>use backslash: [[<a href="link">mess[[ag]]e</a>]]</p>'
@@ -926,7 +932,7 @@ def render(text,
         text = text.encode('utf8')
     text = str(text or '')
     text = regex_backslash.sub(lambda m: m.group(1).translate(ttab_in), text)
-    text = text.replace('\x05','') # concatenate strings separeted by \\n
+    text = text.replace('\x05','').replace('\r\n', '\n') # concatenate strings separeted by \\n
 
     if URL is not None:
         text = replace_at_urls(text,URL)
@@ -1382,7 +1388,7 @@ def render(text,
                                    % (id_prefix+d,b,d) \
                                    for d in escape(code).split(','))+']'
         elif b=='latex':
-            return LATEX % code.replace('"','\"').replace('\n',' ')
+            return LATEX % urllib.quote(code)
         elif b in html_colors:
             return '<span style="color: %s">%s</span>' \
                   % (b, render(code, {}, {}, 'br', URL, environment, latex,

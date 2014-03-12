@@ -41,7 +41,8 @@ a {
       <li><a href="#complex">Complex data types</a></li>
       <li><a href="#other_object">Other objects</a></li>
       <li><a href="#ui_object">User interface objects</a></li>
-      <li><a href="#appendix">Relational relations</a></li>
+      <li><a href="#pyramid">Relations pyramid</a></li>
+      <li><a href="#appendix">Objects relations</a></li>
     </ol>
   </h3>
   
@@ -109,7 +110,7 @@ a {
 			<p>By using the <span class="nobj">DEFFIELD</span> object we can define data storage features
 				for other objects. Besides the classical data types (bool, integer,
 				float, date, string, notes) these can contain list of values
-				(valuelist), url links (flink) or references to concrete components
+				(valuelist), url links (urlink) or references to concrete components
 				of other objects (customer, product, tool, employee, etc.).</p>
       <p>
 				<i>When using NDI, values of features defined in this way can be set
@@ -212,9 +213,9 @@ a {
 				is possible to define further additional data.
 			</p>
 			<p>One to one linked sub objects: <br>
-			  <span class="nobj">ADDRESS</span>(+add.data),
-				<span class="nobj">BARCODE</span>, <span class="nobj">CONTACT</span>(+add.data), 
-				<span class="nobj">PRICE</span>(+add.data)</p>
+			  <span class="nobj">ADDRESS</span>,
+				<span class="nobj">BARCODE</span>, <span class="nobj">CONTACT</span>, 
+				<span class="nobj">PRICE</span></p>
 			<p>One to many linked sub objects: <br>
 			  <span class="nobj">CURRENCY, PATTERN, RATE, TAX</span>
 			</p>
@@ -222,8 +223,8 @@ a {
     <li>
       <h3><a name="other_object">Other objects</a></h3>
       <p>The objects of rights management, logging and other options: <br> 
-				<span class="nobj">LOG</span>(+add.data), 
-				<span class="nobj">NUMBERDEF, SETTING</span></p>
+				<span class="nobj">LOG</span>, 
+				<span class="nobj">NUMBERDEF</span></p>
 		</li>
     <li>
       <h3><a name="ui_object">User interface objects</a></h3>
@@ -251,6 +252,118 @@ a {
 			<p>Printing: <br>
 			  <span class="nobj">UI_PRINTQUEUE</span></p>
 		</li>
+		<li>
+      <h3><a name="pyramid">Relations pyramid</a></h3>
+      <p style="font-style: italic;">For safe backup and restore go from top to the bottom.</p>
+      <table cellpadding="8px" cellspacing="0" style="border-width: 1px; border-style: solid; border-collapse: collapse;">
+        <tr style="background-color: background;">
+          <th colspan="2">Level</th>
+          <th>Additional data</th>
+          <th>Objects</th>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">level 1a</td>
+          <td rowspan="2">no external link</td>
+          <td>no</td>
+          <td><span class="nobj">GROUPS, NUMBERDEF</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">level 1b</td>
+          <td>yes*</td>
+          <td><span class="nobj">CURRENCY, TAX</span></td>
+        </tr>
+        <tr style="background-color: #F5F5F5;">
+          <td style="font-weight: bold;">level 2a</td>
+          <td rowspan="2">link to <= level 1</td>
+          <td>no</td>
+          <td><span class="nobj">DEFFIELD, PATTERN</span></td>
+        </tr>
+        <tr style="background-color: #F5F5F5;">
+          <td style="font-weight: bold;">level 2b</td>
+          
+          <td>yes*</td>
+          <td><span class="nobj">CUSTOMER, EMPLOYEE, PLACE, PRODUCT</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">level 3</td>
+          <td>link to <= level 2</td>
+          <td>yes*</td>
+          <td><span class="nobj">BARCODE, PRICE, PROJECT, RATE, TOOL</span></td>
+        </tr>
+        <tr style="background-color: #F5F5F5;">
+          <td style="font-weight: bold;">level 4</td>
+          <td>link to <= level 3</td>
+          <td>yes*</td>
+          <td><span class="nobj">TRANS</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">level 5</td>
+          <td>link to <= level 4</td>
+          <td>yes*</td>
+          <td><span class="nobj">EVENT, ITEM, MOVEMENT, PAYMENT</span></td>
+        </tr>
+        <tr style="background-color: #F5F5F5;">
+          <td style="font-weight: bold;">level 6</td>
+          <td>link to <= level 5</td>
+          <td>yes*</td>
+          <td><span class="nobj">ADDRESS, CONTACT</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">level 7</td>
+          <td>link to <= level 6</td>
+          <td>yes*</td>
+          <td><span class="nobj">LINK, LOG</span></td>
+        </tr>
+        <tr style="background-color: #F5F5F5;">
+          <td style="font-weight: bold;">level 8</td>
+          <td>link to <= level 7</td>
+          <td>no</td>
+          <td><span class="nobj">FIELDVALUE</span></td>
+        </tr>
+        <tr>
+          <td colspan="4" style="font-style: italic;border-top-style: solid;border-top-width: 1px;font-size: small;">
+          *Backup with the FIELDVALUE (cross-references fields)
+          </td>
+        </tr>
+      </table>
+      
+      <table cellpadding="8px" cellspacing="0" style="border-width: 1px; border-style: solid; border-collapse: collapse;margin-top: 20px;">
+        <tr style="background-color: background;">
+          <th colspan="2">Level</th>
+          <th>Objects</th>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">level 1</td>
+          <td>no external link</td>
+          <td><span class="nobj">UI_APPLVIEW, UI_MENU, UI_LANGUAGE</span></td>
+        </tr>
+        <tr style="background-color: #F5F5F5;">
+          <td style="font-weight: bold;">level 2a</td>
+          <td>link to <= level 1</td>
+          <td><span class="nobj">UI_LOCALE, UI_MESSAGE, UI_NUMTOTEXT</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">level 2b</td>
+          <td>link to <= NOM level 1</td>
+          <td><span class="nobj">UI_REPORT, UI_AUDIT, UI_GROUPINPUT, UI_VIEWFIELDS</span></td>
+        </tr>
+        <tr style="background-color: #F5F5F5;">
+          <td style="font-weight: bold;">level 3a</td>
+          <td>link to <= level 2a</td>
+          <td><span class="nobj">UI_ZIPCATALOG</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;">level 3b</td>
+          <td>link to <= level 2b</td>
+          <td><span class="nobj">UI_MENUFIELDS, UI_REPORTFIELDS, UI_REPORTSOURCES</span></td>
+        </tr>
+        <tr style="background-color: #F5F5F5;">
+          <td style="font-weight: bold;">level 4</td>
+          <td>link to <= NOM level 2</td>
+          <td><span class="nobj">UI_FILTER, UI_USERCONFIG, UI_PRINTQUEUE</span></td>
+        </tr>
+      </table>
+    </li>
     <li>
       <h3><a name="appendix">Objects relations</a></h3>
       <p><i>1. picture: A possible relational database plan of NOM objects.</i></p>

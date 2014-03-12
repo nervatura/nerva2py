@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2013, Csaba Kappel
+Copyright © 2011-2014, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -101,7 +101,7 @@ class fChildFrame(wx.aui.AuiMDIChildFrame):
   
   def _field_link(self,  event=None):
     item = self.dg_fields.GetTable().GetRowData(event.GetRow())
-    if item.fieldtype=="flink":
+    if item.fieldtype=="urlink":
       webbrowser.open(item.value)
       return
     if item.fieldtype=="customer":

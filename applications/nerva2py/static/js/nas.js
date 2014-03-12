@@ -15,12 +15,12 @@ function createDatabase() {
 
 function createDataBackup() {
 	var cmb_alias=document.getElementById('cmb_alias').value;
-	var cmb_format=document.getElementById('cmb_format').value;
-	var cmb_btype=document.getElementById('cmb_btype').value;
-	var cmb_filename=document.getElementById('cmb_filename').value;
-	var cust_filename=document.getElementById('cust_filename').value;
-	var cmb_nom=document.getElementById('cmb_nom').value;
-	var cust_nom=document.getElementById('cust_nom').value;
+	var cmb_format=document.getElementById('cmb_format').value;;
+	var cmb_filename=document.getElementById('cmb_filename').value;;
+	var cust_filename="";
+	if (document.getElementById('cust_filename')!=null) {
+		cust_filename = document.getElementById('cust_filename').value;	
+	}
 	if (cmb_alias=="") {
 		alert("Missing database!"); return false;}
 	if (cmb_filename=="custom") {
@@ -30,25 +30,15 @@ function createDataBackup() {
 			cmb_filename = cust_filename;
 		}
 	}
-	if (cmb_nom=="custom") {
-		if (cmb_btype=="settings") {
-			alert("The setting is selected, the backup only when all objects are allowed!"); return false;
-		}
-		if (cust_nom=="") {
-			alert("Missing custom NOM list!"); return false;	
-		} else {
-			cmb_nom = cust_nom;
-		}
-	}
 	if(confirm('Start the customer backup creation. Do you want to continue?')) {
     	if (cmb_filename=="download") {
-    		msg_result.innerHTML='Starting the process?'
-    		window.open(base_url+'/createDataBackup?alias='+cmb_alias+'&btype='+cmb_btype+'&bformat='+cmb_format
-            		+'&lst_nom='+cmb_nom+'&filename='+cmb_filename, '_blank')
+    		msg_result.innerHTML='Starting the process?';
+    		window.location.assign(base_url+'/createDataBackup?alias='+cmb_alias+'&bformat='+cmb_format
+    		  +'&filename='+cmb_filename)
     	} else {
     		msg_result.innerHTML='Process started. Waiting for the server to respond ...';
-    		callFunction(base_url+'/createDataBackup?alias='+cmb_alias+'&btype='+cmb_btype+'&bformat='+cmb_format
-            		+'&lst_nom='+cmb_nom+'&filename='+cmb_filename,'msg_result');	
+    		callFunction(base_url+'/createDataBackup?alias='+cmb_alias+'&bformat='+cmb_format
+            		+'&filename='+cmb_filename,'msg_result');	
     	}
     } 
 	else {msg_result.innerHTML='Starting the process?'}

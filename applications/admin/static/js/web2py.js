@@ -167,10 +167,12 @@
         else t.fadeOut();
       });
       doc.on('keyup', 'input.integer', function () {
-        this.value = this.value.reverse().replace(/[^0-9\-]|\-(?=.)/g, '').reverse();
+	var nvalue = this.value.reverse().replace(/[^0-9\-]|\-(?=.)/g, '').reverse();
+        if(this.value!=nvalue) this.value = nvalue;
       });
       doc.on('keyup', 'input.double, input.decimal', function () {
-        this.value = this.value.reverse().replace(/[^0-9\-\.,]|[\-](?=.)|[\.,](?=[0-9]*[\.,])/g, '').reverse();
+        var nvalue = this.value.reverse().replace(/[^0-9\-\.,]|[\-](?=.)|[\.,](?=[0-9]*[\.,])/g, '').reverse();
+        if(this.value!=nvalue) this.value = nvalue;
       });
       var confirm_message = (typeof w2p_ajax_confirm_message != 'undefined') ? w2p_ajax_confirm_message : "Are you sure you want to delete this object?";
       doc.on('click', "input[type='checkbox'].delete", function () {
@@ -248,22 +250,33 @@
       });
 
     },
+
     trap_form: function (action, target) {
       /* traps any LOADed form */
       $('#' + target + ' form').each(function (i) {
         var form = $(this);
-        form.attr('data-w2p_target', target);
-        if(!form.hasClass('no_trap')) {
-          /* should be there by default */
-          form.submit(function (e) {
-            web2py.disableElement(form.find(web2py.formInputClickSelector));
-            web2py.hide_flash();
-            web2py.ajax_page('post', action, form.serialize(), target, form);
-            e.preventDefault();
-          });
+        if (form.hasClass('no_trap')) {
+          return;
         }
+
+        form.attr('data-w2p_target', target);
+        var url = form.attr('action');
+
+        if ((url === "") || (url === "#")) {
+          /* form has no action. Use component url. */
+          url = action;
+        }
+
+        form.submit(function (e) {
+          web2py.disableElement(form.find(web2py.formInputClickSelector));
+          web2py.hide_flash();
+          web2py.ajax_page('post', url, form.serialize(), target, form);
+          e.preventDefault();
+        });
       });
     },
+
+
     ajax_page: function (method, action, data, target, element) {
       /* element is a new parameter, but should be put be put in front */
       if(element == undefined) element = $(document);
@@ -295,7 +308,7 @@
           },
           'complete': function (xhr, status) {
             web2py.fire(element, 'ajax:complete', [xhr, status], target);
-            web2py.updatePage(xhr, target);	/* Parse and load the html received */
+            web2py.updatePage(xhr, target);    /* Parse and load the html received */
             web2py.trap_form(action, target);
             web2py.ajax_init('#' + target);
             web2py.after_ajax(xhr);
@@ -445,8 +458,8 @@
       } else return false; /* not supported */
     },
     /* new from here */
-    /* Form input elements bound by jquery-uj */
-    formInputClickSelector: 'input[type=submit], input[type=image], button[type=submit], button:not([type])',
+    /* Form input elements bound by web2py.js */
+    formInputClickSelector: 'input[type=submit]:not([name]), input[type=image]:not([name]), button[type=submit]:not([name]), button:not([type]):not([name])',
     /* Form input elements disabled during form submission */
     disableSelector: 'input, button, textarea, select',
     /* Form input elements re-enabled after form submission */
@@ -472,8 +485,10 @@
       el.addClass('disabled');
       var method = el.prop('type') == 'submit' ? 'val' : 'html';
       var disable_with_message = (typeof w2p_ajax_disable_with_message != 'undefined') ? w2p_ajax_disable_with_message : "Working...";
-      /*store enabled state*/
-      el.data('w2p:enable-with', el[method]());
+      /*store enabled state if not already disabled */
+      if (el.data('w2p:enable-with') === undefined) {
+          el.data('w2p:enable-with', el[method]());
+      }
       /*if you don't want to see "working..." on buttons, replace the following
       * two lines with this one
       * el.data('w2p_disable_with', el[method]());
@@ -513,7 +528,7 @@
       if(flash.html()) flash.append('<span id="closeflash"> &times; </span>').slideDown();
     },
     hide_flash: function () {
-      $('.flash').hide().html('');
+      $('.flash').fadeOut(0).html('');
     },
     show_if_handler: function (target) {
       var triggers = {};
@@ -620,7 +635,9 @@
         if(disable_with == undefined) {
           element.data('w2p_disable_with', element[method]())
         }
-        element.data('w2p:enable-with', element[method]());
+        if (element.data('w2p:enable-with') === undefined) {
+            element.data('w2p:enable-with', element[method]());
+        }
         element[method](element.data('w2p_disable_with'));
         element.prop('disabled', true);
       });
@@ -634,7 +651,10 @@
       form.find(web2py.enableSelector).each(function () {
         var element = $(this),
           method = element.is('button') ? 'html' : 'val';
-        if(element.data('w2p:enable-with')) element[method](element.data('w2p:enable-with'));
+        if(element.data('w2p:enable-with')) {
+            element[method](element.data('w2p:enable-with'));
+            element.removeData('w2p:enable-with');
+        }
         element.prop('disabled', false);
       });
     },
@@ -646,7 +666,18 @@
       el.on('ajax:complete', 'form[data-w2p_target]', function (e) {
         web2py.enableFormElements($(this));
       });
-    }
+    },
+    /* Invalidate and force reload of a web2py component
+    */
+    invalidate: function(target) {
+      $('div[data-w2p_remote]', target).each(function () {
+        var el = $('#' + $(this).attr('id')).get(0);
+        if (el.timing !== undefined) {  // Block triggering regular routines
+            clearInterval(el.timing);
+        }
+      });
+      $.web2py.component_handler(target);
+    },
   }
 
   /*end of functions */
@@ -666,7 +697,7 @@
 /* compatibility code - start */
 ajax = jQuery.web2py.ajax;
 web2py_component = jQuery.web2py.component;
-web2py_websocket = jQuery.web2py.websocket;
+web2py_websocket = jQuery.web2py.web2py_websocket;
 web2py_ajax_page = jQuery.web2py.ajax_page;
 /*needed for IS_STRONG(entropy)*/
 web2py_validate_entropy = jQuery.web2py.validate_entropy;

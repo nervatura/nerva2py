@@ -7,7 +7,8 @@ UPDATE ui_applview SET sqlstr='select e.id, c.custnumber, c.custname, e.calnumbe
 from event e
 inner join customer c on e.ref_id = c.id
 left join groups eg on e.eventgroup = eg.id
-where e.deleted=0 and c.deleted=0 and e.nervatype = (select id from groups where groupname=''nervatype'' and groupvalue=''customer'') and c.id>1 @where_str'
+where e.deleted=0 and c.deleted=0 and e.nervatype = (select id from groups where groupname=''nervatype'' and groupvalue=''customer'') 
+  and c.id not in(select customer.id from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=''own'') @where_str'
 WHERE viewname='CustomerEvents';
 
 update ui_viewfields set 
@@ -86,7 +87,8 @@ UPDATE ui_applview SET sqlstr='select e.id, t.serial, t.description as pdescript
 from event e
 inner join tool t on e.ref_id = t.id
 left join groups eg on e.eventgroup = eg.id
-where e.deleted=0 and t.deleted=0 and e.nervatype = (select id from groups where groupname=''nervatype'' and groupvalue=''tool'') @where_str'
+where e.deleted=0 and t.deleted=0 and e.nervatype = (select id from groups where groupname=''nervatype'' and groupvalue=''tool'') 
+  and (t.toolgroup not in(select id from groups where groupname=''toolgroup'' and groupvalue=''printer'') or t.toolgroup is null) @where_str'
 WHERE viewname='ToolEvents';
 
 update ui_viewfields set 

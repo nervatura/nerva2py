@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2013, Csaba Kappel
+Copyright © 2011-2014, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -16,7 +16,7 @@ if 0:
   import gluon.languages.translator as T
   from gluon.sql import DAL
   global db; db = DAL()
-  from gluon.html import URL #@UnresolvedImport
+  from gluon.html import URL
   
 from nerva2py.nervastore import NervaStore
 from gluon.html import TABLE, TR, TD
@@ -26,14 +26,15 @@ from gluon.sqlhtml import SPAN, A
 #mysql://username:password@localhost/database
 #sqlite://database.db
 
-conStr="postgres://demo:@localhost/demo"
-ns = NervaStore(request, T, None)
-ns.setConnect(uri=conStr, pool_size=0)
-if ns.db!=None:
-  if ns.defineTable(create=False)==False:
+conStr="sqlite://demo.db"
+ns = NervaStore(request, session, T, None)
+ns.engine = "sqlite"
+ns.connect.setConnect(uri=conStr, pool_size=0, createdb=False)
+if ns.db:
+  if not ns.store.defineTable(create=False):
     pass #"Error table define"
 else:
-  pass #ns.T("Could not connect to the database: ")+database
+  pass #"Could not connect to the database: "+conStr
 
 response.generic_patterns = ['*'] if request.is_local else []
 
@@ -41,17 +42,17 @@ def login_validation(form):
   if form.vars.password=="":
     form.vars.password=None
   else:
-    form.vars.password = ns.get_md5_value(form.vars.password)
+    form.vars.password = ns.valid.get_md5_value(form.vars.password)
 
 def change_pw_validation(form):
   if form.vars.old_password=="":
     form.vars.old_password=None
   else:
-    form.vars.old_password = ns.get_md5_value(form.vars.old_password)
+    form.vars.old_password = ns.valid.get_md5_value(form.vars.old_password)
   if form.vars.new_password=="":
     form.vars.new_password=None
   else:
-    form.vars.new_password = ns.get_md5_value(form.vars.new_password)
+    form.vars.new_password = ns.valid.get_md5_value(form.vars.new_password)
 
 def log_event(description, vars=None, origin='auth'):
   pass
@@ -77,11 +78,14 @@ auth.define_tables(username=True, migrate=False, fake_migrate=False)
 
 def index():
   
-  company_name = ns.db.customer(id=1).custname
-  customer_count_1 = len(ns.db((ns.db.customer.deleted==0)&(ns.db.customer.id!=1)).select().as_list())
-  customer_count_2 = ns.db.executesql("select count(*) as rc from customer where deleted=0 and id<>1",as_dict = True)[0]["rc"]
+  company_name = ns.valid.get_own_customer().custname
+  customer_count_1 = len(ns.db((ns.db.customer.deleted==0)&(ns.db.customer.custtype!=ns.valid.get_groups_id("custtype", "own"))).select().as_list())
+  customer_count_2 = ns.db.executesql(
+    "select count(*) as rc from customer where deleted=0 and id not in(select customer.id from customer \
+    inner join groups on customer.custtype=groups.id and groups.groupvalue='own')",as_dict = True)[0]["rc"]
   table = TABLE(TR(TD("Database company name: "+company_name)),
-        TR(TD("Customer count: "+str(customer_count_1))),
+        TR(TD("Customer count 1: "+str(customer_count_1))),
+        TR(TD("Customer count 2: "+str(customer_count_2))),
         TR(TD("Secret page: ",A(SPAN("Login"), _href=URL("secret_page"), _title=T("Login...")))))
   return table
 

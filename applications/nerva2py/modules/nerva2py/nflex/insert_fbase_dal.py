@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2013, Csaba Kappel
+Copyright © 2011-2014, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -362,6 +362,11 @@ def insert_nflex_rows(db):
   inner join employee e on pq.employee_id = e.id \
   left join ui_report r on pq.report_id = r.id \
   where 1=1 @where_str')
+  
+  nflex.insert(sqlkey = 'fGroups_getPrinters', engine = 'all', section = 'fGroups', 
+  sqlstr = 'select tool.id, tool.serial, tool.description from tool \
+  inner join groups on tool.toolgroup=groups.id and groups.groupvalue=\'printer\' \
+  where tool.deleted=0 and tool.inactive=0')
   
   nflex.insert(sqlkey = 'fGroups_getEnabled_eventgroup', engine = 'all', section = 'fGroups', 
   sqlstr = 'select g.id, case when scg.cg is not null then 0 else 1 end as enabled \
@@ -735,7 +740,7 @@ def insert_nflex_rows(db):
     where id in(select min(id) fid from address a \
       where a.deleted=0 and a.nervatype = (select id from groups where groupname=\'nervatype\' and groupvalue=\'customer\') \
       group by a.ref_id)) a on c.id = a.ref_id \
-  where c.deleted=0 and c.id>1 @where_str order by c.custname')
+  where c.deleted=0 and c.id not in(select customer.id from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=\'own\') @where_str order by c.custname')
   
   nflex.insert(sqlkey = 'CustomerFilter_getResult', engine = 'mysql', section = 'fFilter', 
   sqlstr = 'select c.id, c.custnumber, c.custname,  \
@@ -746,7 +751,7 @@ def insert_nflex_rows(db):
     where id in(select min(id) fid from address a \
       where a.deleted=0 and a.nervatype = (select id from groups where groupname=\'nervatype\' and groupvalue=\'customer\') \
       group by a.ref_id)) a on c.id = a.ref_id \
-  where c.deleted=0 and c.id>1 @where_str order by c.custname')
+  where c.deleted=0 and c.id not in(select customer.id from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=\'own\') @where_str order by c.custname')
   
   nflex.insert(sqlkey = 'CustomerFilter_getResult', engine = 'mssql', section = 'fFilter', 
   sqlstr = 'select c.id, c.custnumber, c.custname,  \
@@ -757,7 +762,7 @@ def insert_nflex_rows(db):
     where id in(select min(id) fid from address a \
       where a.deleted=0 and a.nervatype = (select id from groups where groupname=\'nervatype\' and groupvalue=\'customer\') \
       group by a.ref_id)) a on c.id = a.ref_id \
-  where c.deleted=0 and c.id>1 @where_str order by c.custname')
+  where c.deleted=0 and c.id not in(select customer.id from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=\'own\') @where_str order by c.custname')
   
   nflex.insert(sqlkey = 'PlaceFilter_getResult', engine = 'all', section = 'fFilter', 
   sqlstr = 'select p.id, p.planumber, case when mst.msg is null then tg.groupvalue else mst.msg end as placetype, p.description \
@@ -777,7 +782,8 @@ def insert_nflex_rows(db):
   nflex.insert(sqlkey = 'ToolFilter_getResult', engine = 'all', section = 'fFilter', 
   sqlstr = 'select t.id, t.serial, t.description, tg.groupvalue as tgroup, case when ssel.state is null then \'***************\' else ssel.state end  as state \
   from tool t left join groups tg on t.toolgroup = tg.id \
-  left join (select mv.tool_id,  case when t.direction = (select id from groups where groupname = \'direction\' and groupvalue = \'in\') then (select custname from customer where id=1) \
+  left join (select mv.tool_id,  case when t.direction = (select id from groups where groupname = \'direction\' and groupvalue = \'in\') then \
+  (select custname from customer where id in(select min(customer.id) from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=\'own\')) \
     when c.custname is not null then c.custname \
     when e.empnumber is not null then e.empnumber \
     else ltc.custname end as state \
@@ -791,12 +797,13 @@ def insert_nflex_rows(db):
       inner join trans t on mv.trans_id=t.id \
       where mv.deleted=0 and tool_id is not null and t.deleted=0 and cast(shippingdate as date) <= current_date \
       group by tool_id) lst_date on mv.tool_id=lst_date.tool_id and mv.shippingdate=lst_date.ldate group by mv.tool_id)) ssel on t.id = ssel.tool_id \
-  where t.deleted = 0 @where_str')
+  where t.deleted = 0 and (t.toolgroup not in(select id from groups where groupname=\'toolgroup\' and groupvalue=\'printer\') or t.toolgroup is null) @where_str')
   
   nflex.insert(sqlkey = 'ToolFilter_getResult', engine = 'mssql', section = 'fFilter', 
   sqlstr = 'select t.id, t.serial, t.description, tg.groupvalue as tgroup, case when ssel.state is null then \'***************\' else ssel.state end  as state \
   from tool t left join groups tg on t.toolgroup = tg.id \
-  left join (select mv.tool_id,  case when t.direction = (select id from groups where groupname = \'direction\' and groupvalue = \'in\') then (select custname from customer where id=1) \
+  left join (select mv.tool_id,  case when t.direction = (select id from groups where groupname = \'direction\' and groupvalue = \'in\') then \
+  (select custname from customer where id in(select min(customer.id) from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=\'own\')) \
     when c.custname is not null then c.custname \
     when e.empnumber is not null then e.empnumber \
     else ltc.custname end as state \
@@ -810,7 +817,7 @@ def insert_nflex_rows(db):
       inner join trans t on mv.trans_id=t.id \
       where mv.deleted=0 and tool_id is not null and t.deleted=0 and cast(shippingdate as date) <= cast(GETDATE() as DATE) \
       group by tool_id) lst_date on mv.tool_id=lst_date.tool_id and mv.shippingdate=lst_date.ldate group by mv.tool_id)) ssel on t.id = ssel.tool_id \
-  where t.deleted = 0 @where_str')
+  where t.deleted = 0 and (t.toolgroup not in(select id from groups where groupname=\'toolgroup\' and groupvalue=\'printer\') or t.toolgroup is null) @where_str')
   
   nflex.insert(sqlkey = 'MovementFilter_getResult', engine = 'all', section = 'fFilter', 
   sqlstr = 'select t.id, t.transnumber, tg.groupvalue as transtype, dg.groupvalue as direction, t.transdate \
@@ -3119,7 +3126,7 @@ def insert_nflex_rows(db):
     cfv.notes as cust_partnumber,  case when mov.tqty is null then 0 else mov.tqty end tqty \
   from (select i.id as item_id, i.description, t.customer_id, case when fv.value is null then i.product_id else cast(fv.value as signed) end as product_id, \
       case when fv.value is null then false else true end as pgroup,  \
-      sum(case when ISNUMERIC(ltrim(rtrim(fv.notes)))=1 then cast(ltrim(rtrim(fv.notes)) as decimal) else 1 end*i.qty) as pqty \
+      sum(case when cast(ltrim(rtrim(fv.notes)) as unsigned)>0 then cast(ltrim(rtrim(fv.notes)) as decimal) else 1 end*i.qty) as pqty \
     from trans t \
     inner join item i on t.id = i.trans_id \
     left join fieldvalue fv on fv.ref_id = i.product_id and fv.fieldname = \'product_element\' \
@@ -3261,7 +3268,7 @@ def insert_nflex_rows(db):
     case when mov.tqty is null then 0 else mov.tqty end tqty \
   from (select i.id as item_id, i.description, case when fv.value is null then i.product_id else cast(fv.value as signed) end as product_id, \
       case when fv.value is null then false else true end as pgroup,  \
-      sum(case when ISNUMERIC(ltrim(rtrim(fv.notes)))=1 then cast(ltrim(rtrim(fv.notes)) as decimal) else 1 end*i.qty) as pqty \
+      sum(case when cast(ltrim(rtrim(fv.notes)) as unsigned)>0 then cast(ltrim(rtrim(fv.notes)) as decimal) else 1 end*i.qty) as pqty \
     from trans t \
     inner join item i on t.id = i.trans_id \
     left join fieldvalue fv on fv.ref_id = i.product_id and fv.fieldname = \'product_element\' \
@@ -3382,7 +3389,7 @@ def insert_nflex_rows(db):
   
   nflex.insert(sqlkey = 'fTrans_getPaymentView', engine = 'mysql', section = 'fTrans', 
   sqlstr = 'select t.id as id, tg.groupvalue as transtype, dg.groupvalue as direction, p.paiddate, pa.description, \
-    t.transnumber, cast(af.value as decimal)*cast(rf.value as decimal) as amount, ln.id as link_id \
+    t.transnumber, cast(cast(af.value as decimal)*cast(rf.value as decimal) as char) as amount, ln.id as link_id \
   from link ln  \
   inner join payment p on ln.ref_id_1 = p.id \
   inner join trans t on p.trans_id = t.id  \
@@ -3413,7 +3420,7 @@ def insert_nflex_rows(db):
   where id in(select min(id) from address \
     where nervatype = (select id from groups where groupname=\'nervatype\' and groupvalue=\'customer\') and deleted = 0 \
     group by ref_id)) adr on c.id=adr.customer_id \
-  where c.id=1) comp, \
+  where c.id in(select min(customer.id) from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=\'own\')) comp, \
   (select c.custname, adr.zipcode, adr.city, adr.street, c.taxnumber \
   from customer c \
   left join (select ref_id as customer_id, case when zipcode is null then \'\' else zipcode end as zipcode, \
@@ -3439,7 +3446,7 @@ def insert_nflex_rows(db):
   where id in(select min(id) from address \
     where nervatype = (select id from groups where groupname=\'nervatype\' and groupvalue=\'customer\') and deleted = 0 \
     group by ref_id)) adr on c.id=adr.customer_id \
-  where c.id=1) comp, \
+  where c.id in(select min(customer.id) from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=\'own\')) comp, \
   (select c.custname, adr.zipcode, adr.city, adr.street, c.taxnumber \
   from customer c \
   left join (select ref_id as customer_id, case when zipcode is null then \'\' else zipcode end as zipcode, \
@@ -3465,7 +3472,7 @@ def insert_nflex_rows(db):
   where id in(select min(id) from address \
     where nervatype = (select id from groups where groupname=\'nervatype\' and groupvalue=\'customer\') and deleted = 0 \
     group by ref_id)) adr on c.id=adr.customer_id \
-  where c.id=1) comp, \
+  where c.id in(select min(customer.id) from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=\'own\')) comp, \
   (select c.custname, adr.zipcode, adr.city, adr.street, c.taxnumber \
   from customer c \
   left join (select ref_id as customer_id, case when zipcode is null then \'\' else zipcode end as zipcode, \

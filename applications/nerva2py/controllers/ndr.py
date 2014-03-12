@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2013, Csaba Kappel
+Copyright © 2011-2014, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -19,7 +19,7 @@ if 0:
 import os
 import base64
 
-from pyamf.amf3 import Decoder, ByteArray #@UnresolvedImport
+from pyamf.amf3 import Decoder, ByteArray
 from gluon.http import redirect
 from gluon.html import URL, XML
 from gluon.fileutils import read_file
@@ -27,12 +27,11 @@ from gluon.html import TABLE, TR, TD, CENTER, IMG, HTML, TITLE, BODY, LINK, HEAD
 from gluon.html import CODE
 
 from nerva2py.nervastore import NervaStore
-from nerva2py.tools import NervaTools
-from nerva2py.localstore import setEngine
-from nerva2py.ndi import Ndi
+from nerva2py.tools import DataOutput, DatabaseTools
 
-ns = NervaStore(request, T, db)
-dbfu = NervaTools()
+ns = NervaStore(request, session, T, db)
+dbout = DataOutput(ns)
+dbtool = DatabaseTools(ns)
 
 def translate():
   return "jQuery(document).ready(function(){jQuery('body').translate('%s');});" % request.args(0).split('.')[0]
@@ -42,14 +41,14 @@ def getLogin(database, username, password):
   validator["valid"] = False   
   validator["message"] = "OK"
   if ns.db==None:
-    if setEngine(ns, database,True)==False:
+    if ns.local.setEngine(database,True)==False:
       validator["valid"] = False
       if ns.error_message!="":
         validator["message"] = str(ns.error_message)
       else: 
         validator["message"] = str(T("Could not connect to the database: ")+database)
       return validator
-  if ns.setLogin(username, password)==False:
+  if ns.connect.setLogin(username, password)==False:
     validator["valid"] = False
     if ns.error_message!="":
       validator["message"] = str(ns.error_message)
@@ -153,7 +152,7 @@ def exportToExcel():
     return validator["message"]
   response.headers['Content-Type'] = "application/vnd.ms-excel"
   response.headers['Content-Disposition'] = 'attachment;filename="NervaturaExport.xls"'
-  return dbfu.exportToExcel(ns, sheet, view)
+  return dbout.exportToExcel(sheet, view)
 
 def exportToICalendar():
   if request.vars.code and request.vars.database and request.vars.username:
@@ -197,7 +196,7 @@ def exportToICalendar():
     export_fields = False
   response.headers['Content-Type'] = "text/ics"
   response.headers['Content-Disposition'] = 'attachment;filename="NervaturaEvents.ics"'
-  return dbfu.exportToICalendar(ns, event_id, export_fields)
+  return dbout.exportToICalendar(event_id, export_fields)
 
 def getParamList(params):
   drows = []
@@ -284,7 +283,7 @@ def exportToReport():
   if params["output"]=="printer":
     if not request.vars.printername:
       return T('Missing printername parameter!')
-    printer_prop = dbfu.check_printer(ns, request.vars.printername)
+    printer_prop = dbout.check_printer(request.vars.printername)
     if printer_prop["state"]==False:
       return printer_prop["error_message"]
     params["output"] = "pdf"
@@ -298,7 +297,7 @@ def exportToReport():
   else:
     printer_prop = None
     
-  report_tmp = dbfu.getReport(ns,params,filters)
+  report_tmp = dbout.getReport(params,filters)
   if type(report_tmp).__name__=="str":
     if report_tmp=="NODATA":
       return HTML(HEAD(TITLE("Nervatura Report"),
@@ -311,7 +310,7 @@ def exportToReport():
       return report_tmp
   
   if printer_prop:
-    print_item = dbfu.printReport(printer_prop, report_tmp["template"], "Nervatura Report", copies, params["orientation"], params["size"])
+    print_item = dbout.printReport(printer_prop, report_tmp["template"], "Nervatura Report", copies, params["orientation"], params["size"])
     if print_item["state"]==False:
       return print_item["error_message"]
     return "OK"
@@ -353,45 +352,40 @@ def show_codefile():
     return "Missing file..."
     
 def createDataBackup():
-  param = {}
   if request.vars.database and request.vars.username:
     if request.vars.code=="base64":
       if request.vars.password:
-        param["password"] = base64.b64decode(request.vars.password)
+        password = base64.b64decode(request.vars.password)
       else:
-        param["password"] = ""
-      param["username"] = base64.b64decode(request.vars.username)
-      param["database"] = base64.b64decode(request.vars.database)
+        password = ""
+      username = base64.b64decode(request.vars.username)
+      database = base64.b64decode(request.vars.database)
     else:
       if request.vars.password:
-        param["password"] = request.vars.password
+        password = request.vars.password
       else:
-        param["password"] = None
-      param["username"] = request.vars.username
-      param["database"] = request.vars.database
-    ndi = Ndi(ns)
-    validator = ndi.getLogin(param)
-    if validator["valid"]==False:
-      return validator["message"]
+        password = None
+      username = request.vars.username
+      database = request.vars.database
+    if not ns.db:
+      if not ns.local.setEngine(database,True):
+        if ns.error_message!="":
+          return str(ns.error_message)
+        else: 
+          return str(ns.T("Could not connect to the database: "))+str(database)
+    if not ns.connect.setLogin(username, password):
+      if ns.error_message!="":
+        return str(ns.error_message)
+      else: 
+        return str(ns.T("Invalid user: "))+str(username)
   else:
     return T('Error: Missing login parameter(s)!')
-  if request.vars.btype==None:
-    return str(T("Error: Missing backup type parameter!"))
-  elif request.vars.btype not in("customer","settings"):
-    return str(T("Error: Valid backup type parameter: customer, settings"))
   if request.vars.bformat:
     bformat = request.vars.bformat
   else:
     bformat = "backup"
-  if request.vars.lst_nom:
-    if request.vars.bformat:
-      return str(T("Error: The setting is set, the backup only when all objects are allowed!"))
-    lst_nom = str(request.vars.lst_nom).split(",")
-  else:
-    lst_nom = []
 
-  retbc = dbfu.createDataBackup(ns, ndi, alias=request.vars.database, btype=request.vars.btype, lst_nom=lst_nom, 
-                                bformat=bformat, filename=request.vars.filename,verNo=response.verNo)
+  retbc = dbtool.createDataBackup(alias=request.vars.database, bformat=bformat, filename=request.vars.filename,verNo=response.verNo)
   if request.vars.filename == "download":
     if (not str(retbc).startswith("<span")) and (not str(retbc).startswith("<div")):
       response.headers['Content-Type']='application/octet-stream'
@@ -399,31 +393,37 @@ def createDataBackup():
   return retbc
 
 def restoreDataBackup():
-  param = {}
   if request.vars.database and request.vars.username:
     if request.vars.code=="base64":
       if request.vars.password:
-        param["password"] = base64.b64decode(request.vars.password)
+        password = base64.b64decode(request.vars.password)
       else:
-        param["password"] = ""
-      param["username"] = base64.b64decode(request.vars.username)
-      param["database"] = base64.b64decode(request.vars.database)
+        password = ""
+      username = base64.b64decode(request.vars.username)
+      database = base64.b64decode(request.vars.database)
     else:
       if request.vars.password:
-        param["password"] = request.vars.password
+        password = request.vars.password
       else:
-        param["password"] = None
-      param["username"] = request.vars.username
-      param["database"] = request.vars.database
-    ndi = Ndi(ns)
-    validator = ndi.getLogin(param)
-    if validator["valid"]==False:
-      return validator["message"]
+        password = None
+      username = request.vars.username
+      database = request.vars.database
+    if not ns.db:
+      if not ns.local.setEngine(database,True):
+        if ns.error_message!="":
+          return str(ns.error_message)
+        else: 
+          return str(ns.T("Could not connect to the database: "))+str(database)
+    if not ns.connect.setLogin(username, password):
+      if ns.error_message!="":
+        return str(ns.error_message)
+      else: 
+        return str(ns.T("Invalid user: "))+str(username)
   else:
     return T('Missing login parameter(s)!')
   if (request.vars.bfile==None or request.vars.bfile=="") and (request.vars.filename==None or request.vars.filename==""):
     return T('Missing file parameter(s)!')
   if request.vars.filename:
     if request.vars.filename!="":
-      return dbfu.loadBackupData(ns, ndi, filename=request.vars.filename)
-  return dbfu.loadBackupData(ns, ndi, bfile=request.vars.bfile)
+      return dbtool.loadBackupData(alias=database, filename=request.vars.filename)
+  return dbtool.loadBackupData(alias=database, bfile=request.vars.bfile)

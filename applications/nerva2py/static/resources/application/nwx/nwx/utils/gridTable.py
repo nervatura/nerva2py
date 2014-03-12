@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2013, Csaba Kappel
+Copyright © 2011-2014, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -127,7 +127,7 @@ class fieldTable(wx.grid.PyGridTableBase):
         attr.SetAlignment(wx.ALIGN_CENTRE, wx.ALIGN_CENTRE)
       elif ftype=="integer" or ftype=="float":
         attr.SetAlignment(wx.ALIGN_RIGHT, wx.ALIGN_CENTRE)
-      elif ftype=="flink" or ftype=="customer":
+      elif ftype=="urlink" or ftype=="customer":
         attr.SetReadOnly(True)
         attr.SetAlignment(wx.ALIGN_LEFT, wx.ALIGN_CENTRE)
         attr.SetFont(wx.Font(9, wx.SWISS, wx.ITALIC, wx.BOLD, True))

@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2013, Csaba Kappel
+Copyright © 2011-2014, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -59,7 +59,7 @@ class dsCustomer():
                         "filterStr":"deleted=0 and nervatype = (select id from groups where groupname = 'nervatype' and groupvalue = 'customer')", 
                         "orderStr":"description"})
     dataSetInfo.append({"infoName":"fieldValues", "infoType":"table", "classAlias":"models.fieldvalue", 
-                        "filterStr":"fieldname in('set_trans_deleted', 'log_customer_update', 'log_customer_deleted', 'default_customer_report')", 
+                        "filterStr":"fieldname in('not_logical_delete', 'log_customer_update', 'log_customer_deleted', 'default_customer_report')", 
                         "orderStr":None})
     
     if dataSet["customer"][0].id!=-1:
@@ -109,7 +109,7 @@ class dsCustomer():
         for inivalue in recordSetInfo.recordSet:
           if inivalue.fieldname=="default_customer_report":
             pass
-          elif inivalue.fieldname=="set_trans_deleted":
+          elif inivalue.fieldname=="not_logical_delete":
             if inivalue.value=="true":
               dataSet["deletedFlag"] = True
           elif inivalue.fieldname=="log_customer_update":
@@ -358,10 +358,10 @@ class dsCustomer():
       dataSet["contact"].remove(item)
     dataSet["changeData"] = True
       
-  def addFieldRow(self, dataSet, df, flink = "", ct_id = 0, ct_desc = ""):
+  def addFieldRow(self, dataSet, df, urlink = "", ct_id = 0, ct_desc = ""):
     
     fieldtype = self.parentView.getItemFromKey_(dataSet["groups"], "id", self.parentView.getItemFromKey_(dataSet["deffield"], "fieldname", df.fieldname).fieldtype).groupvalue
-    if fieldtype in("flink","notes","customer","tool","trans","transitem","transmovement","transpayment","product","project","employee","place"):
+    if fieldtype in("urlink","notes","customer","tool","trans","transitem","transmovement","transpayment","product","project","employee","place"):
       wx.MessageBox("Sorry, but this fieldtype ("+fieldtype+") is not handled...", ":-(", wx.OK | wx.ICON_ERROR)
       return
     
@@ -381,8 +381,8 @@ class dsCustomer():
       cf.value = date.strftime(date.today(),"%Y-%m-%d")
     elif cf.fieldtype in("integer", "float"):
       cf.value = "0"
-    elif cf.fieldtype=="flink":
-      cf.value = flink
+    elif cf.fieldtype=="urlink":
+      cf.value = urlink
     elif cf.fieldtype=="valuelist":
       cf.valuelist = self.parentView.getItemFromKey_(dataSet["deffield"], "fieldname", df.fieldname).valuelist
     elif cf.fieldtype in("customer","tool","trans","transitem","transmovement","transpayment","product","project","employee","place"):

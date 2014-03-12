@@ -39,6 +39,19 @@
         <script type="text/javascript" src="js/asiface.js"></script>
         <script type="text/javascript" src="js/jquery.js"></script>
         <script type="text/javascript">
+            function getUrlVars() {
+              var vars = {};
+              var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+                if(vars[key]){
+                  if(vars[key] instanceof Array){
+                    vars[key].push(value);
+                  }else{
+                    vars[key] = [vars[key], value];}
+                }else{
+                  vars[key] = value;}});
+              return vars;
+            }
+    
             // For version detection, set to min. required Flash Player version, or 0 (or 0.0.0), for no version detection. 
             var swfVersionStr = "10.2.0";
             // To use express install, set to playerProductInstall.swf, otherwise the empty string. 
@@ -46,6 +59,12 @@
             var flashvars = {};
             flashvars.npi_url = "nerva2py/npi/call/amfrpc3";
             flashvars.ndr_url = "nerva2py/ndr/";
+            var username = getUrlVars()["username"];
+            if (username!=null) {
+              flashvars.username = username;}
+            var database = getUrlVars()["database"];
+            if (database!=null) {
+              flashvars.database = database;}
             var params = {};
             params.quality = "high";
             params.bgcolor = "#ffffff";

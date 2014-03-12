@@ -3,12 +3,14 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2013, Csaba Kappel
+Copyright © 2011-2014, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
 
 if 0:
+  from gluon.globals import Session
+  global session; session = Session()
   global request; request = globals.Request()
   global response; response = globals.Response()
   import gluon.languages.translator as T
@@ -22,7 +24,7 @@ import datetime
 
 from nerva2py.nervastore import NervaStore
 from nerva2py.ndi import Ndi
-from nerva2py.tools import NervaTools
+from nerva2py.tools import DatabaseTools
 from nerva2py.ordereddict import OrderedDict
 
 #----------------------------------------------------------------------------------------------------
@@ -32,9 +34,10 @@ from nerva2py.ordereddict import OrderedDict
 #----------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------
 
-ns = NervaStore(request, T, db)
+ns = NervaStore(request, session, T, db)
 ndi = Ndi(ns)
-dbfu = NervaTools()
+dbtool = DatabaseTools(ns)
+trans_year = datetime.date.today().year
 
 def create_demo():
 #----------------------------------------------------------------------------------------------------
@@ -98,9 +101,9 @@ def create_demo():
                     SPAN(str(retvalue),_style="color:green;font-weight: bold;"),BR()))
     
     customer=[{"custnumber":"DMCUST/00001","custtype":"company","custname":"First Customer Co.","taxnumber":"12345678-1-12","terms":8,
-               "creditlimit":1000000,"discount":2,"sample_customer_float":123.4,"sample_customer_date":"2012-08-12"},
+               "creditlimit":1000000,"discount":2,"sample_customer_float":123.4,"sample_customer_date":str(trans_year-1)+"-08-12"},
               {"custnumber":"DMCUST/00002","custtype":"private","custname":"Second Customer Name","taxnumber":"12121212-1-12","terms":1,
-               "creditlimit":0,"discount":6,"sample_customer_float":56789.67,"sample_customer_date":"2012-09-01",
+               "creditlimit":0,"discount":6,"sample_customer_float":56789.67,"sample_customer_date":str(trans_year-1)+"-09-01",
                "sample_customer_valuelist":"yellow","sample_customer_reference":"DMCUST/00001"},
               {"custnumber":"DMCUST/00003","custtype":"other","custname":"Third Customer Foundation","taxnumber":"10101010-1-01",
                "notax":1,"terms":4,"creditlimit":0,"sample_customer_valuelist":"brown"}]
@@ -142,7 +145,7 @@ def create_demo():
       rs.append(DIV(SPAN("contact"+": ",_style="color:blue;font-weight: bold;"),
                     SPAN(str(retvalue),_style="color:green;font-weight: bold;"),BR()))
     
-    deffield=[{"fieldname":"company_page","nervatype":"event","fieldtype":"flink","description":"Company page","visible":1}]
+    deffield=[{"fieldname":"company_page","nervatype":"event","fieldtype":"urlink","description":"Company page","visible":1}]
     retvalue = ndi.update_deffield(param,deffield)
     if retvalue.startswith("Error"):
       return rs.append(DIV(SPAN("deffield"+": ",_style="color:blue;font-weight: bold;"),
@@ -152,14 +155,14 @@ def create_demo():
                     SPAN(str(retvalue),_style="color:green;font-weight: bold;"),BR()))
       
     event=[{"calnumber":"DMEVT/00001","nervatype":"customer","refnumber":"DMCUST/00001","eventgroup":"visit",
-              "fromdate":"2012-04-05 08:00:00","todate":"2012-04-05 10:00:00","subject":"First visit",
+              "fromdate":str(trans_year-1)+"-04-05 08:00:00","todate":str(trans_year-1)+"-04-05 10:00:00","subject":"First visit",
               "place":"City1","description":"It was long ...  :-(","company_page":"http://nervatura.com/"},
              {"calnumber":"DMEVT/00002","nervatype":"customer","refnumber":"DMCUST/00001","eventgroup":"visit",
-              "fromdate":"2012-04-06 08:00:00","todate":"2012-04-06 10:00:00","subject":"Second visit","place":"City1"},
+              "fromdate":str(trans_year-1)+"-04-06 08:00:00","todate":str(trans_year-1)+"-04-06 10:00:00","subject":"Second visit","place":"City1"},
              {"calnumber":"DMEVT/00003","nervatype":"customer","refnumber":"DMCUST/00002",
-              "fromdate":"2012-04-07 08:00:00","todate":"2012-04-07 10:00:00","subject":"Training"},
+              "fromdate":str(trans_year-1)+"-04-07 08:00:00","todate":str(trans_year-1)+"-04-07 10:00:00","subject":"Training"},
              {"calnumber":"DMEVT/00004","nervatype":"customer","refnumber":"DMCUST/00003",
-              "fromdate":"2012-04-08 08:00:00","subject":"Training"}]
+              "fromdate":str(trans_year-1)+"-04-08 08:00:00","subject":"Training"}]
     retvalue = ndi.update_event(param,event)
     if retvalue.startswith("Error"):
       return rs.append(DIV(SPAN("event"+": ",_style="color:blue;font-weight: bold;"),
@@ -185,7 +188,7 @@ def create_demo():
       rs.append(DIV(SPAN("deffield"+": ",_style="color:blue;font-weight: bold;"),
                     SPAN(str(retvalue),_style="color:green;font-weight: bold;"),BR()))
     
-    employee=[{"empnumber":"DMEMP/00001","usergroup":"guest","startdate":"2011-12-01","department":"production","sample_employee_integer":42}]
+    employee=[{"empnumber":"DMEMP/00001","usergroup":"guest","startdate":str(trans_year-2)+"-12-01","department":"production","sample_employee_integer":42}]
     retvalue = ndi.update_employee(param,employee)
     if retvalue.startswith("Error"):
       return rs.append(DIV(SPAN("employee"+": ",_style="color:blue;font-weight: bold;"),
@@ -215,7 +218,7 @@ def create_demo():
                     SPAN(str(retvalue),_style="color:green;font-weight: bold;"),BR()))
     
     event=[{"calnumber":"DMEVT/00005","nervatype":"employee","refnumber":"DMEMP/00001",
-              "fromdate":"2012-12-15 00:00:00","todate":"2012-12-31 00:00:00","subject":"Holiday","place":"On the beach"}]
+              "fromdate":str(trans_year-1)+"-12-15 00:00:00","todate":str(trans_year-1)+"-12-31 00:00:00","subject":"Holiday","place":"On the beach"}]
     retvalue = ndi.update_event(param,event)
     if retvalue.startswith("Error"):
       return rs.append(DIV(SPAN("event"+": ",_style="color:blue;font-weight: bold;"),
@@ -281,9 +284,9 @@ def create_demo():
       rs.append(DIV(SPAN("product"+": ",_style="color:blue;font-weight: bold;"),
                     SPAN(str(retvalue),_style="color:green;font-weight: bold;"),BR()))
     
-    barcode=[{"barcode":"BC0123456789","partnumber":"DMPROD/00001","barcodetype":"code128a","description":"Barcode1","defcode":1},
-             {"barcode":"BC1212121212","partnumber":"DMPROD/00001","barcodetype":"code128b","description":"Barcode2","qty":5},
-             {"barcode":"BC0101010101","partnumber":"DMPROD/00003","barcodetype":"code128c","description":"Barcode3","defcode":1}]
+    barcode=[{"code":"BC0123456789","partnumber":"DMPROD/00001","barcodetype":"code128a","description":"Barcode1","defcode":1},
+             {"code":"BC1212121212","partnumber":"DMPROD/00001","barcodetype":"code128b","description":"Barcode2","qty":5},
+             {"code":"BC0101010101","partnumber":"DMPROD/00003","barcodetype":"code128c","description":"Barcode3","defcode":1}]
     retvalue = ndi.update_barcode(param,barcode)
     if retvalue.startswith("Error"):
       return rs.append(DIV(SPAN("barcode"+": ",_style="color:blue;font-weight: bold;"),
@@ -293,10 +296,10 @@ def create_demo():
                     SPAN(str(retvalue),_style="color:green;font-weight: bold;"),BR()))
     
     event=[{"calnumber":"DMEVT/00006","nervatype":"product","refnumber":"DMPROD/00001","eventgroup":"pricing",
-            "fromdate":"2012-04-05 08:00:00","todate":"2012-04-05 15:00:00","subject":"New prices","place":"Office"},
-           {"calnumber":"DMEVT/00007","nervatype":"product","refnumber":"DMPROD/00002","fromdate":"2012-04-08 08:00:00",
-            "todate":"2012-04-12 18:00:00","subject":"business trip","place":"Hawaii"},
-           {"calnumber":"DMEVT/00008","nervatype":"product","refnumber":"DMPROD/00002","fromdate":"2012-04-12 08:00:00",
+            "fromdate":str(trans_year-1)+"-04-05 08:00:00","todate":str(trans_year-1)+"-04-05 15:00:00","subject":"New prices","place":"Office"},
+           {"calnumber":"DMEVT/00007","nervatype":"product","refnumber":"DMPROD/00002","fromdate":str(trans_year-1)+"-04-08 08:00:00",
+            "todate":str(trans_year-1)+"-04-12 18:00:00","subject":"business trip","place":"Hawaii"},
+           {"calnumber":"DMEVT/00008","nervatype":"product","refnumber":"DMPROD/00002","fromdate":str(trans_year-1)+"-04-12 08:00:00",
             "subject":"Inventory","description":"Inventory in the warehouse"}]
     retvalue = ndi.update_event(param,event)
     if retvalue.startswith("Error"):
@@ -306,9 +309,9 @@ def create_demo():
       rs.append(DIV(SPAN("event"+": ",_style="color:blue;font-weight: bold;"),
                     SPAN(str(retvalue),_style="color:green;font-weight: bold;"),BR()))
     
-    price=[{"partnumber":"DMPROD/00001","pricetype":"price","validfrom":"2012-04-05","curr":"EUR","qty":0,"pricevalue":25},
-           {"partnumber":"DMPROD/00001","pricetype":"price","validfrom":"2012-04-05","curr":"EUR","qty":10,"pricevalue":20},
-           {"partnumber":"DMPROD/00001","pricetype":"discount","validfrom":"2012-04-12","validto":"2012-04-17","curr":"EUR",
+    price=[{"partnumber":"DMPROD/00001","pricetype":"price","validfrom":str(trans_year-1)+"-04-05","curr":"EUR","qty":0,"pricevalue":25},
+           {"partnumber":"DMPROD/00001","pricetype":"price","validfrom":str(trans_year-1)+"-04-05","curr":"EUR","qty":10,"pricevalue":20},
+           {"partnumber":"DMPROD/00001","pricetype":"discount","validfrom":str(trans_year-1)+"-04-12","validto":str(trans_year-1)+"-04-17","curr":"EUR",
             "discount":15,"calcmode":"ded"}]
     retvalue = ndi.update_price(param,price)
     if retvalue.startswith("Error"):
@@ -359,7 +362,7 @@ def create_demo():
       rs.append(DIV(SPAN("deffield"+": ",_style="color:blue;font-weight: bold;"),
                     SPAN(str(retvalue),_style="color:green;font-weight: bold;"),BR()))
     
-    project=[{"pronumber":"DMPRJ/00001","description":"Sample project","startdate":"2012-12-01","custnumber":"DMCUST/00001",
+    project=[{"pronumber":"DMPRJ/00001","description":"Sample project","startdate":str(trans_year-1)+"-12-01","custnumber":"DMCUST/00001",
               "sample_project_state":"20%","sample_project_leader":"DMEMP/00001"}]
     retvalue = ndi.update_project(param,project)
     if retvalue.startswith("Error"):
@@ -389,7 +392,7 @@ def create_demo():
                     SPAN(str(retvalue),_style="color:green;font-weight: bold;"),BR()))
     
     event=[{"calnumber":"DMEVT/00009","nervatype":"project","refnumber":"DMPRJ/00001",
-              "fromdate":"2012-12-10 09:00:00","todate":"2012-12-10 11:00:00","subject":"Project meeting","place":"Office"}]
+              "fromdate":str(trans_year-1)+"-12-10 09:00:00","todate":str(trans_year-1)+"-12-10 11:00:00","subject":"Project meeting","place":"Office"}]
     retvalue = ndi.update_event(param,event)
     if retvalue.startswith("Error"):
       return rs.append(DIV(SPAN("event"+": ",_style="color:blue;font-weight: bold;"),
@@ -429,7 +432,7 @@ def create_demo():
                     SPAN(str(retvalue),_style="color:green;font-weight: bold;"),BR()))
     
     event=[{"calnumber":"DMEVT/00010","nervatype":"tool","refnumber":"ABC-123","eventgroup":"car",
-            "fromdate":"2012-04-05 08:00:00","todate":"2012-04-05 15:00:00","subject":"Technical inspection","place":"Service"}]
+            "fromdate":str(trans_year-1)+"-04-05 08:00:00","todate":str(trans_year-1)+"-04-05 15:00:00","subject":"Technical inspection","place":"Service"}]
     retvalue = ndi.update_event(param,event)
     if retvalue.startswith("Error"):
       return rs.append(DIV(SPAN("event"+": ",_style="color:blue;font-weight: bold;"),
@@ -460,7 +463,7 @@ def create_demo():
     #->and more create and link to movements
     #----------------------------------------------------------------------------------------------------
     rs.append(DIV(SPAN("insert tool movement (employee)...",_style="color:brown;font-weight: bold;font-style: italic;"),BR()))
-    trans=[{"transnumber":"DMMOVE/00001","transtype":"waybill","direction":"out","transdate":"2012-12-05",
+    trans=[{"transnumber":"DMMOVE/00001","transtype":"waybill","direction":"out","transdate":str(trans_year-1)+"-12-05",
             "empnumber":"DMEMP/00001","notes":"We will give you some of the work tool to the employee..."}]
     retvalue = ndi.update_trans(param,trans)
     if retvalue.startswith("Error"):
@@ -470,8 +473,8 @@ def create_demo():
       rs.append(DIV(SPAN("trans"+": ",_style="color:blue;font-weight: bold;"),
                     SPAN(str(retvalue),_style="color:green;font-weight: bold;"),BR()))
     
-    movement=[{"transnumber":"DMMOVE/00001","rownumber":1,"movetype":"tool","shippingdate":"2012-12-05 00:00:00", "serial":"DEF-456"},
-              {"transnumber":"DMMOVE/00001","rownumber":2,"movetype":"tool","shippingdate":"2012-12-05 00:00:00", "serial":"IMEI-023456789",
+    movement=[{"transnumber":"DMMOVE/00001","rownumber":1,"movetype":"tool","shippingdate":str(trans_year-1)+"-12-05 00:00:00", "serial":"DEF-456"},
+              {"transnumber":"DMMOVE/00001","rownumber":2,"movetype":"tool","shippingdate":str(trans_year-1)+"-12-05 00:00:00", "serial":"IMEI-023456789",
                "notes":"mobil phone"}]
     retvalue = ndi.update_movement(param,movement)
     if retvalue.startswith("Error"):
@@ -486,15 +489,15 @@ def create_demo():
     #->and more create and link to items
     #----------------------------------------------------------------------------------------------------
     rs.append(DIV(SPAN("insert order (vendor and customer)...",_style="color:brown;font-weight: bold;font-style: italic;"),BR()))
-    trans=[{"transnumber":"DMORD/00001","transtype":"order","direction":"in","transdate":"2012-11-01",
-            "duedate":"2012-11-10 00:00:00","custnumber":"DMCUST/00003","paidtype":"transfer","curr":"EUR",
+    trans=[{"transnumber":"DMORD/00001","transtype":"order","direction":"in","transdate":str(trans_year-1)+"-11-01",
+            "duedate":str(trans_year-1)+"-11-10 00:00:00","custnumber":"DMCUST/00003","paidtype":"transfer","curr":"EUR",
             "department":"logistics",
             "notes":"We buy some of the basic material for the production and sale. Billed on the basis of delivery, but not all were shipped."},
-           {"transnumber":"DMORD/00002","transtype":"order","direction":"out","transdate":"2012-12-04",
-            "duedate":"2012-12-10 00:00:00","custnumber":"DMCUST/00002","paidtype":"transfer","curr":"EUR",
+           {"transnumber":"DMORD/00002","transtype":"order","direction":"out","transdate":str(trans_year-1)+"-12-04",
+            "duedate":str(trans_year-1)+"-12-10 00:00:00","custnumber":"DMCUST/00002","paidtype":"transfer","curr":"EUR",
             "department":"sales","notes":"Virtual product sample."},
-           {"transnumber":"DMORD/00003","transtype":"order","direction":"out","transdate":"2012-12-10",
-            "duedate":"2012-12-20 00:00:00","custnumber":"DMCUST/00001","paidtype":"transfer","curr":"EUR",
+           {"transnumber":"DMORD/00003","transtype":"order","direction":"out","transdate":str(trans_year-1)+"-12-10",
+            "duedate":str(trans_year-1)+"-12-20 00:00:00","custnumber":"DMCUST/00001","paidtype":"transfer","curr":"EUR",
             "department":"sales","notes":"DEMO invoice order."}]
     retvalue = ndi.update_trans(param,trans)
     if retvalue.startswith("Error"):
@@ -545,9 +548,9 @@ def create_demo():
     #->and more create and link to movements
     #----------------------------------------------------------------------------------------------------
     rs.append(DIV(SPAN("insert delivery (in and out)...",_style="color:brown;font-weight: bold;font-style: italic;"),BR()))
-    trans=[{"transnumber":"DMDEL/00001","transtype":"delivery","direction":"in","transdate":"2012-11-08"},
-           {"transnumber":"DMDEL/00002","transtype":"delivery","direction":"out","transdate":"2012-12-10"},
-           {"transnumber":"DMDEL/00003","transtype":"delivery","direction":"out","transdate":"2012-12-10"}]
+    trans=[{"transnumber":"DMDEL/00001","transtype":"delivery","direction":"in","transdate":str(trans_year-1)+"-11-08"},
+           {"transnumber":"DMDEL/00002","transtype":"delivery","direction":"out","transdate":str(trans_year-1)+"-12-10"},
+           {"transnumber":"DMDEL/00003","transtype":"delivery","direction":"out","transdate":str(trans_year-1)+"-12-10"}]
     retvalue = ndi.update_trans(param,trans)
     if retvalue.startswith("Error"):
       return rs.append(DIV(SPAN("trans"+": ",_style="color:blue;font-weight: bold;"),
@@ -556,35 +559,35 @@ def create_demo():
       rs.append(DIV(SPAN("trans"+": ",_style="color:blue;font-weight: bold;"),
                     SPAN(str(retvalue),_style="color:green;font-weight: bold;"),BR()))
     
-    movement=[{"transnumber":"DMDEL/00001","rownumber":1,"movetype":"inventory","shippingdate":"2012-11-08 00:00:00",
+    movement=[{"transnumber":"DMDEL/00001","rownumber":1,"movetype":"inventory","shippingdate":str(trans_year-1)+"-11-08 00:00:00",
                "planumber":"material","partnumber":"DMPROD/00005","qty":30,"notes":"demo"},
-          {"transnumber":"DMDEL/00001","rownumber":2,"movetype":"inventory","shippingdate":"2012-11-08 00:00:00",
+          {"transnumber":"DMDEL/00001","rownumber":2,"movetype":"inventory","shippingdate":str(trans_year-1)+"-11-08 00:00:00",
            "planumber":"material","partnumber":"DMPROD/00006","qty":50,"notes":"demo"},
-          {"transnumber":"DMDEL/00001","rownumber":3,"movetype":"inventory","shippingdate":"2012-11-08 00:00:00",
+          {"transnumber":"DMDEL/00001","rownumber":3,"movetype":"inventory","shippingdate":str(trans_year-1)+"-11-08 00:00:00",
            "planumber":"material","partnumber":"DMPROD/00007","qty":50,"notes":"demo"},
-          {"transnumber":"DMDEL/00001","rownumber":4,"movetype":"inventory","shippingdate":"2012-11-08 00:00:00",
+          {"transnumber":"DMDEL/00001","rownumber":4,"movetype":"inventory","shippingdate":str(trans_year-1)+"-11-08 00:00:00",
            "planumber":"material","partnumber":"DMPROD/00008","qty":15,"notes":"demo"},
-          {"transnumber":"DMDEL/00001","rownumber":5,"movetype":"inventory","shippingdate":"2012-11-08 00:00:00",
+          {"transnumber":"DMDEL/00001","rownumber":5,"movetype":"inventory","shippingdate":str(trans_year-1)+"-11-08 00:00:00",
            "planumber":"material","partnumber":"DMPROD/00001","qty":10,"notes":"demo"},
-          {"transnumber":"DMDEL/00001","rownumber":6,"movetype":"inventory","shippingdate":"2012-11-08 00:00:00",
+          {"transnumber":"DMDEL/00001","rownumber":6,"movetype":"inventory","shippingdate":str(trans_year-1)+"-11-08 00:00:00",
            "planumber":"material","partnumber":"DMPROD/00003","qty":10,"notes":"demo"},
-          {"transnumber":"DMDEL/00001","rownumber":7,"movetype":"inventory","shippingdate":"2012-11-08 00:00:00",
+          {"transnumber":"DMDEL/00001","rownumber":7,"movetype":"inventory","shippingdate":str(trans_year-1)+"-11-08 00:00:00",
            "planumber":"material","partnumber":"DMPROD/00009","qty":15,"notes":"demo"},
-          {"transnumber":"DMDEL/00001","rownumber":8,"movetype":"inventory","shippingdate":"2012-11-08 00:00:00",
+          {"transnumber":"DMDEL/00001","rownumber":8,"movetype":"inventory","shippingdate":str(trans_year-1)+"-11-08 00:00:00",
            "planumber":"material","partnumber":"DMPROD/00010","qty":10,"notes":"demo"},
-          {"transnumber":"DMDEL/00001","rownumber":9,"movetype":"inventory","shippingdate":"2012-11-08 00:00:00",
+          {"transnumber":"DMDEL/00001","rownumber":9,"movetype":"inventory","shippingdate":str(trans_year-1)+"-11-08 00:00:00",
            "planumber":"material","partnumber":"DMPROD/00011","qty":20,"notes":"demo"},
-          {"transnumber":"DMDEL/00002","rownumber":1,"movetype":"inventory","shippingdate":"2012-12-10 00:00:00",
+          {"transnumber":"DMDEL/00002","rownumber":1,"movetype":"inventory","shippingdate":str(trans_year-1)+"-12-10 00:00:00",
            "planumber":"warehouse","partnumber":"DMPROD/00009","qty":-2,"notes":"demo"},
-          {"transnumber":"DMDEL/00002","rownumber":2,"movetype":"inventory","shippingdate":"2012-12-10 00:00:00",
+          {"transnumber":"DMDEL/00002","rownumber":2,"movetype":"inventory","shippingdate":str(trans_year-1)+"-12-10 00:00:00",
            "planumber":"warehouse","partnumber":"DMPROD/00010","qty":-2,"notes":"demo"},
-          {"transnumber":"DMDEL/00002","rownumber":3,"movetype":"inventory","shippingdate":"2012-12-10 00:00:00",
+          {"transnumber":"DMDEL/00002","rownumber":3,"movetype":"inventory","shippingdate":str(trans_year-1)+"-12-10 00:00:00",
            "planumber":"warehouse","partnumber":"DMPROD/00011","qty":-4,"notes":"demo"},
-          {"transnumber":"DMDEL/00002","rownumber":4,"movetype":"inventory","shippingdate":"2012-12-10 00:00:00",
+          {"transnumber":"DMDEL/00002","rownumber":4,"movetype":"inventory","shippingdate":str(trans_year-1)+"-12-10 00:00:00",
            "planumber":"warehouse","partnumber":"DMPROD/00001","qty":-3,"notes":"demo"},
-          {"transnumber":"DMDEL/00003","rownumber":1,"movetype":"inventory","shippingdate":"2012-12-10 00:00:00",
+          {"transnumber":"DMDEL/00003","rownumber":1,"movetype":"inventory","shippingdate":str(trans_year-1)+"-12-10 00:00:00",
            "planumber":"warehouse","partnumber":"DMPROD/00001","qty":-3,"notes":"demo"},
-          {"transnumber":"DMDEL/00003","rownumber":2,"movetype":"inventory","shippingdate":"2012-12-10 00:00:00",
+          {"transnumber":"DMDEL/00003","rownumber":2,"movetype":"inventory","shippingdate":str(trans_year-1)+"-12-10 00:00:00",
            "planumber":"warehouse","partnumber":"DMPROD/00003","qty":-5,"notes":"demo"}]
     retvalue = ndi.update_movement(param,movement)
     if retvalue.startswith("Error"):
@@ -622,7 +625,7 @@ def create_demo():
     #->and more create and link to movements
     #----------------------------------------------------------------------------------------------------
     rs.append(DIV(SPAN("insert stock transfer...",_style="color:brown;font-weight: bold;font-style: italic;"),BR()))
-    trans=[{"transnumber":"DMDTF/00001","transtype":"delivery","direction":"transfer","transdate":"2012-11-08","planumber":"material"}]
+    trans=[{"transnumber":"DMDTF/00001","transtype":"delivery","direction":"transfer","transdate":str(trans_year-1)+"-11-08","planumber":"material"}]
     retvalue = ndi.update_trans(param,trans)
     if retvalue.startswith("Error"):
       return rs.append(DIV(SPAN("trans"+": ",_style="color:blue;font-weight: bold;"),
@@ -631,25 +634,25 @@ def create_demo():
       rs.append(DIV(SPAN("trans"+": ",_style="color:blue;font-weight: bold;"),
                     SPAN(str(retvalue),_style="color:green;font-weight: bold;"),BR()))
     
-    movement=[{"transnumber":"DMDTF/00001","rownumber":1,"movetype":"inventory","shippingdate":"2012-11-08 00:00:00",
+    movement=[{"transnumber":"DMDTF/00001","rownumber":1,"movetype":"inventory","shippingdate":str(trans_year-1)+"-11-08 00:00:00",
            "planumber":"material","partnumber":"DMPROD/00001","qty":-10,"notes":"demo"},
-          {"transnumber":"DMDTF/00001","rownumber":2,"movetype":"inventory","shippingdate":"2012-11-08 00:00:00",
+          {"transnumber":"DMDTF/00001","rownumber":2,"movetype":"inventory","shippingdate":str(trans_year-1)+"-11-08 00:00:00",
            "planumber":"warehouse","partnumber":"DMPROD/00001","qty":10,"notes":"demo"},
-          {"transnumber":"DMDTF/00001","rownumber":3,"movetype":"inventory","shippingdate":"2012-11-08 00:00:00",
+          {"transnumber":"DMDTF/00001","rownumber":3,"movetype":"inventory","shippingdate":str(trans_year-1)+"-11-08 00:00:00",
            "planumber":"material","partnumber":"DMPROD/00003","qty":-10,"notes":"demo"},
-          {"transnumber":"DMDTF/00001","rownumber":4,"movetype":"inventory","shippingdate":"2012-11-08 00:00:00",
+          {"transnumber":"DMDTF/00001","rownumber":4,"movetype":"inventory","shippingdate":str(trans_year-1)+"-11-08 00:00:00",
            "planumber":"warehouse","partnumber":"DMPROD/00003","qty":10,"notes":"demo"},
-          {"transnumber":"DMDTF/00001","rownumber":5,"movetype":"inventory","shippingdate":"2012-11-08 00:00:00",
+          {"transnumber":"DMDTF/00001","rownumber":5,"movetype":"inventory","shippingdate":str(trans_year-1)+"-11-08 00:00:00",
            "planumber":"material","partnumber":"DMPROD/00009","qty":-15,"notes":"demo"},
-          {"transnumber":"DMDTF/00001","rownumber":6,"movetype":"inventory","shippingdate":"2012-11-08 00:00:00",
+          {"transnumber":"DMDTF/00001","rownumber":6,"movetype":"inventory","shippingdate":str(trans_year-1)+"-11-08 00:00:00",
            "planumber":"warehouse","partnumber":"DMPROD/00009","qty":15,"notes":"demo"},
-          {"transnumber":"DMDTF/00001","rownumber":7,"movetype":"inventory","shippingdate":"2012-11-08 00:00:00",
+          {"transnumber":"DMDTF/00001","rownumber":7,"movetype":"inventory","shippingdate":str(trans_year-1)+"-11-08 00:00:00",
            "planumber":"material","partnumber":"DMPROD/00010","qty":-10,"notes":"demo"},
-          {"transnumber":"DMDTF/00001","rownumber":8,"movetype":"inventory","shippingdate":"2012-11-08 00:00:00",
+          {"transnumber":"DMDTF/00001","rownumber":8,"movetype":"inventory","shippingdate":str(trans_year-1)+"-11-08 00:00:00",
            "planumber":"warehouse","partnumber":"DMPROD/00010","qty":10,"notes":"demo"},
-          {"transnumber":"DMDTF/00001","rownumber":9,"movetype":"inventory","shippingdate":"2012-11-08 00:00:00",
+          {"transnumber":"DMDTF/00001","rownumber":9,"movetype":"inventory","shippingdate":str(trans_year-1)+"-11-08 00:00:00",
            "planumber":"material","partnumber":"DMPROD/00011","qty":-20,"notes":"demo"},
-          {"transnumber":"DMDTF/00001","rownumber":10,"movetype":"inventory","shippingdate":"2012-11-08 00:00:00",
+          {"transnumber":"DMDTF/00001","rownumber":10,"movetype":"inventory","shippingdate":str(trans_year-1)+"-11-08 00:00:00",
            "planumber":"warehouse","partnumber":"DMPROD/00011","qty":20,"notes":"demo"}]
     retvalue = ndi.update_movement(param,movement)
     if retvalue.startswith("Error"):
@@ -677,7 +680,7 @@ def create_demo():
     #->and more create and link to movements
     #----------------------------------------------------------------------------------------------------
     rs.append(DIV(SPAN("insert stock correction...",_style="color:brown;font-weight: bold;font-style: italic;"),BR()))
-    trans=[{"transnumber":"DMCORR/00001","transtype":"inventory","direction":"transfer","transdate":"2012-12-01",
+    trans=[{"transnumber":"DMCORR/00001","transtype":"inventory","direction":"transfer","transdate":str(trans_year-1)+"-12-01",
             "planumber":"warehouse","notes":"Disposing of some bad product ..."}]
     retvalue = ndi.update_trans(param,trans)
     if retvalue.startswith("Error"):
@@ -687,9 +690,9 @@ def create_demo():
       rs.append(DIV(SPAN("trans"+": ",_style="color:blue;font-weight: bold;"),
                     SPAN(str(retvalue),_style="color:green;font-weight: bold;"),BR()))
     
-    movement=[{"transnumber":"DMCORR/00001","rownumber":1,"movetype":"inventory","shippingdate":"2012-12-01 00:00:00",
+    movement=[{"transnumber":"DMCORR/00001","rownumber":1,"movetype":"inventory","shippingdate":str(trans_year-1)+"-12-01 00:00:00",
            "planumber":"warehouse","partnumber":"DMPROD/00001","qty":-2,"notes":"demo"},
-          {"transnumber":"DMCORR/00001","rownumber":2,"movetype":"inventory","shippingdate":"2012-12-01 00:00:00",
+          {"transnumber":"DMCORR/00001","rownumber":2,"movetype":"inventory","shippingdate":str(trans_year-1)+"-12-01 00:00:00",
            "planumber":"warehouse","partnumber":"DMPROD/00010","qty":-3,"notes":"demo"}]
     retvalue = ndi.update_movement(param,movement)
     if retvalue.startswith("Error"):
@@ -704,8 +707,8 @@ def create_demo():
     #->and more create and link to items
     #----------------------------------------------------------------------------------------------------
     rs.append(DIV(SPAN("insert offer (customer)...",_style="color:brown;font-weight: bold;font-style: italic;"),BR()))
-    trans=[{"transnumber":"DMOFF/00001","transtype":"offer","direction":"out","transdate":"2012-11-05",
-            "duedate":"2012-11-30 00:00:00","custnumber":"DMCUST/00001","paidtype":"transfer","curr":"EUR","department":"sales",
+    trans=[{"transnumber":"DMOFF/00001","transtype":"offer","direction":"out","transdate":str(trans_year-1)+"-11-05",
+            "duedate":str(trans_year-1)+"-11-30 00:00:00","custnumber":"DMCUST/00001","paidtype":"transfer","curr":"EUR","department":"sales",
             "ref_transnumber":"DMORD/00003","notes":"DEMO invoice offer"}]
     retvalue = ndi.update_trans(param,trans)
     if retvalue.startswith("Error"):
@@ -743,14 +746,14 @@ def create_demo():
     #->and more create and link to items
     #----------------------------------------------------------------------------------------------------
     rs.append(DIV(SPAN("insert invoice (vendor and customer)...",_style="color:brown;font-weight: bold;font-style: italic;"),BR()))
-    trans=[{"transnumber":"DMINV/00001","transtype":"invoice","direction":"out","transdate":"2012-12-10",
-            "duedate":"2012-12-20 00:00:00","custnumber":"DMCUST/00001","paidtype":"transfer","curr":"EUR","department":"sales",
+    trans=[{"transnumber":"DMINV/00001","transtype":"invoice","direction":"out","transdate":str(trans_year-1)+"-12-10",
+            "duedate":str(trans_year-1)+"-12-20 00:00:00","custnumber":"DMCUST/00001","paidtype":"transfer","curr":"EUR","department":"sales",
             "ref_transnumber":"DMORD/00003","fnote":"A long and <b><i>rich text</b></i> at the bottom of the invoice...<br><br>Can be multiple lines ..."},
-           {"transnumber":"DMINV/00002","transtype":"invoice","direction":"out","transdate":"2012-12-10",
-            "duedate":"2013-01-10 00:00:00","custnumber":"DMCUST/00002","paidtype":"transfer","curr":"EUR","department":"sales",
+           {"transnumber":"DMINV/00002","transtype":"invoice","direction":"out","transdate":str(trans_year-1)+"-12-10",
+            "duedate":str(trans_year)+"-01-10 00:00:00","custnumber":"DMCUST/00002","paidtype":"transfer","curr":"EUR","department":"sales",
             "ref_transnumber":"DMORD/00002","notes":"Virtual product sample."},
-           {"transnumber":"DMINV/00003","transtype":"invoice","direction":"in","transdate":"2012-11-10",
-            "duedate":"2012-12-20 00:00:00","custnumber":"DMCUST/00003","paidtype":"transfer","curr":"EUR","department":"logistics",
+           {"transnumber":"DMINV/00003","transtype":"invoice","direction":"in","transdate":str(trans_year-1)+"-11-10",
+            "duedate":str(trans_year-1)+"-12-20 00:00:00","custnumber":"DMCUST/00003","paidtype":"transfer","curr":"EUR","department":"logistics",
             "ref_transnumber":"DMORD/00001","notes":"We buy some of the basic material for the production and sale. Billed on the basis of delivery, but not all were shipped."}]
     retvalue = ndi.update_trans(param,trans)
     if retvalue.startswith("Error"):
@@ -812,9 +815,9 @@ def create_demo():
     #->and more create and link to payments
     #----------------------------------------------------------------------------------------------------
     rs.append(DIV(SPAN("insert payment (bank and cash)...",_style="color:brown;font-weight: bold;font-style: italic;"),BR()))
-    trans=[{"transnumber":"DMPMT/00001","transtype":"bank","direction":"transfer","transdate":"2013-01-15","planumber":"bank",
+    trans=[{"transnumber":"DMPMT/00001","transtype":"bank","direction":"transfer","transdate":str(trans_year)+"-01-15","planumber":"bank",
             "ref_transnumber":"BM0123456"},
-           {"transnumber":"DMPMT/00002","transtype":"cash","direction":"out","transdate":"2012-12-18","planumber":"cash"}]
+           {"transnumber":"DMPMT/00002","transtype":"cash","direction":"out","transdate":str(trans_year-1)+"-12-18","planumber":"cash"}]
     retvalue = ndi.update_trans(param,trans)
     if retvalue.startswith("Error"):
       return rs.append(DIV(SPAN("trans"+": ",_style="color:blue;font-weight: bold;"),
@@ -823,10 +826,10 @@ def create_demo():
       rs.append(DIV(SPAN("trans"+": ",_style="color:blue;font-weight: bold;"),
                     SPAN(str(retvalue),_style="color:green;font-weight: bold;"),BR()))
     
-    payment=[{"transnumber":"DMPMT/00001","rownumber":1,"paiddate":"2012-12-20","amount":-4000,"notes":"payment two divided..."},
-             {"transnumber":"DMPMT/00001","rownumber":2,"paiddate":"2012-12-20","amount":849},
-             {"transnumber":"DMPMT/00001","rownumber":3,"paiddate":"2013-01-10","amount":228},
-             {"transnumber":"DMPMT/00002","rownumber":1,"paiddate":"2012-12-18","amount":-488}]
+    payment=[{"transnumber":"DMPMT/00001","rownumber":1,"paiddate":str(trans_year-1)+"-12-20","amount":-4000,"notes":"payment two divided..."},
+             {"transnumber":"DMPMT/00001","rownumber":2,"paiddate":str(trans_year-1)+"-12-20","amount":849},
+             {"transnumber":"DMPMT/00001","rownumber":3,"paiddate":str(trans_year)+"-01-10","amount":228},
+             {"transnumber":"DMPMT/00002","rownumber":1,"paiddate":str(trans_year-1)+"-12-18","amount":-488}]
     retvalue = ndi.update_payment(param,payment)
     if retvalue.startswith("Error"):
       return rs.append(DIV(SPAN("payment"+": ",_style="color:blue;font-weight: bold;"),
@@ -858,8 +861,8 @@ def create_demo():
     rs.append(DIV(SPAN("insert formula and production",_style="color:brown;font-weight: bold;font-style: italic;"),BR()))
     trans=[{"transnumber":"DMFRM/00001","transtype":"formula","direction":"transfer","notes":"Sample formula (4 door/car)"},
            {"transnumber":"DMFRM/00002","transtype":"formula","direction":"transfer","notes":"Sample formula (3 door/car)"},
-           {"transnumber":"DMMAKE/00001","transtype":"production","direction":"transfer","transdate":"2012-12-01",
-            "duedate":"2012-12-02 00:00:00","planumber":"warehouse","notes":"formula: 4 door/car"}]
+           {"transnumber":"DMMAKE/00001","transtype":"production","direction":"transfer","transdate":str(trans_year-1)+"-12-01",
+            "duedate":str(trans_year-1)+"-12-02 00:00:00","planumber":"warehouse","notes":"formula: 4 door/car"}]
     retvalue = ndi.update_trans(param,trans)
     if retvalue.startswith("Error"):
       return rs.append(DIV(SPAN("trans"+": ",_style="color:blue;font-weight: bold;"),
@@ -887,15 +890,15 @@ def create_demo():
               {"transnumber":"DMFRM/00002","rownumber":5,"movetype":"plan","partnumber":"DMPROD/00008",
                "qty":1,"shared":1,"planumber":"material","notes":"demo"},
               {"transnumber":"DMMAKE/00001","rownumber":1,"movetype":"inventory","partnumber":"DMPROD/00004",
-               "shippingdate":"2012-12-02 00:00:00","qty":2,"shared":1,"planumber":"warehouse","notes":"demo"},
+               "shippingdate":str(trans_year-1)+"-12-02 00:00:00","qty":2,"shared":1,"planumber":"warehouse","notes":"demo"},
               {"transnumber":"DMMAKE/00001","rownumber":2,"movetype":"inventory","partnumber":"DMPROD/00005",
-               "shippingdate":"2012-12-01 00:00:00","qty":-8,"shared":0,"planumber":"material","notes":"demo"},
+               "shippingdate":str(trans_year-1)+"-12-01 00:00:00","qty":-8,"shared":0,"planumber":"material","notes":"demo"},
               {"transnumber":"DMMAKE/00001","rownumber":3,"movetype":"inventory","partnumber":"DMPROD/00006",
-               "shippingdate":"2012-12-01 00:00:00","qty":-8,"shared":0,"planumber":"material","notes":"demo"},
+               "shippingdate":str(trans_year-1)+"-12-01 00:00:00","qty":-8,"shared":0,"planumber":"material","notes":"demo"},
               {"transnumber":"DMMAKE/00001","rownumber":4,"movetype":"inventory","partnumber":"DMPROD/00007",
-               "shippingdate":"2012-12-01 00:00:00","qty":-12,"shared":0,"planumber":"material","notes":"demo"},
+               "shippingdate":str(trans_year-1)+"-12-01 00:00:00","qty":-12,"shared":0,"planumber":"material","notes":"demo"},
               {"transnumber":"DMMAKE/00001","rownumber":5,"movetype":"inventory","partnumber":"DMPROD/00008",
-               "shippingdate":"2012-12-01 00:00:00","qty":-1,"shared":0,"planumber":"material","notes":"demo"}]
+               "shippingdate":str(trans_year-1)+"-12-01 00:00:00","qty":-1,"shared":0,"planumber":"material","notes":"demo"}]
     retvalue = ndi.update_movement(param,movement)
     if retvalue.startswith("Error"):
       return rs.append(DIV(SPAN("movement"+": ",_style="color:blue;font-weight: bold;"),
@@ -909,8 +912,8 @@ def create_demo():
     #->and more create and link to items
     #----------------------------------------------------------------------------------------------------
     rs.append(DIV(SPAN("insert worksheet...",_style="color:brown;font-weight: bold;font-style: italic;"),BR()))
-    trans=[{"transnumber":"DMWORK/00001","transtype":"worksheet","direction":"out","transdate":"2013-01-05",
-            "duedate":"2013-01-05 00:00:00","custnumber":"DMCUST/00001","paidtype":"transfer","curr":"EUR","department":"sales",
+    trans=[{"transnumber":"DMWORK/00001","transtype":"worksheet","direction":"out","transdate":str(trans_year)+"-01-05",
+            "duedate":str(trans_year)+"-01-05 00:00:00","custnumber":"DMCUST/00001","paidtype":"transfer","curr":"EUR","department":"sales",
             "empnumber":"DMEMP/00001","trans_wsdistance":200,"trans_wstotal":3}]
     retvalue = ndi.update_trans(param,trans)
     if retvalue.startswith("Error"):
@@ -935,8 +938,8 @@ def create_demo():
     #->and more create and link to items
     #----------------------------------------------------------------------------------------------------
     rs.append(DIV(SPAN("insert worksheet...",_style="color:brown;font-weight: bold;font-style: italic;"),BR()))
-    trans=[{"transnumber":"DMRNT/00001","transtype":"rent","direction":"out","transdate":"2013-01-01",
-            "duedate":"2013-01-11 00:00:00","custnumber":"DMCUST/00001","paidtype":"transfer","curr":"EUR","department":"logistics",
+    trans=[{"transnumber":"DMRNT/00001","transtype":"rent","direction":"out","transdate":str(trans_year)+"-01-01",
+            "duedate":str(trans_year)+"-01-11 00:00:00","custnumber":"DMCUST/00001","paidtype":"transfer","curr":"EUR","department":"logistics",
             "trans_reholiday":3}]
     retvalue = ndi.update_trans(param,trans)
     if retvalue.startswith("Error"):
@@ -965,18 +968,17 @@ def create_demo():
     def set_def_report(key,value):
       if not ns.db.deffield(fieldname=key):
         fkey = key.split("_")
-        nervatype_id = ns.db((ns.db.groups.groupname=="nervatype")&(ns.db.groups.groupvalue=="setting")).select().as_list()[0]["id"]
         if len(fkey)==4:
           description = "default "+fkey[1]+" "+fkey[2]+" report"
         else:
           description = "default "+fkey[1]+" report"
-        fieldtype_id = ns.db((ns.db.groups.groupname=="fieldtype")&(ns.db.groups.groupvalue=="string")).select().as_list()[0]["id"]
-        ns.db.deffield.insert(**{"fieldname":key,"nervatype":nervatype_id,"fieldtype":fieldtype_id,
-                                 "description":description})
-      if ns.db.fieldvalue(fieldname=key):
-        ns.db(ns.db.fieldvalue.fieldname==key).update(**{"value":value})
-      else:
-        ns.db.fieldvalue.insert(**{"fieldname":key,"value":value})
+        values = {"fieldname":key,
+                  "nervatype":ns.valid.get_groups_id("nervatype", "setting"),
+                  "fieldtype":ns.valid.get_groups_id("fieldtype", "string"),
+                  "description":description}
+        ns.connect.updateData("deffield", values=values, validate=False, insert_row=True)
+      values = {"id":ns.valid.get_id_from_refnumber("fieldvalue",key), "fieldname":key, "value":value}
+      ns.connect.updateData("fieldvalue", values=values, validate=False, insert_row=True)
     reports = {"fpdf_customer_sheet_en":"default_customer_report",
                "fpdf_employee_sheet_en":"default_employee_report",
                "fpdf_invoice_en":"default_trans_invoice_report",
@@ -985,7 +987,7 @@ def create_demo():
                "html_vat":None,
                "xls_vat_en":None}
     for report in reports.keys():
-      load = dbfu.loadReport(ns=ns, fileName=report+".sql", fileStr=None, insert=(not ns.db.ui_report(reportkey=report)))
+      load = dbtool.loadReport(fileName=report+".sql", fileStr=None, insert=(not ns.db.ui_report(reportkey=report)))
       if load != "OK":
         rs.append(DIV(SPAN("report"+": ",_style="color:blue;font-weight: bold;"),
                     SPAN(load,_style="color:red;font-weight: bold;"),BR()))
@@ -995,7 +997,41 @@ def create_demo():
           set_def_report(reports[report],report)
         rs.append(DIV(SPAN("report"+": ",_style="color:blue;font-weight: bold;"),
                       SPAN("OK|"+report,_style="color:green;font-weight: bold;"),BR()))
-  
+
+  #----------------------------------------------------------------------------------------------------
+    #sample user menu:
+  #----------------------------------------------------------------------------------------------------
+    #+3 sample menus and menufields
+    #create if does not exist (update_row=False)
+    #----------------------------------------------------------------------------------------------------
+    rs.append(DIV(BR(),SPAN("insert sample menu...",_style="color:brown;font-weight: bold;font-style: italic;"),BR()))
+    ui_menu = [{'id':ns.valid.get_id_from_refnumber('ui_menu','mnu_exp_1'),
+                'menukey':'mnu_exp_1', 'description':'Server function example', 'funcname':'callMenuCmd', 'url':0},
+               {'id':ns.valid.get_id_from_refnumber('ui_menu','mnu_exp_2'),
+                'menukey':'mnu_exp_2', 'description':'Server URL example', 'funcname':'nerva2py/ndi/getVernum', 'url':1},
+               {'id':ns.valid.get_id_from_refnumber('ui_menu','mnu_exp_3'),
+                'menukey':'mnu_exp_3', 'description':'Internet URL example', 'funcname':'search', 'url':1, 
+                'address':'https://www.google.com'}]
+    for values in ui_menu:
+      ns.connect.updateData("ui_menu", values=values, log_enabled=False, validate=False, insert_row=True, update_row=False)
+      rs.append(DIV(SPAN("menu"+": ",_style="color:blue;font-weight: bold;"),
+                      SPAN("OK|"+values["menukey"],_style="color:green;font-weight: bold;"),BR()))
+    
+    ui_menufields = [{'id':ns.valid.get_id_from_refnumber('ui_menufields','mnu_exp_1~number_1'),
+                      'menu_id':ns.valid.get_id_from_refnumber('ui_menu','mnu_exp_1'), 
+                      'fieldname':'number_1', 'description':'first number', 
+                      'fieldtype':ns.valid.get_groups_id("fieldtype", "float"), 'orderby':0},
+                     {'id':ns.valid.get_id_from_refnumber('ui_menufields','mnu_exp_1~number_2'),
+                      'menu_id':ns.valid.get_id_from_refnumber('ui_menu','mnu_exp_1'), 
+                      'fieldname':'number_2', 'description':'second number', 
+                      'fieldtype':ns.valid.get_groups_id("fieldtype", "float"), 'orderby':1},
+                     {'id':ns.valid.get_id_from_refnumber('ui_menufields','mnu_exp_3~q'),
+                      'menu_id':ns.valid.get_id_from_refnumber('ui_menu','mnu_exp_3'), 
+                      'fieldname':'q', 'description':'google search', 
+                      'fieldtype':ns.valid.get_groups_id("fieldtype", "string"), 'orderby':0}]
+    for values in ui_menufields:
+      ns.connect.updateData("ui_menufields", values=values, log_enabled=False, validate=False, insert_row=True, update_row=False)
+          
     rs.append(P(SPAN("End process: ",_style="color:blue;font-weight: bold;"),
                 SPAN(str(datetime.datetime.now()),_style="font-weight: bold;")))
   except Exception, err:
@@ -1039,7 +1075,7 @@ def get_demo_report():
     else:
       return "Error|Missing employee No.: DMEMP/00001"
   elif param["reportcode"] in("html_vat","gshi_vat_en","fpdf_vat_en","xls_vat_en"):
-    param["filters"] = "date_from=2012-01-01|date_to=2012-12-31"
+    param["filters"] = "date_from="+str(trans_year-1)+"-01-01|date_to="+str(trans_year-1)+"-12-31"
   else:
     return "Error|Unknown reportcode!"
   if request.vars.output:

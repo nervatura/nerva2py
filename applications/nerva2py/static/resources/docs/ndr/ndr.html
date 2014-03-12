@@ -306,7 +306,6 @@ th,td {
           username<span class="ftype">::String</span>,
           password<span class="ftype">::String</span>,
           bformat<span class="ftype">::String</span><span class="defvalue">='backup'</span>,
-          lst_nom<span class="ftype">::String</span><span class="defvalue">=''</span>,
           filename<span class="ftype">::String</span><span class="defvalue">=''</span>)
           <span class="ftype">::Optional</span></td>
       </tr>
@@ -317,18 +316,12 @@ th,td {
 						the backup file. Independent of the database type and version of
 						the NAS server..<br> <br> 
 						
-						<span class="retpar"">customer</span> <b>backup type:</b><br> 
+						<b>Nervatura backup type:</b><br> 
 						<span style="color: green; font-weight: bold;">NOM objects: </span>
-						address, barcode, contact, currency, customer,
-						deffield, employee, event, groups, item, link, movement,
-						numberdef, pattern, payment, place, price, product, project, rate,
-						tax, tool, trans, setting<br> 
-						<span style="color: red; font-weight: bold;">Not included: </span>
-						log, user interface objects (starting
-						with the ui_) and deleted rows (deleted flag)<br> <br> 
-						
-						
-						<span class="retpar"">settings</span> <b>backup type:</b><br> 
+						address, barcode, contact, currency, customer, deffield, employee,
+						event, fieldvalue, groups, item, link, log, movement, numberdef,
+						pattern, payment, place, price, product, project, rate, tax, tool,
+						trans<br>  
 						<span style="color: green; font-weight: bold;">Settings objects: </span>
 						ui_audit, ui_applview, ui_filter, ui_groupinput,
 						ui_language, ui_locale, ui_menu, ui_menufields, ui_message,
@@ -336,7 +329,7 @@ th,td {
 						ui_reportsources, ui_userconfig,
 						ui_viewfields, ui_zipcatalog<br> 
 						<span style="color: red; font-weight: bold;">Not included: </span>
-						ui_printqueue and other NOM objects<br> <br> 
+						ui_printqueue<br> <br> 
 						
 						<span class="retpar">code</span>: base64 or none or
             missing. If the value is "base64", all other parameters are encoded in base64.<br>
@@ -346,20 +339,15 @@ th,td {
               valid username for the database<br>
             <span class="retpar">password</span>:
               MD5 encoded user password (or an empty string if not set)<br>
-            <span class="retpar">btype</span>:
-              backup type. Valid values: customer,settings.<br>
             <span class="retpar">bformat</span>:
               optional. Valid values: backup,xml. Default value: backup.<br>
-            <span class="retpar">lst_nom</span>:
-              optional. Valid values: empty (all) or a comma separeted object list. Default value: all.
-              The setting is set, the backup only when all objects are allowed!<br>
             <span class="retpar">filename</span>:
               optional. Valid values: empty (database name), download (direct result) or a custom filename. 
               Default value: database name. 
           </p>
           <p><b>Only to be used if the database (and the user) NDI or NPI access enabled!</b></p>
           <p class="exblock"><b><u><i>Example:</i></u></b><br><br>
-            http://localhost:8000/nerva2py/ndr/createDataBackup?code=none&database=demo&username=demo&password=&btype=customer&bformat=&lst_nom=&filename=
+            http://localhost:8000/nerva2py/ndr/createDataBackup?code=none&database=demo&username=demo&password=&bformat=&filename=
           </p>
           <p>The result is a process report or the backup (XML) file.</p>
         </td>
@@ -377,7 +365,7 @@ th,td {
       <tr>
         <td>
           <p class="fdesc">
-            Restores a customer backup or xml file. It is recommended to create the database before restoring!<br>
+            Restores a backup or xml file.<br>
                   
             <span class="retpar">code</span>: base64 or none or
             missing. If the value is "base64", all other parameters are encoded in base64.<br>

@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2013, Csaba Kappel
+Copyright © 2011-2014, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -17,8 +17,8 @@ if 0:
   global db; db = DAL()
   global response; response = globals.Response()
 
-import pyamf #@UnresolvedImport
-from pyamf.flex import ArrayCollection #@UnresolvedImport
+import pyamf
+from pyamf.flex import ArrayCollection 
 from gluon.tools import Service
 
 from nerva2py.nervastore import NervaStore
@@ -26,9 +26,9 @@ from nerva2py.tools import NervaTools
 from nerva2py.npi import Npi
 import nerva2py.models
 
-ns = NervaStore(request, T, db)
+ns = NervaStore(request, session, T, db)
 npi = Npi(ns)
-dbfu = NervaTools()
+tool = NervaTools(ns)
 
 service = Service()
         
@@ -92,7 +92,7 @@ def loadDataSet_amf(login, dataSetInfo):
       if (recordSetInfo["infoType"] == "execute"):
         executeSql_amf(login, recordSetInfo["sqlKey"], recordSetInfo["sqlStr"], recordSetInfo["paramList"])
       if (recordSetInfo["infoType"] == "function"):
-        func = getattr(dbfu, recordSetInfo["functionName"], None)
+        func = getattr(tool, recordSetInfo["functionName"], None)
         params = {}
         if callable(func):
           if (type(recordSetInfo["paramList"]) is list) or (type(recordSetInfo["paramList"]) is ArrayCollection):
@@ -104,7 +104,7 @@ def loadDataSet_amf(login, dataSetInfo):
               params[param["name"]] = param["value"]
           else:
             params = recordSetInfo["paramList"]
-          recordSet = func(ns, params)
+          recordSet = func(params)
       infoSet = {}
       infoSet["infoName"] = recordSetInfo["infoName"]
       infoSet["recordSet"] = recordSet

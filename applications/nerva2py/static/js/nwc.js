@@ -7,7 +7,7 @@ function get_base_url() {
 //index
 //--------------------------------------------------
 function call_menucmd(_menukey,new_window) {
-	url_str = get_base_url()+'/menufields/_menukey';
+	url_str = get_base_url()+'/frm_custom_menu/_menukey';
 	url_str = url_str.replace("_menukey",_menukey);
 	if (new_window==1) {
 		window.open(url_str,'_blank');
@@ -383,7 +383,7 @@ function load_price() {
 	var qty=document.getElementById("item_qty");
 	var fxprice=document.getElementById("item_fxprice");
 	var trans_id=document.getElementById("item_trans_id").value;	
-	var surl = get_base_url()+'/get_product_price?trans_id='+trans_id+'&product_id='+product_id.value+'&qty='+qty.value;
+	var surl = get_base_url()+'/cmd_get_price?trans_id='+trans_id+'&product_id='+product_id.value+'&qty='+qty.value;
 	jQuery.ajax({
     	type: "POST",
     	url: surl,
@@ -817,7 +817,7 @@ function load_formula(){
 	if (res==false) {
 		return false;}
 	
-	var foget_url = get_base_url()+'/load_formula?production_id='+document.getElementById("production_production_id").value+"&formula_id="+formula_id;
+	var foget_url = get_base_url()+'/cmd_get_formula?production_id='+document.getElementById("production_production_id").value+"&formula_id="+formula_id;
 	jQuery.ajax({
     	type: "POST", 
     	url: foget_url,

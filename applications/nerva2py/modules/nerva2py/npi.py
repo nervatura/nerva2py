@@ -3,31 +3,31 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2013, Csaba Kappel
+Copyright © 2011-2014, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
 
-from nerva2py.localstore import setEngine, setSqlParams
 from nerva2py.tools import NervaTools
 
 #Basic npi functions. Encoding independent
 
 class Npi(object):
   ns = None
-  dbfu = NervaTools()
+  tool = NervaTools(None)
     
   def __init__(self, NervaStore):
     self.ns = NervaStore
+    self.tool = NervaTools(NervaStore)
   
   def getLogin(self, database, username, password):
     validator = {}
     if self.ns.db==None:
-      if setEngine(self.ns, database)==False:
+      if self.ns.local.setEngine(database)==False:
         validator["valid"] = False
         validator["message"] = str(self.ns.error_message)
         return validator
-    if self.ns.setLogin(username, password)==False:
+    if self.ns.connect.setLogin(username, password)==False:
       validator["valid"] = False
       if self.ns.error_message!="":
         validator["message"] = str(self.ns.error_message)
@@ -48,7 +48,7 @@ class Npi(object):
         appl = login["appl"]
       else:
         appl = "nflex"
-      sqlStr = setSqlParams(lstore=self.ns.lstore, engine=self.ns.engine, sqlKey=sqlKey, sqlStr=sqlStr, whereStr=whereStr, havingStr=havingStr, 
+      sqlStr = self.ns.local.setSqlParams(sqlKey=sqlKey, sqlStr=sqlStr, whereStr=whereStr, havingStr=havingStr, 
                             paramList=paramList, rlimit=False, appl=appl)
       if simpleList==False:
         result = self.ns.db.executesql(sqlStr, as_dict=True)
@@ -84,7 +84,7 @@ class Npi(object):
         appl = login["appl"]
       else:
         appl = "nflex"
-      sqlStr = setSqlParams(lstore=self.ns.lstore, engine=self.ns.engine, sqlKey=sqlKey, sqlStr=sqlStr, whereStr="", havingStr="", 
+      sqlStr = self.ns.local.setSqlParams(sqlKey=sqlKey, sqlStr=sqlStr, whereStr="", havingStr="", 
                             paramList=paramList, rlimit=False, appl=appl)
       self.ns.db.executesql(sqlStr)
     except Exception, err:
@@ -110,7 +110,7 @@ class Npi(object):
         if (recordSetInfo["infoType"] == "execute"):
           self.executeSql(login, recordSetInfo["sqlKey"], recordSetInfo["sqlStr"], recordSetInfo["paramList"])
         if (recordSetInfo["infoType"] == "function"):
-          func = getattr(self.dbfu, recordSetInfo["functionName"], None)
+          func = getattr(self.tool, recordSetInfo["functionName"], None)
           params = {}
           if callable(func):
             if (type(recordSetInfo["paramList"]) is list):
@@ -122,7 +122,7 @@ class Npi(object):
                 params[param["name"]] = param["value"]
             else:
               params = recordSetInfo["paramList"]
-            recordSet = func(self.ns, params)
+            recordSet = func(params)
         infoSet = {}
         infoSet["infoName"] = recordSetInfo["infoName"]
         infoSet["recordSet"] = recordSet
@@ -132,47 +132,20 @@ class Npi(object):
     return dataSet
 
   def saveRecord(self, login, record, validate=False):
-    def clearValues(table, values):
-      rid = None
+    def clearValues(tablename, values):
+      table = getattr(self.ns.db, tablename)
       for key in values.keys():
         if values[key]==None or hasattr(table, key)==False:
           del values[key]
-        elif key=="id":
-          rid = values["id"]
-          del values["id"]
-      return rid
+      return values
     if login.has_key("safe")!=True:
       validator = self.getLogin(login["database"], login["username"], login["password"])
       if validator["valid"]==False:
         raise NameError(validator["message"])
-    try:
-      table = getattr(self.ns.db, record.__tablename__)
-      values = record.__dict__
-      rid = clearValues(table, values)
-      if rid==None or rid<=0:
-        if validate==True:
-          ret = table.validate_and_insert(**values)
-          if len(ret.error)>0:
-            #ns.db.rollback()
-            raise RuntimeError(str(ret.error))
-          else:
-            record.id = int(ret.id)
-        else:
-          record.id = int(table.insert(**values))
-        if rid!=None:
-          record.oid = rid
-      else:
-        if validate==True:
-          ret = self.ns.db(table.id==rid).validate_and_update(**values)
-          if len(ret.errors)>0:
-            #ns.db.rollback()
-            raise RuntimeError(str(ret.errors.items()[0]).replace(",",":").replace("(","").replace(")",""))
-        else:
-          self.ns.db(table.id==rid).update(**values)
-    except Exception, err:
-      #ns.db.rollback()
-      raise RuntimeError(err)
-    #ns.db.commit()
+    values = clearValues(record.__tablename__, record.__dict__)
+    row_id = self.ns.connect.updateData(record.__tablename__, values=values, validate=validate, insert_row=True)
+    if not row_id:
+      raise str(self.ns.error_message)
     return record
   
   def saveRecordSet(self, login, recordSet, validate=False):
@@ -203,9 +176,9 @@ class Npi(object):
           for record in updateSetInfo["recordSet"]:
             self.deleteRecord(login, record)
         if (updateSetInfo["updateType"] == "function"):
-          func = getattr(self.dbfu, updateSetInfo["functionName"], None)
+          func = getattr(self.tool, updateSetInfo["functionName"], None)
           if callable(func):
-            updateSetInfo["value"] = func(self.ns, updateSetInfo["paramList"])
+            updateSetInfo["value"] = func(updateSetInfo["paramList"])
     except Exception, err:
       self.ns.db.rollback()
       raise RuntimeError(err)
@@ -217,13 +190,8 @@ class Npi(object):
       validator = self.getLogin(login["database"], login["username"], login["password"])
       if validator["valid"]==False:
         raise NameError(validator["message"])
-    try:
-      table = getattr(self.ns.db, record.__tablename__)
-      self.ns.db(table.id == record.id).delete()
-    except Exception, err:
-      #ns.db.rollback()
-      raise RuntimeError(err)
-    #ns.db.commit()
+    if not self.ns.connect.deleteData(nervatype=record.__tablename__, ref_id=record.id):
+      raise str(self.ns.error_message)
     return True
   
   def deleteRecordSet(self, login, recordSet):
@@ -245,10 +213,10 @@ class Npi(object):
       validator = self.getLogin(login["database"], login["username"], login["password"])
       if validator["valid"]==False:
         raise NameError(validator["message"])
-    func = getattr(self.dbfu, functionName, None)
+    func = getattr(self.tool, functionName, None)
     if callable(func):
       try:
-        retval = func(self.ns, paramList)
+        retval = func(paramList)
       except Exception, err:
         raise RuntimeError(err)
       if type(retval) is not list:

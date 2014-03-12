@@ -13,7 +13,7 @@ left join (select * from address
   where id in(select min(id) fid from address a
     where a.deleted=0 and a.nervatype = (select id from groups where groupname=''nervatype'' and groupvalue=''customer'')
     group by a.ref_id)) addr on c.id = addr.ref_id
-where c.deleted=0 and c.id>1 @where_str '
+where c.deleted=0 and c.id not in(select customer.id from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=''own'') @where_str '
 WHERE viewname='CustomerView';
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('CustomerView', 'custnumber', (select id from groups where groupname='fieldtype' and groupvalue='string'), 
@@ -67,7 +67,7 @@ INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, s
 INSERT INTO ui_applview (viewname, sqlstr, inistr, menu, menuitem, parentview, orderby) 
   VALUES ('CustomerFieldsView', '', 'and c.id = -1', 'customer', 'browser_customer_edit', 'CustomerView', 1);
 UPDATE ui_applview SET sqlstr='select c.id, c.custnumber, c.custname, df.description as fielddef,
-case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end as text_value,
+case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end as text_value,
 cast(case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end AS REAL) as number_value,
 case when fg.groupvalue in (''date'') and fv.value not in('''') then cast(fv.value as date) else null end as date_value,
 case when fg.groupvalue in (''bool'') then case when fv.value = ''true'' then 1 else 0 end else null end as bool_value,
@@ -91,7 +91,7 @@ left join product rf_product on fv.value = cast(rf_product.id as text)
 left join project rf_project on fv.value = cast(rf_project.id as text)
 left join employee rf_employee on fv.value = cast(rf_employee.id as text)
 left join place rf_place on fv.value = cast(rf_place.id as text)
-where fv.deleted = 0 and c.deleted=0 and c.id>1 @where_str'
+where fv.deleted = 0 and c.deleted=0 and c.id not in(select customer.id from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=''own'') @where_str'
 WHERE viewname='CustomerFieldsView';
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('CustomerFieldsView', 'custnumber', (select id from groups where groupname='fieldtype' and groupvalue='string'), 
@@ -107,7 +107,7 @@ INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, s
   (select id from groups where groupname='aggretype' and groupvalue='<>'));
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('CustomerFieldsView', 'text_value', (select id from groups where groupname='fieldtype' and groupvalue='string'), 
-  (select id from groups where groupname='wheretype' and groupvalue='where'), 3, 'case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end', 
+  (select id from groups where groupname='wheretype' and groupvalue='where'), 3, 'case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end', 
   (select id from groups where groupname='aggretype' and groupvalue='<>'));
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('CustomerFieldsView', 'number_value', (select id from groups where groupname='fieldtype' and groupvalue='float'), 
@@ -142,7 +142,8 @@ INSERT INTO ui_applview (viewname, sqlstr, inistr, menu, menuitem, parentview, o
 UPDATE ui_applview SET sqlstr='select c.id, c.custnumber, c.custname, co.firstname, co.surname, co.status, co.phone, co.fax, co.mobil, co.email, co.notes
 from contact co
 inner join customer c on co.ref_id = c.id
-where co.deleted=0 and c.deleted=0 and co.nervatype = (select id from groups where groupname=''nervatype'' and groupvalue=''customer'') and c.id>1 @where_str'
+where co.deleted=0 and c.deleted=0 and co.nervatype = (select id from groups where groupname=''nervatype'' and groupvalue=''customer'') 
+  and c.id not in(select customer.id from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=''own'') @where_str'
 WHERE viewname='CustomerContactView';
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('CustomerContactView', 'custnumber', (select id from groups where groupname='fieldtype' and groupvalue='string'), 
@@ -190,7 +191,8 @@ INSERT INTO ui_applview (viewname, sqlstr, inistr, menu, menuitem, parentview, o
 UPDATE ui_applview SET sqlstr='select c.id, c.custnumber, c.custname, a.country, a.state, a.zipcode, a.city, a.street, a.notes 
 from address a
 inner join customer c on a.ref_id = c.id
-where a.deleted=0 and c.deleted=0 and a.nervatype = (select id from groups where groupname=''nervatype'' and groupvalue=''customer'') and c.id>1 @where_str'
+where a.deleted=0 and c.deleted=0 and a.nervatype = (select id from groups where groupname=''nervatype'' and groupvalue=''customer'') 
+  and c.id not in(select customer.id from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=''own'') @where_str'
 WHERE viewname='CustomerAddressView';
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('CustomerAddressView', 'custnumber', (select id from groups where groupname='fieldtype' and groupvalue='string'), 
@@ -231,7 +233,7 @@ UPDATE ui_applview SET sqlstr='select c.id, c.custnumber, c.custname, g.groupval
 from customer c
 inner join link l on c.id = l.ref_id_1 and l.nervatype_1 = (select id from groups where groupname=''nervatype'' and groupvalue=''customer'')
 inner join groups g on l.ref_id_2 = g.id and l.nervatype_2 = (select id from groups where groupname=''nervatype'' and groupvalue=''groups'')
-where c.deleted = 0 and g.deleted = 0 and l.deleted=0 and c.id>1 @where_str'
+where c.deleted = 0 and g.deleted = 0 and l.deleted=0 and c.id not in(select customer.id from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=''own'') @where_str'
 WHERE viewname='CustomerGroupsView';
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('CustomerGroupsView', 'custnumber', (select id from groups where groupname='fieldtype' and groupvalue='string'), 
@@ -259,7 +261,8 @@ UPDATE ui_applview SET sqlstr='select e.id, c.custnumber, c.custname, e.calnumbe
 from event e
 inner join customer c on e.ref_id = c.id
 left join groups eg on e.eventgroup = eg.id
-where e.deleted=0 and c.deleted=0 and e.nervatype = (select id from groups where groupname=''nervatype'' and groupvalue=''customer'') and c.id>1 @where_str'
+where e.deleted=0 and c.deleted=0 and e.nervatype = (select id from groups where groupname=''nervatype'' and groupvalue=''customer'') 
+  and c.id not in(select customer.id from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=''own'') @where_str'
 WHERE viewname='CustomerEvents';
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('CustomerEvents', 'custnumber', (select id from groups where groupname='fieldtype' and groupvalue='string'), 
@@ -349,7 +352,7 @@ INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, s
 INSERT INTO ui_applview (viewname, sqlstr, inistr, menu, menuitem, parentview, orderby) 
   VALUES ('ProductFieldsView', '', 'and p.id = -1', 'product', 'browser_product_edit', 'ProductView', 1);
 UPDATE ui_applview SET sqlstr='select p.id, p.partnumber, p.description, df.description as fielddef,
-case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end as text_value,
+case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end as text_value,
 cast(case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end AS REAL) as number_value,
 case when fg.groupvalue in (''date'') and fv.value not in('''') then cast(fv.value as date) else null end as date_value,
 case when fg.groupvalue in (''bool'') then case when fv.value = ''true'' then 1 else 0 end else null end as bool_value,
@@ -389,7 +392,7 @@ INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, s
   (select id from groups where groupname='aggretype' and groupvalue='<>'));
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('ProductFieldsView', 'text_value', (select id from groups where groupname='fieldtype' and groupvalue='string'), 
-  (select id from groups where groupname='wheretype' and groupvalue='where'), 3, 'case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end', 
+  (select id from groups where groupname='wheretype' and groupvalue='where'), 3, 'case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end', 
   (select id from groups where groupname='aggretype' and groupvalue='<>'));
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('ProductFieldsView', 'number_value', (select id from groups where groupname='fieldtype' and groupvalue='float'), 
@@ -881,7 +884,7 @@ INSERT INTO ui_applview (viewname, sqlstr, inistr, menu, menuitem, parentview, o
   VALUES ('TransItemFieldsView', '', 'and t.id = -1', 'transitem', 'browser_transitem_edit', 'TransItemHeadView', 1);
 UPDATE ui_applview SET sqlstr='select t.id||''_''||tg.groupvalue||''_''||dg.groupvalue as id, case when mst.msg is null then tg.groupvalue else mst.msg end as transtype, 
   case when msd.msg is null then dg.groupvalue else msd.msg end as direction, t.transnumber, df.description as fielddef,
-case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end as text_value,
+case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end as text_value,
 cast(case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end AS REAL) as number_value,
 case when fg.groupvalue in (''date'') and fv.value not in('''') then cast(fv.value as date) else null end as date_value,
 case when fg.groupvalue in (''bool'') then case when fv.value = ''true'' then 1 else 0 end else null end as bool_value,
@@ -930,7 +933,7 @@ INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, s
   (select id from groups where groupname='aggretype' and groupvalue='<>'));
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('TransItemFieldsView', 'text_value', (select id from groups where groupname='fieldtype' and groupvalue='string'), 
-  (select id from groups where groupname='wheretype' and groupvalue='where'), 4, 'case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end', 
+  (select id from groups where groupname='wheretype' and groupvalue='where'), 4, 'case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end', 
   (select id from groups where groupname='aggretype' and groupvalue='<>'));
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('TransItemFieldsView', 'number_value', (select id from groups where groupname='fieldtype' and groupvalue='float'), 
@@ -1205,7 +1208,7 @@ INSERT INTO ui_applview (viewname, sqlstr, inistr, menu, menuitem, parentview, o
 UPDATE ui_applview SET sqlstr='select t.id||''_''||tg.groupvalue||''_''||dg.groupvalue as id, case when mst.msg is null then tg.groupvalue else mst.msg end as transtype, 
   case when tg.groupvalue=''bank'' then '''' else case when msd.msg is null then dg.groupvalue else msd.msg end end as direction, 
   t.transnumber, df.description as fielddef,
-case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end as text_value,
+case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end as text_value,
 cast(case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end AS REAL) as number_value,
 case when fg.groupvalue in (''date'') and fv.value not in('''') then cast(fv.value as date) else null end as date_value,
 case when fg.groupvalue in (''bool'') then case when fv.value = ''true'' then 1 else 0 end else null end as bool_value,
@@ -1254,7 +1257,7 @@ INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, s
   (select id from groups where groupname='aggretype' and groupvalue='<>'));
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('PaymentFieldsView', 'text_value', (select id from groups where groupname='fieldtype' and groupvalue='string'), 
-  (select id from groups where groupname='wheretype' and groupvalue='where'), 4, 'case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end', 
+  (select id from groups where groupname='wheretype' and groupvalue='where'), 4, 'case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end', 
   (select id from groups where groupname='aggretype' and groupvalue='<>'));
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('PaymentFieldsView', 'number_value', (select id from groups where groupname='fieldtype' and groupvalue='float'), 
@@ -1621,7 +1624,7 @@ INSERT INTO ui_applview (viewname, sqlstr, inistr, menu, menuitem, parentview, o
 UPDATE ui_applview SET sqlstr='select tg.groupvalue||''_''||dg.groupvalue||''_''||(case when delt.ref_id is null then cast(t.id as text) else cast(delt.ref_id as text) end) as id, 
   case when mst.msg is null then tg.groupvalue else mst.msg end as transtype, 
   case when msd.msg is null then dg.groupvalue else msd.msg end as direction, t.transnumber, df.description as fielddef,
-case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end as text_value,
+case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end as text_value,
 cast(case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end AS REAL) as number_value,
 case when fg.groupvalue in (''date'') and fv.value not in('''') then cast(fv.value as date) else null end as date_value,
 case when fg.groupvalue in (''bool'') then case when fv.value = ''true'' then 1 else 0 end else null end as bool_value,
@@ -1674,7 +1677,7 @@ INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, s
   (select id from groups where groupname='aggretype' and groupvalue='<>'));
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('MovementFieldsView', 'text_value', (select id from groups where groupname='fieldtype' and groupvalue='string'), 
-  (select id from groups where groupname='wheretype' and groupvalue='where'), 4, 'case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end', 
+  (select id from groups where groupname='wheretype' and groupvalue='where'), 4, 'case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end', 
   (select id from groups where groupname='aggretype' and groupvalue='<>'));
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('MovementFieldsView', 'number_value', (select id from groups where groupname='fieldtype' and groupvalue='float'), 
@@ -1829,7 +1832,7 @@ INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, s
 INSERT INTO ui_applview (viewname, sqlstr, inistr, menu, menuitem, parentview, orderby) 
   VALUES ('EmployeeFieldsView', '', 'and e.id = -1', 'employee', 'browser_employee_edit', 'EmployeeView', 1);
 UPDATE ui_applview SET sqlstr='select e.id, e.empnumber, c.firstname, c.surname, e.username, df.description as fielddef,
-case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end as text_value,
+case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end as text_value,
 cast(case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end AS REAL) as number_value,
 case when fg.groupvalue in (''date'') and fv.value not in('''') then cast(fv.value as date) else null end as date_value,
 case when fg.groupvalue in (''bool'') then case when fv.value = ''true'' then 1 else 0 end else null end as bool_value,
@@ -1878,7 +1881,7 @@ INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, s
   (select id from groups where groupname='aggretype' and groupvalue='<>'));
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('EmployeeFieldsView', 'text_value', (select id from groups where groupname='fieldtype' and groupvalue='string'), 
-  (select id from groups where groupname='wheretype' and groupvalue='where'), 5, 'case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end', 
+  (select id from groups where groupname='wheretype' and groupvalue='where'), 5, 'case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end', 
   (select id from groups where groupname='aggretype' and groupvalue='<>'));
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('EmployeeFieldsView', 'number_value', (select id from groups where groupname='fieldtype' and groupvalue='float'), 
@@ -2014,7 +2017,7 @@ INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, s
 INSERT INTO ui_applview (viewname, sqlstr, inistr, menu, menuitem, parentview, orderby) 
   VALUES ('ProjectFieldsView', '', 'and p.id = -1', 'project', 'browser_project_edit', 'ProjectView', 1);
 UPDATE ui_applview SET sqlstr='select p.id, p.pronumber, p.description, df.description as fielddef,
-case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end as text_value,
+case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end as text_value,
 cast(case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end AS REAL) as number_value,
 case when fg.groupvalue in (''date'') and fv.value not in('''') then cast(fv.value as date) else null end as date_value,
 case when fg.groupvalue in (''bool'') then case when fv.value = ''true'' then 1 else 0 end else null end as bool_value,
@@ -2054,7 +2057,7 @@ INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, s
   (select id from groups where groupname='aggretype' and groupvalue='<>'));
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('ProjectFieldsView', 'text_value', (select id from groups where groupname='fieldtype' and groupvalue='string'), 
-  (select id from groups where groupname='wheretype' and groupvalue='where'), 3, 'case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end', 
+  (select id from groups where groupname='wheretype' and groupvalue='where'), 3, 'case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end', 
   (select id from groups where groupname='aggretype' and groupvalue='<>'));
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('ProjectFieldsView', 'number_value', (select id from groups where groupname='fieldtype' and groupvalue='float'), 
@@ -2290,7 +2293,8 @@ UPDATE ui_applview SET sqlstr='select t.id, t.serial, t.description, p.descripti
 from tool t
 inner join product p on t.product_id = p.id
 left join groups tg on t.toolgroup = tg.id
-left join (select mv.tool_id,  case when t.direction = (select id from groups where groupname = ''direction'' and groupvalue = ''in'') then (select custname from customer where id=1)
+left join (select mv.tool_id,  case when t.direction = (select id from groups where groupname = ''direction'' and groupvalue = ''in'') then 
+  (select custname from customer where id in(select min(customer.id) from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=''own''))
   when c.custname is not null then c.custname 
   when e.empnumber is not null then e.empnumber 
   else ltc.custname end as state
@@ -2306,7 +2310,7 @@ where mv.id in(select max(id) from movement mv
     inner join trans t on mv.trans_id=t.id
     where mv.deleted=0 and tool_id is not null and t.deleted=0 and cast(shippingdate as date) <= current_date 
     group by tool_id) lst_date on mv.tool_id=lst_date.tool_id and mv.shippingdate=lst_date.ldate group by mv.tool_id)) ssel on t.id = ssel.tool_id
-where t.deleted = 0 @where_str '
+where t.deleted = 0 and (t.toolgroup not in(select id from groups where groupname=''toolgroup'' and groupvalue=''printer'') or t.toolgroup is null) @where_str '
 WHERE viewname='ToolView';
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('ToolView', 'serial', (select id from groups where groupname='fieldtype' and groupvalue='string'), 
@@ -2340,7 +2344,7 @@ INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, s
 INSERT INTO ui_applview (viewname, sqlstr, inistr, menu, menuitem, parentview, orderby) 
   VALUES ('ToolFieldsView', '', 'and p.id = -1', 'tool', 'browser_tool_edit', 'ToolView', 1);
 UPDATE ui_applview SET sqlstr='select t.id, t.serial, t.description, df.description as fielddef,
-case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end as text_value,
+case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end as text_value,
 cast(case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end AS REAL) as number_value,
 case when fg.groupvalue in (''date'') and fv.value not in('''') then cast(fv.value as date) else null end as date_value,
 case when fg.groupvalue in (''bool'') then case when fv.value = ''true'' then 1 else 0 end else null end as bool_value,
@@ -2364,7 +2368,7 @@ left join product rf_product on fv.value = cast(rf_product.id as text)
 left join project rf_project on fv.value = cast(rf_project.id as text)
 left join employee rf_employee on fv.value = cast(rf_employee.id as text)
 left join place rf_place on fv.value = cast(rf_place.id as text)
-where fv.deleted = 0 and t.deleted=0 @where_str'
+where fv.deleted = 0 and t.deleted=0 and (t.toolgroup not in(select id from groups where groupname=''toolgroup'' and groupvalue=''printer'') or t.toolgroup is null) @where_str'
 WHERE viewname='ToolFieldsView';
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('ToolFieldsView', 'serial', (select id from groups where groupname='fieldtype' and groupvalue='string'), 
@@ -2380,7 +2384,7 @@ INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, s
   (select id from groups where groupname='aggretype' and groupvalue='<>'));
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('ToolFieldsView', 'text_value', (select id from groups where groupname='fieldtype' and groupvalue='string'), 
-  (select id from groups where groupname='wheretype' and groupvalue='where'), 3, 'case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end', 
+  (select id from groups where groupname='wheretype' and groupvalue='where'), 3, 'case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end', 
   (select id from groups where groupname='aggretype' and groupvalue='<>'));
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('ToolFieldsView', 'number_value', (select id from groups where groupname='fieldtype' and groupvalue='float'), 
@@ -2419,7 +2423,8 @@ UPDATE ui_applview SET sqlstr='select e.id, t.serial, t.description as pdescript
 from event e
 inner join tool t on e.ref_id = t.id
 left join groups eg on e.eventgroup = eg.id
-where e.deleted=0 and t.deleted=0 and e.nervatype = (select id from groups where groupname=''nervatype'' and groupvalue=''tool'') @where_str'
+where e.deleted=0 and t.deleted=0 and e.nervatype = (select id from groups where groupname=''nervatype'' and groupvalue=''tool'') 
+  and (t.toolgroup not in(select id from groups where groupname=''toolgroup'' and groupvalue=''printer'') or t.toolgroup is null) @where_str'
 WHERE viewname='ToolEvents';
 INSERT INTO ui_viewfields (viewname, fieldname, fieldtype, wheretype, orderby, sqlstr, aggretype) 
   VALUES ('ToolEvents', 'serial', (select id from groups where groupname='fieldtype' and groupvalue='string'), 

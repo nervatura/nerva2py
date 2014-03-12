@@ -80,7 +80,7 @@ left join fieldvalue custname on t.id = custname.ref_id and custname.fieldname='
 left join fieldvalue custaddress on t.id = custaddress.ref_id and custaddress.fieldname=''trans_custinvoice_custaddress'' 
 left join fieldvalue custtax on t.id = custtax.ref_id and custtax.fieldname=''trans_custinvoice_custtax'' 
 inner join customer c on t.customer_id = c.id 
-left join customer comp on comp.id = 1 
+left join customer comp on comp.id in (select min(customer.id) from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=''own'') 
 left join (select ti.trans_id as id, sum(ti.netamount) as sum_netamount, sum(ti.vatamount) as sum_vatamount, sum(ti.amount) as sum_amount 
   from item ti where ti.deleted=0 group by ti.trans_id ) as tsum on tsum.id = t.id 
 where t.id = @id'
@@ -120,7 +120,7 @@ left join fieldvalue custname on t.id = custname.ref_id and custname.fieldname='
 left join fieldvalue custaddress on t.id = custaddress.ref_id and custaddress.fieldname=''trans_custinvoice_custaddress'' 
 left join fieldvalue custtax on t.id = custtax.ref_id and custtax.fieldname=''trans_custinvoice_custtax'' 
 inner join customer c on t.customer_id = c.id 
-left join customer comp on comp.id = 1 
+left join customer comp on comp.id in (select min(customer.id) from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=''own'') 
 left join (select ti.trans_id as id, sum(ti.netamount) as sum_netamount, sum(ti.vatamount) as sum_vatamount, sum(ti.amount) as sum_amount 
   from item ti where ti.deleted=0 group by ti.trans_id ) as tsum on tsum.id = t.id 
 where t.id = @id'
@@ -160,7 +160,7 @@ left join fieldvalue custname on t.id = custname.ref_id and custname.fieldname='
 left join fieldvalue custaddress on t.id = custaddress.ref_id and custaddress.fieldname=''trans_custinvoice_custaddress'' 
 left join fieldvalue custtax on t.id = custtax.ref_id and custtax.fieldname=''trans_custinvoice_custtax'' 
 inner join customer c on t.customer_id = c.id 
-left join customer comp on comp.id = 1 
+left join customer comp on comp.id in (select min(customer.id) from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=''own'') 
 left join (select ti.trans_id as id, sum(ti.netamount) as sum_netamount, sum(ti.vatamount) as sum_vatamount, sum(ti.amount) as sum_amount 
   from item ti where ti.deleted=0 group by ti.trans_id ) as tsum on tsum.id = t.id 
 where t.id = @id'

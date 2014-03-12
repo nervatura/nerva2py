@@ -14,36 +14,48 @@ function changeItem(){
   document.getElementById("datatype").value = nom;
   document.getElementById("rs_url").value = "";
   document.getElementById("rs_server").value = "";
+  document.getElementById("insert_field").checked = true;
+  document.getElementById("insert_field").disabled = false;
+  document.getElementById("no_deffield").checked = false;
+  document.getElementById("no_deffield").disabled = false;
+  
+  url = window.location.protocol+'//'+window.location.host
+  +'/nerva2py/ndi_demo/get_nom_data?nom=@nom&database=@database&username=@username&password=@password';
+  url = url.replace("@nom", nom);
+  url = url.replace("@database", document.getElementById("database").value);
+  url = url.replace("@username", document.getElementById("username").value);
+  url = url.replace("@password", document.getElementById("password").value);
+  
   switch (nom) {
     case "sql":
       document.getElementById("rs_sql").style.display="block";
       document.getElementById("rs_nosql").style.display="none";
-      $("#tabs").tabs('select',0);
+      $("#tabs").tabs({active: 0});
       $("#tabs").tabs({disabled: [1,2]});
-      break;
-    case "fieldvalue":
-    case "log":
-      document.getElementById("rs_sql").style.display="none";
-      document.getElementById("rs_nosql").style.display="block";
-      $("#tabs").tabs('select',0);
-      $("#tabs").tabs({disabled: [1,2]});
-      jQuery.ajax({type: "POST", 
-    	  url: window.location.protocol+'//'+window.location.host+'/nerva2py/ndi_demo/get_nom_data?nom='+nom, 
-    	  success: function(data) {
-    		document.getElementById("rs_view").innerHTML=data.split("||")[0];
-    	    web2py_ajax_init();} });
       break;
     default:
       document.getElementById("rs_sql").style.display="none";
       document.getElementById("rs_nosql").style.display="block";
       $("#tabs").tabs({disabled: false});
+      switch (nom) {
+        case "groups":
+        case "fieldvalue":
+        case "numberdef":
+        case "deffield":
+        case "pattern":
+    	  document.getElementById("insert_field").checked = false;
+    	  document.getElementById("insert_field").disabled = true;
+    	  document.getElementById("no_deffield").checked = false;
+    	  document.getElementById("no_deffield").disabled = true;
+    	  break;
+      }
       jQuery.ajax({type: "POST", 
-    	  url: window.location.protocol+'//'+window.location.host+'/nerva2py/ndi_demo/get_nom_data?nom='+nom, 
+    	  url: url, 
     	  success: function(data) {
     		document.getElementById("rs_view").innerHTML=data.split("||")[0];
     	    document.getElementById("rs_update").innerHTML=data.split("||")[1];
     	    document.getElementById("rs_delete").innerHTML=data.split("||")[2];
-    	    web2py_ajax_init();} });
+    	    } });
       }
 }
 
@@ -61,6 +73,9 @@ function getParams(urlfunc){
     params = params.replace("@username", document.getElementById("username").value);
     params = params.replace("@password", document.getElementById("password").value);
     params = params.replace("@datatype", document.getElementById("datatype").value);
+    if (document.getElementById("use_deleted").checked) {
+    	params = params+"|use_deleted";	
+    }
     if (urlfunc=="updateData" && document.getElementById("insert_row").checked) {
     	params = params+"|insert_row";	
     }
@@ -98,12 +113,14 @@ function createView(){
 		filters_py += '"output":"'+document.getElementById("output").value+'"'
 		var inputs = $("#rs_view :input");
 		for (var i=0;i<inputs.length;i++) {
-			if (document.getElementById("datatype").value=="log" && inputs[i].value=="notype") {
-				filters += "|"+inputs[i].value;
-				filters_py += ',"notype":True'
-			} else {
-				filters += "|"+inputs[i].name+"="+inputs[i].value;
-				filters_py += ',"'+inputs[i].name+'":"'+inputs[i].value+'"'
+			if (inputs[i].value!='') {
+				if (document.getElementById("datatype").value=="log" && inputs[i].value=="notype") {
+					filters += "|"+inputs[i].value;
+					filters_py += ',"notype":True'
+				} else {
+					filters += "|"+inputs[i].name+"="+inputs[i].value;
+					filters_py += ',"'+inputs[i].name+'":"'+inputs[i].value+'"'
+				}	
 			}
 		}
 		var inputs = ["where","orderby","header","columns"]
@@ -116,7 +133,11 @@ function createView(){
 		if (document.getElementById("show_id").checked) {
 			filters += "|show_id"
 			filters_py += ',"show_id":True'
-		}	
+		}
+		if (document.getElementById("no_deffield").checked) {
+			filters += "|no_deffield"
+			filters_py += ',"no_deffield":True'
+		}
 	} else {
 		filters += "output="+document.getElementById("output_sql").value
 		filters_py += '"output":"'+document.getElementById("output_sql").value+'"'

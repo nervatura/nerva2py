@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2013, Csaba Kappel
+Copyright © 2011-2014, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -24,15 +24,19 @@ from gluon.html import TABLE, TR, TD, SPAN
 from nerva2py.nervastore import NervaStore
 from nerva2py.ndi import Ndi
 
-ns = NervaStore(request, T, db)
+ns = NervaStore(request, session, T, db)
 ndi = Ndi(ns)
-validator = ndi.getLogin({"database":"demo","username":"demo","password":""})
-    
+
+database = request.vars.database if request.vars.database else "demo"
+username = request.vars.username if request.vars.username else "demo"  
+password = request.vars.password if request.vars.password else ""
+validator = ndi.getLogin({"database":database,"username":username,"password":password})
+
 def index():
   response.title=T('NDI Demo')
-  response.subtitle=T('Nervatura Data Interface Demo')
+  response.subtitle=T('Data Interface Demo')
   lst_nom = ["address","barcode","contact","currency","customer","deffield","employee","event","fieldvalue","groups","item","link",
-         "log","movement","numberdef","pattern","payment","place","price","product","project","rate","tax","tool","trans","setting","sql"]
+         "log","movement","numberdef","pattern","payment","place","price","product","project","rate","tax","tool","trans","sql"]
   response.lst_nom = SELECT(*[OPTION(str(nom).upper(), _value=nom) for nom in lst_nom], _id="lst_nom", 
                             _size=len(lst_nom),_style="width: 100%;font-weight: bold;", 
                             _onchange="changeItem();setLabels(this.value.toUpperCase()+'"
@@ -45,9 +49,9 @@ def get_nom_data():
       fields_lst = create_fieldlist(request.vars.nom)
       return get_view_lst(request.vars.nom)+"||"+get_update_lst(fields_lst)+"||"+get_delete_lst(fields_lst)
     else:
-      return T("Missing parameter")
+      return T("Missing parameter")+"||"+T("Missing parameter")+"||"+T("Missing parameter")
   else:
-    return validator["message"]
+    return validator["message"]+"||"+validator["message"]+"||"+validator["message"]
 
 checkbox_style="width: auto;border-bottom-style: double;border-width: 4px;border-color: #8B8B83;text-align: center;padding-top:8px;"
 checkbox_style2="width: auto;text-align: left;vertical-align: bottom;border-bottom-style: double;border-width: 4px;border-color: #8B8B83;"
@@ -56,28 +60,32 @@ checklabel_style="width: auto;padding-top:0px;padding-bottom:0px;color: #FFD700;
 def get_view_lst(table):
   rtable = TABLE(_style="width: 100%;")
   if table in("address","contact"):
-    nervatype_lst=['customer', 'employee', 'event', 'place', 'product', 'project', 'tool', 'trans']
+    nervatype_lst=['', 'customer', 'employee', 'event', 'place', 'product', 'project', 'tool', 'trans']
     rtable.append(TR(TD(DIV("nervatype",_class="div_label"),_class="td_label",_style="width: 90px;"),
          TD(SELECT(*[OPTION(nervatype) for nervatype in nervatype_lst], _id="address_nervatype", _name="nervatype"),
             _class="td_input", _style="width: 175px;"),
          TD()
          ))
   elif table=="event":
-    nervatype_lst=['customer', 'employee', 'place', 'product', 'project', 'tool', 'trans']
+    nervatype_lst=['', 'customer', 'employee', 'place', 'product', 'project', 'tool', 'trans']
     rtable.append(TR(TD(DIV("nervatype",_class="div_label"),_class="td_label",_style="width: 90px;"),
          TD(SELECT(*[OPTION(nervatype) for nervatype in nervatype_lst], _id="event_nervatype", _name="nervatype"),
             _class="td_input", _style="width: 175px;"),
          TD()
          ))
   elif table=="fieldvalue":
-    nervatype_lst=['customer', 'employee', 'event', 'groups', 'place', 'product', 'project', 'tool', 'trans']
+    nervatype_lst=['', 'address', 'barcode', 'contact', 'currency', 'customer', 'employee', 'event', 'item', 'link', 
+                   'log', 'movement', 'payment', 'price', 'place', 'product', 'project', 'rate', 'tax',
+                   'tool', 'trans', 'setting']
     rtable.append(TR(TD(DIV("nervatype",_class="div_label"),_class="td_label",_style="width: 90px;"),
          TD(SELECT(*[OPTION(nervatype) for nervatype in nervatype_lst], _id="fieldvalue_nervatype", _name="nervatype"),
             _class="td_input", _style="width: 175px;"),
          TD()
          ))
   elif table=="link":
-    nervatype_lst=['customer', 'employee', 'event', 'groups', 'place', 'product', 'project', 'tool', 'trans', 'item', 'movement', 'payment']
+    nervatype_lst=['', 'address', 'barcode', 'contact', 'currency', 'customer', 'employee', 'event', 'groups', 'item', 
+                   'movement', 'payment', 'price', 'place', 'product', 'project', 'rate', 'tax',
+                   'tool', 'trans']
     rtable.append(TR(TD(DIV("nervatype1",_class="div_label"),_class="td_label",_style="width: 90px;"),
          TD(SELECT(*[OPTION(nervatype) for nervatype in nervatype_lst], _id="link_nervatype1", _name="nervatype1"),
             _class="td_input", _style="width: 175px;"),
@@ -86,13 +94,13 @@ def get_view_lst(table):
             _class="td_input", _style="width: 175px;"),
          TD()
          ))
-  elif table=="log":
-    nervatype_lst=['notype','customer', 'employee', 'event', 'groups', 'place', 'product', 'project', 'tool', 'trans']
-    rtable.append(TR(TD(DIV("nervatype",_class="div_label"),_class="td_label",_style="width: 90px;"),
-         TD(SELECT(*[OPTION(nervatype) for nervatype in nervatype_lst], _id="log_nervatype", _name="nervatype"),
-            _class="td_input", _style="width: 175px;"),
-         TD()
-         ))
+#   elif table=="log":
+#     nervatype_lst=['notype','customer', 'employee', 'event', 'groups', 'place', 'product', 'project', 'tool', 'trans']
+#     rtable.append(TR(TD(DIV("nervatype",_class="div_label"),_class="td_label",_style="width: 90px;"),
+#          TD(SELECT(*[OPTION(nervatype) for nervatype in nervatype_lst], _id="log_nervatype", _name="nervatype"),
+#             _class="td_input", _style="width: 175px;"),
+#          TD()
+#          ))
   return rtable
   
 def get_delete_lst(fields_lst):
@@ -171,8 +179,8 @@ def get_update_lst(fields_lst):
   
 def create_fieldlist(table):
   fields_lst = []
-  if table=="setting":
-    table="fieldvalue"
+#   if table=="setting":
+#     table="fieldvalue"
   fields = ns.db[table].fields
   for fname in fields:
     fieldcat=1
@@ -201,8 +209,8 @@ def create_fieldlist(table):
         continue
     elif table=="barcode":
       if fname=="code":
-        fields_lst.append({"fieldname":"barcode","label":T('Barcode'),
-                       "widget":INPUT(_type="text",_value="",_name="barcode",_id=table+"_barcode",_class="string"),
+        fields_lst.append({"fieldname":"code","label":T('Barcode'),
+                       "widget":INPUT(_type="text",_value="",_name="code",_id=table+"_code",_class="string"),
                        "fieldcat":0})
         continue
       elif fname=="product_id":
@@ -224,8 +232,9 @@ def create_fieldlist(table):
       if fname=="fieldname":
         fieldcat=0
       elif fname=="nervatype":
-        ns.db[table].nervatype.requires = IS_IN_SET(('address', 'contact', 'customer', 'employee', 'event', 'groups', 'item', 'link', 
-                                                     'log', 'movement', 'price', 'place', 'product', 'project', 'tool', 'trans'))
+        ns.db[table].nervatype.requires = IS_IN_SET(('address', 'barcode', 'contact', 'currency', 'customer', 'employee', 'event', 'item', 'link', 
+                                                     'log', 'movement', 'payment', 'price', 'place', 'product', 'project', 'rate', 'tax',
+                                                     'tool', 'trans', 'setting'))
       elif fname=="subtype":
         ns.db[table][fname].widget=lambda field,value: SQLFORM.widgets.string.widget(field,value)
       elif fname=="fieldtype":
@@ -283,12 +292,14 @@ def create_fieldlist(table):
         taxcode = ns.db(ns.db.tax.inactive==0).select(ns.db.tax.taxcode)
         widget=SELECT(*[OPTION(field.taxcode) for field in taxcode], _id="item_taxcode", _name="taxcode")
         widget.insert(0, OPTION(""))
-        fields_lst.append({"fieldname":"taxcode","label":T('Tax'), "widget":widget, "fieldcat":0})
+        fields_lst.append({"fieldname":"taxcode","label":T('Tax'), "widget":widget, "fieldcat":1})
         continue
       elif fname in("fxprice","netamount","vatamount","amount"):
         continue
     elif table=="link":
-      nervatype_lst=['customer', 'employee', 'event', 'groups', 'place', 'product', 'project', 'tool', 'trans', 'item', 'movement', 'payment']
+      nervatype_lst=['address', 'barcode', 'contact', 'currency', 'customer', 'employee', 'event', 'groups', 'item', 
+                   'movement', 'payment', 'price', 'place', 'product', 'project', 'rate', 'tax',
+                   'tool', 'trans']
       if fname == "nervatype_1":
         widget=SELECT(*[OPTION(nervatype) for nervatype in nervatype_lst], _id="link_nervatype1", _name="nervatype1")
         widget.insert(0, OPTION(""))
@@ -308,6 +319,32 @@ def create_fieldlist(table):
         fields_lst.append({"fieldname":"refnumber2","label":T('Ref. No. 2'),
                        "widget":INPUT(_type="text",_value="",_name="refnumber2",_id=table+"_refnumber2",_class="string"),
                        "fieldcat":0})
+        continue
+    elif table=="log":
+      nervatype_lst=['address', 'barcode', 'contact', 'currency', 'customer', 'employee', 'deffield',
+                     'event', 'groups', 'item', 'link', 'movement', 'payment', 'price', 'place', 'product', 'project', 
+                     'rate', 'tax', 'tool', 'trans', 'setting']
+      if fname=="employee_id":
+        fields_lst.append({"fieldname":"empnumber","label":T('Employee No.'),
+                       "widget":INPUT(_type="text",_value="",_name="empnumber",_id=table+"_empnumber",_class="string"),
+                       "fieldcat":0})
+        continue
+      elif fname=="crdate":
+        fieldcat=0
+      elif fname == "nervatype":
+        widget=SELECT(*[OPTION(nervatype) for nervatype in nervatype_lst], _id="log_nervatype", _name="nervatype")
+        widget.insert(0, OPTION(""))
+        fields_lst.append({"fieldname":"nervatype","label":T('Nervatype'), "widget":widget, "fieldcat":1})
+        continue
+      elif fname == "logstate":
+        widget=SELECT(*[OPTION(logstate.groupvalue) for logstate in ns.db(ns.db.groups.groupname.like('logstate')).select(ns.db.groups.groupvalue)], _id="log_logstate", _name="logstate")
+        widget.insert(0, OPTION(""))
+        fields_lst.append({"fieldname":"logstate","label":T('State'), "widget":widget, "fieldcat":1})
+        continue
+      elif fname=="ref_id":
+        fields_lst.append({"fieldname":"refnumber","label":T('Ref.No.'),
+                       "widget":INPUT(_type="text",_value="",_name="refnumber",_id=table+"_refnumber",_class="string"),
+                       "fieldcat":1})
         continue
     elif table=="movement":
       if fname=="trans_id":
@@ -381,6 +418,10 @@ def create_fieldlist(table):
         continue
       elif fname=="validfrom":
         fieldcat=0
+      elif fname=="curr":
+        fieldcat=0
+      elif fname=="qty":
+        fieldcat=0
       elif fname=="pricevalue":
         ns.db.price.pricevalue.label = T("Value/limit")
       elif fname=="calcmode":  
@@ -396,7 +437,7 @@ def create_fieldlist(table):
         taxcode = ns.db(ns.db.tax.inactive==0).select(ns.db.tax.taxcode)
         widget=SELECT(*[OPTION(field.taxcode) for field in taxcode], _id="product_taxcode", _name="taxcode")
         widget.insert(0, OPTION(""))
-        fields_lst.append({"fieldname":"taxcode","label":T('Tax'), "widget":widget, "fieldcat":0})
+        fields_lst.append({"fieldname":"taxcode","label":T('Tax'), "widget":widget, "fieldcat":1})
         continue
     elif table=="project":
       if fname=="pronumber":
@@ -482,6 +523,12 @@ def create_fieldlist(table):
                        "fieldcat":0})
         continue
       elif fname=="ref_id":
+        fields_lst.append({"fieldname":"refnumber","label":T('Ref.No.'),
+                       "widget":INPUT(_type="text",_value="",_name="refnumber",_id=table+"_refnumber",_class="string"),
+                       "fieldcat":0})
+        fields_lst.append({"fieldname":"rownumber","label":T('Row No.'),
+                       "widget":INPUT(_type="text",_value="1",_name="rownumber",_id=table+"_rownumber",_class="integer"),
+                       "fieldcat":0})
         continue
       elif fname=="fieldtype":
         ns.db.fieldvalue.fieldtype.requires = IS_IN_DB(ns.db((ns.db.groups.groupname.like('fieldtype'))
@@ -491,8 +538,8 @@ def create_fieldlist(table):
     fields_lst.append({"fieldname":fname,"label":form.custom.label[fname],
                        "widget":form.custom.widget[fname],"fieldcat":fieldcat})
   
-  if table in("address", "contact", "customer", "employee", "event", "groups", "item", "link", "log", 
-              "movement", "price", "place", "product", "project", "tool", "trans"):
+  if table in("address", "barcode", "contact", "currency", "customer", "employee", "event", "groups", "item", "link", "log", 
+              "movement", "price", "place", "product", "project", "rate", "tax", "tool", "trans"):
     nervatype = ns.db((ns.db.groups.groupname=="nervatype")&(ns.db.groups.groupvalue==table)).select().as_list()[0]["id"]
     deffields = ns.db((ns.db.deffield.deleted==0)&(ns.db.deffield.visible==1)&(ns.db.deffield.nervatype==nervatype)
                       &(ns.db.deffield.readonly==0)&(ns.db.deffield.fieldtype==ns.db.groups.id)).select(

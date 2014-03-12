@@ -10,7 +10,7 @@ left join (select * from address
   where id in(select min(id) fid from address a
     where a.deleted=0 and a.nervatype = (select id from groups where groupname=''nervatype'' and groupvalue=''customer'')
     group by a.ref_id)) addr on c.id = addr.ref_id
-where c.deleted=0 and c.id>1 @where_str '
+where c.deleted=0 and c.id not in(select customer.id from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=''own'') @where_str '
 WHERE viewname='CustomerView';
 
 update ui_viewfields set 
@@ -18,8 +18,8 @@ sqlstr=' CONCAT(case when addr.city is null then '''' else addr.city end, '' '',
 where viewname='CustomerView' and fieldname='address';
 
 UPDATE ui_applview SET sqlstr='select c.id, c.custnumber, c.custname, df.description as fielddef,
-case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end as text_value,
-cast(case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end AS decimal) as number_value,
+case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end as text_value,
+case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end as number_value,
 case when fg.groupvalue in (''date'') and fv.value not in('''') then cast(fv.value as date) else null end as date_value,
 case when fg.groupvalue in (''bool'') then case when fv.value = ''true'' then 1 else 0 end else null end as bool_value,
 case when fg.groupvalue in (''customer'') then rf_customer.custnumber
@@ -42,7 +42,7 @@ left join product rf_product on fv.value = cast(rf_product.id as char)
 left join project rf_project on fv.value = cast(rf_project.id as char)
 left join employee rf_employee on fv.value = cast(rf_employee.id as char)
 left join place rf_place on fv.value = cast(rf_place.id as char)
-where fv.deleted = 0 and c.deleted=0 and c.id>1 @where_str'
+where fv.deleted = 0 and c.deleted=0 and c.id not in(select customer.id from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=''own'') @where_str'
 WHERE viewname='CustomerFieldsView';
 
 update ui_viewfields set 
@@ -56,7 +56,8 @@ UPDATE ui_applview SET sqlstr='select e.id, c.custnumber, c.custname, e.calnumbe
 from event e
 inner join customer c on e.ref_id = c.id
 left join groups eg on e.eventgroup = eg.id
-where e.deleted=0 and c.deleted=0 and e.nervatype = (select id from groups where groupname=''nervatype'' and groupvalue=''customer'') and c.id>1 @where_str'
+where e.deleted=0 and c.deleted=0 and e.nervatype = (select id from groups where groupname=''nervatype'' and groupvalue=''customer'') 
+  and c.id not in(select customer.id from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=''own'') @where_str'
 WHERE viewname='CustomerEvents';
 
 update ui_viewfields set 
@@ -68,8 +69,8 @@ sqlstr=' cast(cast(e.todate as time) as char)'
 where viewname='CustomerEvents' and fieldname='totime';
 
 UPDATE ui_applview SET sqlstr='select p.id, p.partnumber, p.description, df.description as fielddef,
-case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end as text_value,
-cast(case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end AS decimal) as number_value,
+case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end as text_value,
+case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end as number_value,
 case when fg.groupvalue in (''date'') and fv.value not in('''') then cast(fv.value as date) else null end as date_value,
 case when fg.groupvalue in (''bool'') then case when fv.value = ''true'' then 1 else 0 end else null end as bool_value,
 case when fg.groupvalue in (''customer'') then rf_customer.custnumber
@@ -118,8 +119,8 @@ sqlstr=' cast(cast(e.todate as time) as char)'
 where viewname='ProductEvents' and fieldname='totime';
 
 UPDATE ui_applview SET sqlstr='select e.id, e.empnumber, c.firstname, c.surname, e.username, df.description as fielddef,
-case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end as text_value,
-cast(case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end AS decimal) as number_value,
+case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end as text_value,
+case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end as number_value,
 case when fg.groupvalue in (''date'') and fv.value not in('''') then cast(fv.value as date) else null end as date_value,
 case when fg.groupvalue in (''bool'') then case when fv.value = ''true'' then 1 else 0 end else null end as bool_value,
 case when fg.groupvalue in (''customer'') then rf_customer.custnumber
@@ -170,8 +171,8 @@ sqlstr=' cast(cast(e.todate as time) as char)'
 where viewname='EmployeeEvents' and fieldname='totime';
 
 UPDATE ui_applview SET sqlstr='select t.id, t.serial, t.description, df.description as fielddef,
-case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end as text_value,
-cast(case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end AS decimal) as number_value,
+case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end as text_value,
+case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end as number_value,
 case when fg.groupvalue in (''date'') and fv.value not in('''') then cast(fv.value as date) else null end as date_value,
 case when fg.groupvalue in (''bool'') then case when fv.value = ''true'' then 1 else 0 end else null end as bool_value,
 case when fg.groupvalue in (''customer'') then rf_customer.custnumber
@@ -194,7 +195,7 @@ left join product rf_product on fv.value = cast(rf_product.id as char)
 left join project rf_project on fv.value = cast(rf_project.id as char)
 left join employee rf_employee on fv.value = cast(rf_employee.id as char)
 left join place rf_place on fv.value = cast(rf_place.id as char)
-where fv.deleted = 0 and t.deleted=0 @where_str'
+where fv.deleted = 0 and t.deleted=0 and (t.toolgroup not in(select id from groups where groupname=''toolgroup'' and groupvalue=''printer'') or t.toolgroup is null) @where_str'
 WHERE viewname='ToolFieldsView';
 
 update ui_viewfields set 
@@ -208,7 +209,8 @@ UPDATE ui_applview SET sqlstr='select e.id, t.serial, t.description as pdescript
 from event e
 inner join tool t on e.ref_id = t.id
 left join groups eg on e.eventgroup = eg.id
-where e.deleted=0 and t.deleted=0 and e.nervatype = (select id from groups where groupname=''nervatype'' and groupvalue=''tool'') @where_str'
+where e.deleted=0 and t.deleted=0 and e.nervatype = (select id from groups where groupname=''nervatype'' and groupvalue=''tool'') 
+  and (t.toolgroup not in(select id from groups where groupname=''toolgroup'' and groupvalue=''printer'') or t.toolgroup is null) @where_str'
 WHERE viewname='ToolEvents';
 
 update ui_viewfields set 
@@ -250,8 +252,8 @@ UPDATE ui_applview SET sqlstr='select CONCAT(cast(t.id as char), ''_'', tg.group
   t.notax, t.paid,t.acrate, t.notes, t.intnotes, t.fnote,  
   case when mss.msg is null then sg.groupvalue else mss.msg end as transtate,
   t.closed, t.deleted,
-  cast(reholiday.value as decimal) as reholiday, cast(rebadtool.value as decimal) as rebadtool, cast(reother.value as decimal) as reother, rentnote.value as rentnote,
-  cast(wsdistance.value as decimal) as wsdistance, cast(wsrepair.value as decimal) as wsrepair, cast(wstotal.value as decimal) as wstotal, wsnote.value as wsnote
+  reholiday.value as reholiday, rebadtool.value as rebadtool, reother.value as reother, rentnote.value as rentnote,
+  wsdistance.value as wsdistance, wsrepair.value as wsrepair, wstotal.value as wstotal, wsnote.value as wsnote
 from trans t
 inner join groups tg on t.transtype = tg.id and tg.groupvalue in(''invoice'',''receipt'',''order'',''offer'',''worksheet'',''rent'')
   left join ui_message mst on mst.fieldname = tg.groupvalue and  mst.secname = ''transtype'' and mst.lang = (select value from fieldvalue where fieldname = ''default_lang'')
@@ -306,8 +308,8 @@ where viewname='TransItemHeadView' and fieldname='wstotal';
 
 UPDATE ui_applview SET sqlstr='select CONCAT(cast(t.id as char), ''_'', tg.groupvalue, ''_'', dg.groupvalue) as id, case when mst.msg is null then tg.groupvalue else mst.msg end as transtype, 
   case when msd.msg is null then dg.groupvalue else msd.msg end as direction, t.transnumber, df.description as fielddef,
-case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end as text_value,
-cast(case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end AS decimal) as number_value,
+case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end as text_value,
+case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end as number_value,
 case when fg.groupvalue in (''date'') and fv.value not in('''') then cast(fv.value as date) else null end as date_value,
 case when fg.groupvalue in (''bool'') then case when fv.value = ''true'' then 1 else 0 end else null end as bool_value,
 case when fg.groupvalue in (''customer'') then rf_customer.custnumber
@@ -396,8 +398,8 @@ WHERE viewname='PaymentView';
 UPDATE ui_applview SET sqlstr='select CONCAT(cast(t.id as char),''_'', tg.groupvalue, ''_'', dg.groupvalue) as id, case when mst.msg is null then tg.groupvalue else mst.msg end as transtype, 
   case when tg.groupvalue=''bank'' then '''' else case when msd.msg is null then dg.groupvalue else msd.msg end end as direction, 
   t.transnumber, df.description as fielddef,
-case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end as text_value,
-cast(case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end AS decimal) as number_value,
+case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end as text_value,
+case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end as number_value,
 case when fg.groupvalue in (''date'') and fv.value not in('''') then cast(fv.value as date) else null end as date_value,
 case when fg.groupvalue in (''bool'') then case when fv.value = ''true'' then 1 else 0 end else null end as bool_value,
 case when fg.groupvalue in (''customer'') then rf_customer.custnumber
@@ -436,7 +438,7 @@ UPDATE ui_applview SET sqlstr='select CONCAT(cast(t.id as char),''_'', tg.groupv
   case when mst.msg is null then tg.groupvalue else mst.msg end as transtype, 
   case when tg.groupvalue=''bank'' then '''' else case when msd.msg is null then dg.groupvalue else msd.msg end end as direction, 
   p.paiddate, pa.description as place,
-  t.transnumber as paidnumber, pa.curr as pcurr, cast(af.value as decimal) as paidamount, cast(rf.value as decimal) as prate,
+  t.transnumber as paidnumber, pa.curr as pcurr, af.value as paidamount, rf.value as prate,
   inv.transnumber as invnumber, inv.curr as icurr, irow.amount as invamount, p.notes as pnotes
 from link ln 
 inner join payment p on ln.ref_id_1 = p.id and p.deleted=0
@@ -508,8 +510,8 @@ WHERE viewname='MovementView';
 UPDATE ui_applview SET sqlstr='select CONCAT(tg.groupvalue, ''_'', dg.groupvalue, ''_'', (case when delt.ref_id is null then cast(t.id as char) else cast(delt.ref_id as char) end)) as id, 
   case when mst.msg is null then tg.groupvalue else mst.msg end as transtype, 
   case when msd.msg is null then dg.groupvalue else msd.msg end as direction, t.transnumber, df.description as fielddef,
-case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end as text_value,
-cast(case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end AS decimal) as number_value,
+case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end as text_value,
+case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end as number_value,
 case when fg.groupvalue in (''date'') and fv.value not in('''') then cast(fv.value as date) else null end as date_value,
 case when fg.groupvalue in (''bool'') then case when fv.value = ''true'' then 1 else 0 end else null end as bool_value,
 case when fg.groupvalue in (''customer'') then rf_customer.custnumber
@@ -567,8 +569,8 @@ where t.deleted=0 and g.deleted = 0 and l.deleted=0
 WHERE viewname='MovementGroupsView';
 
 UPDATE ui_applview SET sqlstr='select p.id, p.pronumber, p.description, df.description as fielddef,
-case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''flink'') then fv.value else null end as text_value,
-cast(case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end AS decimal) as number_value,
+case when fg.groupvalue in (''notes'', ''string'', ''valuelist'', ''urlink'') then fv.value else null end as text_value,
+case when fg.groupvalue in (''float'', ''integer'') then fv.value else null end as number_value,
 case when fg.groupvalue in (''date'') and fv.value not in('''') then cast(fv.value as date) else null end as date_value,
 case when fg.groupvalue in (''bool'') then case when fv.value = ''true'' then 1 else 0 end else null end as bool_value,
 case when fg.groupvalue in (''customer'') then rf_customer.custnumber

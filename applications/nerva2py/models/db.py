@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2013, Csaba Kappel
+Copyright © 2011-2014, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -40,7 +40,8 @@ if not request.env.web2py_runtime_gae:
   sys.setdefaultencoding("utf-8")#@UndefinedVariable
 else:
   ename="google_datastore"
-  db = DAL('google:datastore://storage', migrate=False, fake_migrate=False)
+  #db = DAL('google:datastore://storage', migrate=False, fake_migrate=False)
+  db = DAL('google:datastore', adapter_args={'ndb_settings':None, 'use_ndb':False})
   session.connect(request, response, db = db)
   #from gluon.contrib.memdb import MEMDB
   #from google.appengine.api.memcache import Client
@@ -168,6 +169,6 @@ table = db.define_table('nflex',
   )
 if create_tbl: 
   createTable(table)
-  from nerva2py.nflex.insert_fbase_dal import insert_nflex_rows  # @UnresolvedImport
+  from nerva2py.nflex.insert_fbase_dal import insert_nflex_rows
   insert_nflex_rows(db)
   

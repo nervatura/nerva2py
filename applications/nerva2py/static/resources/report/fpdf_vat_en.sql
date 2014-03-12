@@ -95,7 +95,7 @@ left join (select * from address
   where id in(select min(id) fid from address a 
     where a.deleted=0 and a.nervatype = (select id from groups where groupname=''nervatype'' and groupvalue=''customer'') 
     group by a.ref_id)) addr on c.id = addr.ref_id 
-where c.id=1'
+where c.id in(select min(customer.id) from customer inner join groups on customer.custtype=groups.id and groups.groupvalue=''own'') '
 where report_id = (select id from ui_report where reportkey='fpdf_vat_en') and dataset='company';--
 
 update ui_report set report='

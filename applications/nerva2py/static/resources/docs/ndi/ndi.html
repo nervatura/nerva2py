@@ -134,7 +134,7 @@ a {
 
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="5" cellspacing="0" width="100%">
 
 		<tbody>
 			<tr bgcolor="#E5E5E5">
@@ -164,7 +164,13 @@ a {
 						values</a></td>
 			</tr>
 			<tr>
-				<td><a name="insert_row">insert_row</a></td>
+        <td>use_deleted</td>
+        <td>no value</td>
+        <td>Optional. Show (getData) or use (updateData) the deleted data. Used for data backup/restore.
+        </td>
+      </tr>
+			<tr>
+				<td>insert_row</td>
 				<td>no value</td>
 				<td>Optional, only in case of request for <b><i>updateData</i></b>.
 					If used and no unique identifier corresponding to the object is set
@@ -176,7 +182,7 @@ a {
 				</td>
 			</tr>
 			<tr>
-				<td><a name="insert_field">insert_field</a></td>
+				<td>insert_field</td>
 				<td>no value</td>
 				<td>Optional, only in case of request for <b><i>updateData</i></b>. If used, and
 					the field name given at data update has not existed before, it will
@@ -196,7 +202,7 @@ a {
 
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="5" cellspacing="0" width="100%">
 
 		<tbody>
 			<tr bgcolor="#E5E5E5">
@@ -241,6 +247,11 @@ a {
 				<td>no value</td>
 				<td>Optional. If specified, the primary key will be shown.</td>
 			</tr>
+			<tr>
+        <td>no_deffield</td>
+        <td>no value</td>
+        <td>Optional. Does not show the additional data.</td>
+      </tr>
 		</tbody>
 	</table>
   
@@ -269,247 +280,174 @@ a {
 	<h3>
     <a name="datatype_values">4. The datatype values</a>
   </h3>
-
-	<table
-		style="border-width: 1px; border-style: solid; border-collapse: collapse;text-align: left;"
-		border="1" cellpadding="4" cellspacing="0" width="100%">
-			<tr bgcolor="#E5E5E5">
-				<th>Datatype value</th>
-				<th>Update parameters and getData result value</th>
-				<th>Delete parameters</th>
-				<th>getData required parameters</th>
-				<th>Description</th>
-			</tr>
-			<tr>
-				<td>address</td>
-				<td>See <a href="#address_fields">Address fields</a></td>
-				<td>nervatype+refnumber+rownumber</td>
-				<td>nervatype</td>
-				<td>Address data to Customer, Employee, Place etc.</td>
-			</tr>
-			<tr>
-				<td>barcode</td>
-				<td>See <a href="#barcode_fields">Barcode fields</a></td>
-				<td>barcode</td>
-				<td>-</td>
-
-				<td>Barcode data to Product, Tool, Place, Trans etc.</td>
-			</tr>
-			<tr>
-				<td>contact</td>
-				<td>See <a href="#contact_fields">Contact fields</a></td>
-				<td>nervatype+refnumber+rownumber</td>
-				<td>nervatype</td>
-
-				<td>Contact data to Customer, Employee, Place etc.</td>
-			</tr>
-			<tr>
-				<td>currency</td>
-				<td>See <a href="#currency_fields">Currency fields</a></td>
-				<td>curr</td>
-				<td>-</td>
-
-				<td>Currency data to Trans</td>
-			</tr>
-			<tr>
-				<td>customer</td>
-				<td>See <a href="#customer_fields">Customer fields</a></td>
-				<td>custnumber</td>
-				<td>-</td>
-
-				<td>Customer data</td>
-			</tr>
-			<tr>
-				<td>deffield</td>
-				<td>See <a href="#deffield_fields">Deffield fields</a></td>
-				<td>fieldname</td>
-				<td>-</td>
-
-				<td>Create your own data fields for all objects Nervatura</td>
-			</tr>
-			<tr>
-				<td>employee</td>
-				<td>See <a href="#employee_fields">Employee fields</a></td>
-				<td>empnumber</td>
-				<td>-</td>
-
-				<td>Employee data</td>
-			</tr>
-			<tr>
-				<td>event</td>
-				<td>See <a href="#event_fields">Event fields</a></td>
-				<td>calnumber</td>
-				<td>nervatype</td>
-
-				<td>Specific date or time interval associated with event data</td>
-			</tr>
-			<tr>
-				<td>fieldvalue</td>
-				<td>See <a href="#fieldvalue_fields">Fieldvalue fields</a></td>
-				<td>None</td>
-				<td>nervatype</td>
-
-				<td>Set the value of the object (eg, customer, product etc).<br> 
-				<i>The
-				part after the ~ sign will be set in the notes (other data) field,
-				the part before in the value field. If the same field name is used
-				more times in an object the [fieldname~index]=[value~notes] format
-				can be used to set the value. The "~index" and "~notes" section is
-				optional and may be omitted.</i></td>
-			</tr>
-			<tr>
-				<td>groups</td>
-				<td>See <a href="#groups_fields">Groups fields</a></td>
-				<td>groupname+groupvalue</td>
-				<td>-</td>
-
-				<td>Managing Groups</td>
-			</tr>
-			<tr>
-				<td>item</td>
-				<td>See <a href="#item_fields">Item fields</a></td>
-				<td>transnumber+rownumber</td>
-				<td>-</td>
-
-				<td>Transaction items data: product, quantity, price, tax etc.</td>
-			</tr>
-			<tr>
-				<td>link</td>
-				<td>See <a href="#link_fields">Link fields</a></td>
-				<td>nervatype1+refnumber1+ nervatype2+refnumber2</td>
-				<td>nervatype1, nervatype2</td>
-
-				<td>Create a relationship between two objects: Product-Product,
-					Transaction-Transaction, Transaction-Project etc.</td>
-			</tr>
-			<tr>
-				<td>log</td>
-				<td>See <a href="#log_fields">Log fields</a></td>
-				<td>None</td>
-				<td>nervatype or notype</td>
-
-				<td>Read only object, values are automatically generated. Logging
-				options can be set on objects: time, operation, employee etc.</td>
-			</tr>
-			<tr>
-				<td>movement</td>
-				<td>See <a href="#movement_fields">Movement fields</a></td>
-				<td>transnumber+rownumber</td>
-				<td>-</td>
-
-				<td>Transaction movement data: inventory, store or rent
-					in/out/transfer</td>
-			</tr>
-			<tr>
-				<td>numberdef</td>
-				<td>See <a href="#numberdef_fields">Numberdef fields</a></td>
-				<td>numberkey</td>
-				<td>-</td>
-
-				<td><br></td>
-			</tr>
-			<tr>
-				<td>pattern</td>
-				<td>See <a href="#pattern_fields">Pattern fields</a></td>
-				<td>description</td>
-				<td>-</td>
-
-				<td>Transaction footer template</td>
-			</tr>
-			<tr>
-				<td>payment</td>
-				<td>See <a href="#payment_fields">Payment fields</a></td>
-				<td>transnumber+rownumber</td>
-				<td>-</td>
-
-				<td>Transaction payment details: bank statement or petty cash,
-				payment amount, date etc.</td>
-			</tr>
-			<tr>
-				<td>place</td>
-				<td>See <a href="#place_fields">Place fields</a></td>
-				<td>planumber</td>
-				<td>-</td>
-
-				<td>Setting places: bank, petty cash, warehouse, store data</td>
-			</tr>
-			<tr>
-				<td>price</td>
-				<td>See <a href="#price_fields">Price fields</a></td>
-				<td>partnumber+pricetype+validfrom+curr+qty</td>
-				<td>-</td>
-
-				<td>Product price</td>
-			</tr>
-			<tr>
-				<td>product</td>
-				<td>See <a href="#product_fields">Product fields</a></td>
-				<td>partnumber</td>
-				<td>-</td>
-
-				<td>Product data</td>
-			</tr>
-			<tr>
-				<td>project</td>
-				<td>See <a href="#project_fields">Project fields</a></td>
-				<td>pronumber</td>
-				<td>-</td>
-
-				<td>Project data</td>
-			</tr>
-			<tr>
-				<td>rate</td>
-				<td>See <a href="#rate_fields">Rate fields</a></td>
-				<td>ratetype+ratedate+curr+planumber</td>
-				<td>-</td>
-
-				<td><br></td>
-			</tr>
-			<tr>
-				<td>tax</td>
-				<td>See <a href="#tax_fields">Tax fields</a></td>
-				<td>code</td>
-				<td>-</td>
-
-				<td><br></td>
-			</tr>
-			<tr>
-				<td>tool</td>
-				<td>See <a href="#tool_fields">Tool fields</a></td>
-				<td>serial</td>
-				<td>-</td>
-
-				<td><br></td>
-			</tr>
-			<tr>
-				<td>trans</td>
-				<td>See <a href="#trans_fields">Trans fields</a></td>
-				<td>transnumber</td>
-				<td>-</td>
-
-				<td>Transaction header data: invoice, order, offer, dekivery
-					etc.</td>
-			</tr>
-			<tr>
-				<td>setting</td>
-				<td>See <a href="#setting_fields">Setting fields</a></td>
-				<td>fieldname</td>
-				<td>-</td>
-
-				<td><br></td>
-			</tr>
-			<tr>
-				<td>sql</td>
-				<td>SQL result</td>
-				<td>None</td>
-				<td><br></td>
-
-				<td>A valid SQL query.<br>
-				  <span style="font-style: italic;font-weight: bold;font-size: smaller;">
-				  Unsupported, use at your own risk!</span> 
-				</td>
-			</tr>
-	</table>
+  
+  <table
+    style="border-width: 1px; border-style: solid; border-collapse: collapse;text-align: left;"
+    border="1" cellpadding="4" cellspacing="0" width="100%">
+      <tr bgcolor="#E5E5E5">
+        <th>Datatype</th>
+        <th>Primary key / unique value</th>
+        <th>Fields</th>
+        <th>Comment</th>
+      </tr>
+      <tr>
+        <td>address</td>
+        <td>nervatype/refnumber~rownumber</td>
+        <td>See <a href="#address_fields" style="font-weight: bold;">ADDRESS</a></td>
+        <td><br></td>
+      </tr>
+       <tr>
+        <td>barcode</td>
+        <td>code</td>
+        <td>See <a href="#barcode_fields" style="font-weight: bold;">BARCODE</a></td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td>contact</td>
+        <td>nervatype/refnumber~rownumber</td>
+        <td>See <a href="#contact_fields" style="font-weight: bold;">CONTACT</a></td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td>currency</td>
+        <td>curr</td>
+        <td>See <a href="#currency_fields" style="font-weight: bold;">CURRENCY</a></td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td>customer</td>
+        <td>custnumber</td>
+        <td>See <a href="#customer_fields" style="font-weight: bold;">CUSTOMER</a></td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td>deffield</td>
+        <td>fieldname</td>
+        <td>See <a href="#deffield_fields" style="font-weight: bold;">DEFFIELD</a></td>
+        <td>Create your own data fields for Nervatura objects</td>
+      </tr>
+      <tr>
+        <td>employee</td>
+        <td>empnumber</td>
+        <td>See <a href="#employee_fields" style="font-weight: bold;">EMPLOYEE</a></td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td>event</td>
+        <td>calnumber</td>
+        <td>See <a href="#event_fields" style="font-weight: bold;">EVENT</a></td>
+        <td>Specific date or time interval associated with event data</td>
+      </tr>
+      <tr>
+        <td>fieldvalue</td>
+        <td>refnumber~~fieldname~rownumber</td>
+        <td>See <a href="#fieldvalue_fields" style="font-weight: bold;">FIELDVALUE</a></td>
+        <td>Set the value of the object</td>
+      </tr>
+      <tr>
+        <td>groups</td>
+        <td>groupname~groupvalue</td>
+        <td>See <a href="#groups_fields" style="font-weight: bold;">GROUPS</a></td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td>item</td>
+        <td>refnumber~rownumber</td>
+        <td>See <a href="#item_fields" style="font-weight: bold;">ITEM</a></td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td>link</td>
+        <td>nervatype_1~refnumber_1~~nervatype_2~refnumber_2</td>
+        <td>See <a href="#link_fields" style="font-weight: bold;">LINK</a></td>
+        <td>Create a relationship between two objects.</td>
+      </tr>
+      <tr>
+        <td>log</td>
+        <td>empnumber~crdate</td>
+        <td>See <a href="#log_fields" style="font-weight: bold;">LOG</a></td>
+        <td>Values are automatically generated.</td>
+      </tr>
+      <tr>
+        <td>movement</td>
+        <td>refnumber~rownumber</td>
+        <td>See <a href="#movement_fields" style="font-weight: bold;">MOVEMENT</a></td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td>numberdef</td>
+        <td>numberkey</td>
+        <td>See <a href="#numberdef_fields" style="font-weight: bold;">NUMBERDEF</a></td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td>pattern</td>
+        <td>description</td>
+        <td>See <a href="#pattern_fields" style="font-weight: bold;">PATTERN</a></td>
+        <td>Transaction footer template</td>
+      </tr>
+      <tr>
+        <td>payment</td>
+        <td>refnumber~rownumber</td>
+        <td>See <a href="#payment_fields" style="font-weight: bold;">PAYMENT</a></td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td>place</td>
+        <td>planumber</td>
+        <td>See <a href="#place_fields" style="font-weight: bold;">PLACE</a></td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td>price</td>
+        <td>partnumber~pricetype~validfrom~curr~qty</td>
+        <td>See <a href="#price_fields" style="font-weight: bold;">PRICE</a></td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td>product</td>
+        <td>partnumber</td>
+        <td>See <a href="#product_fields" style="font-weight: bold;">PRODUCT</a></td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td>project</td>
+        <td>pronumber</td>
+        <td>See <a href="#project_fields" style="font-weight: bold;">PROJECT</a></td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td>rate</td>
+        <td>ratetype~ratedate~curr~planumber</td>
+        <td>See <a href="#rate_fields" style="font-weight: bold;">RATE</a></td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td>tax</td>
+        <td>taxcode</td>
+        <td>See <a href="#tax_fields" style="font-weight: bold;">TAX</a></td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td>tool</td>
+        <td>serial</td>
+        <td>See <a href="#tool_fields" style="font-weight: bold;">TOOL</a></td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td>trans</td>
+        <td>transnumber</td>
+        <td>See <a href="#trans_fields" style="font-weight: bold;">TRANS</a></td>
+        <td>Transaction header data.</td>
+      </tr>
+      <tr>
+        <td>sql</td>
+        <td><br></td>
+        <td><br></td>
+        <td>A valid SQL query. <span style="font-style: italic;font-weight: bold;font-size: smaller;">
+          Unsupported, use at your own risk!</span></td>
+      </tr>
+  </table>
   
   <h3>
     <a name="examples">5. Examples</a>
@@ -545,7 +483,10 @@ a {
     <br>
     <span style="font-style: italic;background-color: #FFFAFA;font-size: small;">
       http://127.0.0.1:8000/nerva2py/ndi/updateData?code=&amp;params=database=demo|username=demo|password=|datatype=customer|insert_row|insert_field&amp;
-      data=custnumber=DOC/00001|customer_weight=92</span>
+      data=custnumber=DOC/00001|customer_weight=92<br>
+      or<br>
+      http://127.0.0.1:8000/nerva2py/ndi/updateData?code=&amp;params=database=demo|username=demo|password=|datatype=fieldvalue|insert_row&amp;
+      data=fieldname=customer_weight|refnumber=DOC/00001|value=92</span>
     <br>
     <br>
     <b><i>4. For the customer generated in the point 1. we give new address data.</i></b>
@@ -598,12 +539,15 @@ a {
   </h3>
 
 	<p>
-		<u><a name="address_fields">Address fieldname and type values:</a></u>
+		<u><a name="address_fields"><b>ADDRESS</b> fieldname and type values:</a></u>
 	</p>
-
+	<ul style="line-height: 25px;">
+	  <li>Primary key / unique value: <b>nervatype/refnumber~rownumber</b></li>
+	  <li>Logging settings: <i>log_address_update, log_address_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -612,25 +556,23 @@ a {
 			</tr>
 			<tr>
 				<td><b>nervatype*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value (nervatype+refnumber+rownumber). Valid
+				<td>text</td>
+				<td>Required. Valid
 						values: customer, employee, event, place, product, project, tool,
-						trans.</b></td>
+						trans.</td>
 			</tr>
 			<tr>
 				<td><b>refnumber*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value
-						(nervatype+refnumber+rownumber). Valid values:
-						custnumber(Customer), empnumber(Employee), calnumber(Event),
-						planumber(Place), partnumber(Product),
-						pronumber(Project), serial(Tool), transnumber(Transaction).</b></td>
+				<td>text</td>
+				<td>Required. Valid values:
+						custnumber (CUSTOMER), empnumber (EMPLOYEE), calnumber (EVENT),
+						planumber (PLACE), partnumber (PRODUCT),
+						pronumber (PROJECT), serial (TOOL), transnumber (TRANS).</td>
 			</tr>
 			<tr>
 				<td><b>rownumber*</b></td>
-				<td><b>integer</b></td>
-				<td><b>Required. UNIQUE value
-						(nervatype+refnumber+rownumber). If 0, add new address.</b></td>
+				<td>integer</td>
+				<td>Required. If 0, add new address.</td>
 			</tr>
 			<tr>
 				<td>country</td>
@@ -665,24 +607,31 @@ a {
 			<tr>
 				<td><i>additional data</i></td>
 				<td><i>by definition or text</i></td>
-				<td><i>Valid for any additional fieldname already defined (in
-						Deffield) or insert_field params option will automatically create
-						it.</i></td>
-			</tr>
-			<tr>
-				<td colspan="3"><i>*Logging values: log_[nervatype]_update,
-						log_[nervatype]_delete.</i></td>
+				<td>Valid for any additional fieldname already defined
+						(in DEFFIELD) or insert_field params option will automatically
+						create it.<br>
+						<i>The part after the ~ sign will be set in the
+						notes (other data) field, the part before in the value field. If
+						the same field name is used more times in an object the
+						[fieldname~index]=[value~notes] format can be used to set the
+						value.<br> 
+						The "~index" and "~notes" section is optional and may be
+						omitted.</i>
+			  </td>
 			</tr>
 		</tbody>
 	</table>
 
 	<p>
-		<u><a name="barcode_fields">Barcode fieldname and type values:</a></u>
+		<u><a name="barcode_fields"><b>BARCODE</b> fieldname and type values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>code</b></li>
+    <li>Logging settings: <i>log_barcode_update, log_barcode_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -690,9 +639,9 @@ a {
 				<th width="100%">Comment</th>
 			</tr>
 			<tr>
-				<td><b>barcode*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value.</b></td>
+				<td><b>code*</b></td>
+				<td>text</td>
+				<td>Required.</td>
 			</tr>
 			<tr>
 				<td>partnumber*</td>
@@ -703,7 +652,7 @@ a {
 				<td>barcodetype*</td>
 				<td>text</td>
 				<td>Required in case of new value entry. Valid values: all groupvalue from
-					Groups, where groupname equal barcodetype. (Default values:
+					GROUPS, where groupname equal barcodetype. (Default values:
 					code128a, code128b, code128c, code25, code25i, code39, code93,
 					ean13, ean8, postnet, upca, upce)</td>
 			</tr>
@@ -723,16 +672,34 @@ a {
 				<td>Default barcode for product. Boolean type, valid TRUE values:
 					TRUE,true,T,t,Y,y,YES,yes,ON,on,1 or FALSE. Default value: FALSE.</td>
 			</tr>
+			<tr>
+        <td><i>additional data</i></td>
+        <td><i>by definition or text</i></td>
+        <td>Valid for any additional fieldname already defined
+            (in DEFFIELD) or insert_field params option will automatically
+            create it.<br>
+            <i>The part after the ~ sign will be set in the
+            notes (other data) field, the part before in the value field. If
+            the same field name is used more times in an object the
+            [fieldname~index]=[value~notes] format can be used to set the
+            value.<br> 
+            The "~index" and "~notes" section is optional and may be
+            omitted.</i>
+        </td>
+      </tr>
 		</tbody>
 	</table>
 
 	<p>
-		<u><a name="contact_fields">Contact fieldname and type values:</a></u>
+		<u><a name="contact_fields"><b>CONTACT</b> fieldname and type values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>nervatype/refnumber~rownumber</b></li>
+    <li>Logging settings: <i>log_contact_update, log_contact_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -741,25 +708,22 @@ a {
 			</tr>
 			<tr>
 				<td><b>nervatype*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value
-						(nervatype+refnumber+rownumber). Valid values: customer, employee,
-						event, place, product, project, tool, trans.</b></td>
+				<td>text</td>
+				<td>Required. Valid values: customer, employee,
+						event, place, product, project, tool, trans.</td>
 			</tr>
 			<tr>
 				<td><b>refnumber*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value
-						(nervatype+refnumber+rownumber). Valid values:
-						custnumber(Customer), empnumber(Employee), calnumber(Event),
-						planumber(Place), partnumber(Product),
-						pronumber(Project), serial(Tool), transnumber(Transaction).</b></td>
+				<td>text</td>
+				<td>Required. Valid values:
+						custnumber (CUSTOMER), empnumber (EMPLOYEE), calnumber (EVENT),
+						planumber (PLACE), partnumber (PRODUCT),
+						pronumber (PROJECT), serial (TOOL), transnumber (TRANS).</td>
 			</tr>
 			<tr>
 				<td><b>rownumber*</b></td>
-				<td><b>integer</b></td>
-				<td><b>Required. UNIQUE value
-						(nervatype+refnumber+rownumber). If 0, add new contact.</b></td>
+				<td>integer</td>
+				<td>Required. If 0, add new contact.</td>
 			</tr>
 			<tr>
 				<td>firstname</td>
@@ -804,25 +768,32 @@ a {
 			<tr>
 				<td><i>additional data</i></td>
 				<td><i>by definition or text</i></td>
-				<td><i> Valid for any additional fieldname already defined (in
-						Deffield) or insert_field params option will automatically create
-						it.</i></td>
-			</tr>
-			<tr>
-				<td colspan="3"><i>*Logging values: log_[nervatype]_update,
-						log_[nervatype]_delete.</i></td>
+				<td>Valid for any additional fieldname already defined
+            (in DEFFIELD) or insert_field params option will automatically
+            create it.<br>
+            <i>The part after the ~ sign will be set in the
+            notes (other data) field, the part before in the value field. If
+            the same field name is used more times in an object the
+            [fieldname~index]=[value~notes] format can be used to set the
+            value.<br> 
+            The "~index" and "~notes" section is optional and may be
+            omitted.</i>
+        </td>
 			</tr>
 		</tbody>
 	</table>
 
 	<p>
-		<u><a name="currency_fields">Currency fieldname and type
+		<u><a name="currency_fields"><b>CURRENCY</b> fieldname and type
 				values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>curr</b></li>
+    <li>Logging settings: <i>log_currency_update, log_currency_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -831,8 +802,8 @@ a {
 			</tr>
 			<tr>
 				<td><b>curr*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value.</b></td>
+				<td>text</td>
+				<td>Required.</td>
 			</tr>
 			<tr>
 				<td>description*</td>
@@ -855,17 +826,35 @@ a {
 				<td>Default rate as for the base currency. Default value: 0. Base
 					currency setting: default_currency</td>
 			</tr>
+			<tr>
+        <td><i>additional data</i></td>
+        <td><i>by definition or text</i></td>
+        <td>Valid for any additional fieldname already defined
+            (in DEFFIELD) or insert_field params option will automatically
+            create it.<br>
+            <i>The part after the ~ sign will be set in the
+            notes (other data) field, the part before in the value field. If
+            the same field name is used more times in an object the
+            [fieldname~index]=[value~notes] format can be used to set the
+            value.<br> 
+            The "~index" and "~notes" section is optional and may be
+            omitted.</i>
+        </td>
+      </tr>
 		</tbody>
 	</table>
 
 	<p>
-		<u><a name="customer_fields">Customer fieldname and type
+		<u><a name="customer_fields"><b>CUSTOMER</b> fieldname and type
 				values:</a></u>
 	</p>
-	
+	<ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>custnumber</b></li>
+    <li>Logging settings: <i>log_customer_update, log_customer_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -874,9 +863,9 @@ a {
 			</tr>
 			<tr>
 				<td><b>custnumber*</b></td>
-				<td><b>text</b></td>
-				<td><b>UNIQUE value. Add new, if not set, the function retrieves the
-						next value</b></td>
+				<td>text</td>
+				<td>Add new, if not set, the function retrieves the
+						next value</td>
 			</tr>
 			<tr>
 				<td>custtype</td>
@@ -932,27 +921,34 @@ a {
           TRUE,true,T,t,Y,y,YES,yes,ON,on,1 or FALSE. Default value: FALSE.</td>
 			</tr>
 			<tr>
-				<td><i>additional data</i></td>
-				<td><i>by definition or text</i></td>
-				<td><i>Valid for any additional fieldname already defined (in
-						Deffield) or insert_field params option will automatically create
-						it.</i></td>
-			</tr>
-			<tr>
-				<td colspan="3"><i>*Logging values: log_customer_update,
-						log_customer_delete.</i></td>
-			</tr>
+        <td><i>additional data</i></td>
+        <td><i>by definition or text</i></td>
+        <td>Valid for any additional fieldname already defined
+            (in DEFFIELD) or insert_field params option will automatically
+            create it.<br>
+            <i>The part after the ~ sign will be set in the
+            notes (other data) field, the part before in the value field. If
+            the same field name is used more times in an object the
+            [fieldname~index]=[value~notes] format can be used to set the
+            value.<br> 
+            The "~index" and "~notes" section is optional and may be
+            omitted.</i>
+        </td>
+      </tr>
 		</tbody>
 	</table>
 
 	<p>
-		<u><a name="deffield_fields">Deffield fieldname and type
+		<u><a name="deffield_fields"><b>DEFFIELD</b> fieldname and type
 				values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>fieldname</b></li>
+    <li>Logging settings: <i>log_deffield_update, log_deffield_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -961,31 +957,32 @@ a {
 			</tr>
 			<tr>
 				<td><b>fieldname*</b></td>
-				<td><b>text</b></td>
-				<td><b>UNIQUE value, required</b></td>
+				<td>text</td>
+				<td>Required</td>
 			</tr>
 			<tr>
 				<td>nervatype*</td>
 				<td>text</td>
-				<td>Required in case of new value entry. Valid values: address, contact,
-					customer, employee, event, groups, item, link, log,
-					movement, price, place, product, project, tool, trans.</td>
+				<td>Required in case of new value entry. Valid values: address,
+					barcode, contact, currency, customer, employee, event,
+					item, link, log, movement, payment, price, place,
+					product, project, rate, tax, tool, trans, setting.</td>
 			</tr>
 			<tr>
 				<td>subtype</td>
 				<td>text</td>
-				<td>Valid values: all groupvalue from Groups, where groupname
-					equal custtype(Customer) or
-					groupname equal placetype(Place) or groupname equal
-					protype(Product) or groupname equal toolgroup(Tool) or groupname
-					equal transtype(Trans).</td>
+				<td>Valid values: all groupvalue from GROUPS, where groupname
+					equal custtype (CUSTOMER) or
+					groupname equal placetype (PLACE) or groupname equal
+					protype (PRODUCT) or groupname equal toolgroup (TOOL) or groupname
+					equal transtype (TRANS).</td>
 			</tr>
 			<tr>
 				<td>fieldtype*</td>
 				<td>text</td>
 				<td>Required in case of new value entry. Valid values: bool, date, float,
-					integer, string, valuelist, notes, flink, customer, tool, trans,
-					product, project, employee, place</td>
+					integer, string, valuelist, notes, urlink, password, customer, tool,
+					transitem, transmovement, transpayment, product, project, employee, place</td>
 			</tr>
 			<tr>
 				<td>description</td>
@@ -1019,13 +1016,16 @@ a {
 	</table>
 
 	<p>
-		<u><a name="employee_fields">Employee fieldname and type
+		<u><a name="employee_fields"><b>EMPLOYEE</b> fieldname and type
 				values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>empnumber</b></li>
+    <li>Logging settings: <i>log_employee_update, log_employee_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -1034,15 +1034,15 @@ a {
 			</tr>
 			<tr>
 				<td><b>empnumber*</b></td>
-				<td><b>text</b></td>
-				<td><b>UNIQUE value. Add new, if not set, the function retrieves the
-						next value.</b></td>
+				<td>text</td>
+				<td>Add new, if not set, the function retrieves the
+						next value.</td>
 			</tr>
 			<tr>
 				<td>usergroup*</td>
 				<td>text</td>
 				<td>Required in case of new value entry. Valid values: all groupvalue from
-					Groups, where groupname equal usergroup.</td>
+					GROUPS, where groupname equal usergroup.</td>
 			</tr>
 			<tr>
 				<td>startdate</td>
@@ -1057,14 +1057,19 @@ a {
 			<tr>
 				<td>department</td>
 				<td>text</td>
-				<td>Valid values: all groupvalue from Groups, where groupname
+				<td>Valid values: all groupvalue from GROUPS, where groupname
 					equal department.</td>
 			</tr>
 			<tr>
-				<td>email</td>
+				<td>password</td>
 				<td>text</td>
-				<td></td>
+				<td>MD5 string</td>
 			</tr>
+			<tr>
+        <td>registration_key</td>
+        <td>text</td>
+        <td><br></td>
+      </tr>
 			<tr>
 				<td>inactive</td>
 				<td>boolean</td>
@@ -1072,26 +1077,33 @@ a {
           TRUE,true,T,t,Y,y,YES,yes,ON,on,1 or FALSE. Default value: FALSE.</td>
 			</tr>
 			<tr>
-				<td><i>additional data</i></td>
-				<td><i>by definition or text</i></td>
-				<td><i>Valid for any additional fieldname already defined (in
-						Deffield) or insert_field params option will automatically create
-						it.</i></td>
-			</tr>
-			<tr>
-				<td colspan="3"><i>*Logging values: log_employee_update,
-						log_employee_delete.</i></td>
-			</tr>
+        <td><i>additional data</i></td>
+        <td><i>by definition or text</i></td>
+        <td>Valid for any additional fieldname already defined
+            (in DEFFIELD) or insert_field params option will automatically
+            create it.<br>
+            <i>The part after the ~ sign will be set in the
+            notes (other data) field, the part before in the value field. If
+            the same field name is used more times in an object the
+            [fieldname~index]=[value~notes] format can be used to set the
+            value.<br> 
+            The "~index" and "~notes" section is optional and may be
+            omitted.</i>
+        </td>
+      </tr>
 		</tbody>
 	</table>
 
 	<p>
-		<u><a name="event_fields">Event fieldname and type values:</a></u>
+		<u><a name="event_fields"><b>EVENT</b> fieldname and type values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>calnumber</b></li>
+    <li>Logging settings: <i>log_event_update, log_event_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -1100,8 +1112,8 @@ a {
 			</tr>
 			<tr>
 				<td><b>calnumber*</b></td>
-				<td><b>text</b></td>
-				<td><b>UNIQUE value. Add new, if not set, the function retrieves the next value.</b></td>
+				<td>text</td>
+				<td>Add new, if not set, the function retrieves the next value.</td>
 			</tr>
 			<tr>
 				<td>nervatype*</td>
@@ -1112,10 +1124,10 @@ a {
 			<tr>
 				<td>refnumber*</td>
 				<td>text</td>
-				<td>Required in case of new value entry. Valid values: custnumber(Customer),
-					empnumber(Employee), planumber(Place),
-					partnumber(Product), pronumber(Project), serial(Tool),
-					transnumber(Transaction).</td>
+				<td>Required in case of new value entry. Valid values: custnumber (CUSTOMER),
+					empnumber (EMPLOYEE), planumber (PLACE),
+					partnumber (PRODUCT), pronumber (PROJECT), serial (TOOL),
+					transnumber (TRANS).</td>
 			</tr>
 			<tr>
 				<td>uid</td>
@@ -1125,7 +1137,7 @@ a {
 			<tr>
 				<td>eventgroup</td>
 				<td>text</td>
-				<td>Valid values: all groupvalue from Groups, where groupname equal
+				<td>Valid values: all groupvalue from GROUPS, where groupname equal
 					department. If the value specified does not exist, it is created
 					automatically.</td>
 			</tr>
@@ -1156,27 +1168,34 @@ a {
 				<td><br></td>
 			</tr>
 			<tr>
-				<td><i>additional data</i></td>
-				<td><i>by definition or text</i></td>
-				<td><i>Valid for any additional fieldname already defined (in
-						Deffield) or insert_field params option will automatically create
-						it.</i></td>
-			</tr>
-			<tr>
-				<td colspan="3"><i>*Logging values: log_event_update,
-						log_event_delete.</i></td>
-			</tr>
+        <td><i>additional data</i></td>
+        <td><i>by definition or text</i></td>
+        <td>Valid for any additional fieldname already defined
+            (in DEFFIELD) or insert_field params option will automatically
+            create it.<br>
+            <i>The part after the ~ sign will be set in the
+            notes (other data) field, the part before in the value field. If
+            the same field name is used more times in an object the
+            [fieldname~index]=[value~notes] format can be used to set the
+            value.<br> 
+            The "~index" and "~notes" section is optional and may be
+            omitted.</i>
+        </td>
+      </tr>
 		</tbody>
 	</table>
 
 	<p>
-		<u><a name="fieldvalue_fields">Fieldvalue fieldname and type
+		<u><a name="fieldvalue_fields"><b>FIELDVALUE</b> fieldname and type
 				values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>refnumber~~fieldname~rownumber</b></li>
+    <li>Logging settings: <i>log_fieldvalue_update, log_fieldvalue_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -1184,49 +1203,58 @@ a {
 				<th width="100%">Comment</th>
 			</tr>
 			<tr>
-				<td>nervatype</td>
-				<td>text</td>
-				<td>Valid values: customer, employee, event, groups,
-					place, product, project, tool, trans.</td>
-			</tr>
+        <td><b>fieldname*</b></td>
+        <td>text</td>
+        <td>Required.</td>
+      </tr>
+      <tr>
+        <td><b>refnumber*</b></td>
+        <td>text</td>
+        <td>If nervatype=setting will be omitted.</td>
+      </tr>
+      <tr>
+        <td><b>rownumber</b></td>
+        <td>integer</td>
+        <td>Optional. Default value: 1.</td>
+      </tr>
 			<tr>
-				<td>refnumber</td>
-				<td>text</td>
-				<td>Valid values: custnumber(Customer), empnumber(Employee),
-					calnumber(Evenet), groupname(Groups),
-					placenumber(Place), partnumber(Product), pronumber(Project),
-					serial(Tool), transnumber(Trans)</td>
-			</tr>
-			<tr>
-				<td>fieldname</td>
-				<td>text</td>
-				<td><br></td>
-			</tr>
-			<tr>
-				<td>fieldtype</td>
-				<td>text</td>
-				<td>Readonly value! (from Deffield)</td>
-			</tr>
-			<tr>
-				<td>value</td>
-				<td>text</td>
-				<td><br></td>
+				<td>value*</td>
+				<td>by definition or text</td>
+				<td>Required.</td>
 			</tr>
 			<tr>
 				<td>notes</td>
 				<td>text</td>
 				<td><br></td>
 			</tr>
+			<tr>
+        <td><i>nervatype</i></td>
+        <td><i>text</i></td>
+        <td><i>Readonly value! (from DEFFIELD)</i></td>
+      </tr>
+      <tr>
+        <td><i>description</i></td>
+        <td><i>text</i></td>
+        <td><i>Readonly value! (from DEFFIELD)</i></td>
+      </tr>
+      <tr>
+        <td><i>fieldtype</i></td>
+        <td><i>text</i></td>
+        <td><i>Readonly value! (from DEFFIELD)</i></td>
+      </tr>
 		</tbody>
 	</table>
 
 	<p>
-		<u><a name="groups_fields">Groups fieldname and type values:</a></u>
+		<u><a name="groups_fields"><b>GROUPS</b> fieldname and type values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>groupname~groupvalue</b></li>
+    <li>Logging settings: <i>log_groups_update, log_groups_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -1235,13 +1263,13 @@ a {
 			</tr>
 			<tr>
 				<td><b>groupname*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value (groupname+groupvalue)</b></td>
+				<td>text</td>
+				<td>Required.</td>
 			</tr>
 			<tr>
 				<td><b>groupvalue*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value (groupname+groupvalue)</b></td>
+				<td>text</td>
+				<td>Required.</td>
 			</tr>
 			<tr>
 				<td>description</td>
@@ -1254,23 +1282,19 @@ a {
 				<td>Boolean type, valid TRUE values:
           TRUE,true,T,t,Y,y,YES,yes,ON,on,1 or FALSE. Default value: FALSE.</td>
 			</tr>
-			<tr>
-				<td><i>additional data</i></td>
-				<td><i>by definition or text</i></td>
-				<td><i>Valid for any additional fieldname already defined (in
-						Deffield) or insert_field params option will automatically create
-						it.</i></td>
-			</tr>
 		</tbody>
 	</table>
 
 	<p>
-		<u><a name="item_fields">Item fieldname and type values:</a></u>
+		<u><a name="item_fields"><b>ITEM</b> fieldname and type values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>refnumber~rownumber</b></li>
+    <li>Logging settings: <i>log_item_update, log_item_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -1279,15 +1303,13 @@ a {
 			</tr>
 			<tr>
 				<td><b>transnumber*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value (transnumber+rownumber).
-						Valid transnumber(Transaction)</b></td>
+				<td>text</td>
+				<td>Required. Valid transnumber (TRANS)</td>
 			</tr>
 			<tr>
 				<td><b>rownumber*</b></td>
-				<td><b>integer</b></td>
-				<td><b>Required. UNIQUE value (transnumber+rownumber). If
-						0, add new item.</b></td>
+				<td>integer</td>
+				<td>Required. If 0, add new item.</td>
 			</tr>
 			<tr>
 				<td>inputmode</td>
@@ -1304,22 +1326,22 @@ a {
 			<tr>
 				<td>partnumber*</td>
 				<td>text</td>
-				<td>Required in case of new value entry. Valid partnumber(Product).</td>
+				<td>Required in case of new value entry. Valid partnumber (PRODUCT).</td>
 			</tr>
 			<tr>
 				<td>unit</td>
 				<td>text</td>
-				<td>Default value: unit of Product.</td>
+				<td>Default value: unit of PRODUCT.</td>
 			</tr>
 			<tr>
 				<td>taxcode</td>
 				<td>text</td>
-				<td>Default value: taxcode of Product.</td>
+				<td>Default value: taxcode of PRODUCT.</td>
 			</tr>
 			<tr>
 				<td>description</td>
 				<td>text</td>
-				<td>Default value: description of Product.</td>
+				<td>Default value: description of PRODUCT.</td>
 			</tr>
 			<tr>
 				<td>qty</td>
@@ -1369,26 +1391,33 @@ a {
 				<td>Default value: 0.</td>
 			</tr>
 			<tr>
-				<td><i>additional data</i></td>
-				<td><i>by definition or text</i></td>
-				<td><i>Valid for any additional fieldname already defined (in
-						Deffield) or insert_field params option will automatically create
-						it.</i></td>
-			</tr>
-			<tr>
-				<td colspan="3"><i>*Logging values: log_trans_update,
-						log_trans_delete.</i></td>
-			</tr>
+        <td><i>additional data</i></td>
+        <td><i>by definition or text</i></td>
+        <td>Valid for any additional fieldname already defined
+            (in DEFFIELD) or insert_field params option will automatically
+            create it.<br>
+            <i>The part after the ~ sign will be set in the
+            notes (other data) field, the part before in the value field. If
+            the same field name is used more times in an object the
+            [fieldname~index]=[value~notes] format can be used to set the
+            value.<br> 
+            The "~index" and "~notes" section is optional and may be
+            omitted.</i>
+        </td>
+      </tr>
 		</tbody>
 	</table>
 
 	<p>
-		<u><a name="link_fields">Link items fieldname and type values:</a></u>
+		<u><a name="link_fields"><b>LINK</b> items fieldname and type values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>nervatype_1~refnumber_1~~nervatype_2~refnumber_2</b></li>
+    <li>Logging settings: <i>log_link_update, log_link_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -1397,39 +1426,23 @@ a {
 			</tr>
 			<tr>
 				<td><b>nervatype1*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value
-						(nervatype1+refnumber1+nervatype2+refnumber2). Valid values:
-						customer, employee, event, groups, place, product,
-						project, tool, trans, item, movement, payment.</b></td>
+				<td>text</td>
+				<td>Required.</td>
 			</tr>
 			<tr>
 				<td><b>refnumber1*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value
-						(nervatype1+refnumber1+nervatype2+refnumber2). Valid values:
-						custnumber(Customer), empnumber(Employee), calnumber(Event),
-						groupname~groupvalue(Groups), placenumber(Place),
-						partnumber(Product), pronumber(Project), serial(Tool),
-						transnumber(Trans), transnumber~rownumber(Item, Movement, Payment)</b></td>
+				<td>text</td>
+				<td style="text-align: left;">Required.</td>
 			</tr>
 			<tr>
 				<td><b>nervatype2*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value
-						(nervatype1+refnumber1+nervatype2+refnumber2). Valid values:
-						customer, employee, event, groups, place, product,
-						project, tool, trans, item, movement, payment.</b></td>
+				<td>text</td>
+				<td>Required.</td>
 			</tr>
 			<tr>
 				<td><b>refnumber2*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value
-						(nervatype1+refnumber1+nervatype2+refnumber2). Valid values:
-						custnumber(Customer), empnumber(Employee), calnumber(Event),
-						groupname~groupvalue(Groups), placenumber(Place),
-						partnumber(Product), pronumber(Project), serial(Tool),
-						transnumber(Trans), transnumber~rownumber(Item, Movement, Payment)</b></td>
+				<td>text</td>
+				<td style="text-align: left;">Required.</td>
 			</tr>
 			<tr>
 				<td>linktype</td>
@@ -1437,73 +1450,94 @@ a {
 				<td>Default value: 0.</td>
 			</tr>
 			<tr>
-				<td><i>additional data</i></td>
-				<td><i>by definition or text</i></td>
-				<td><i>Valid for any additional fieldname already defined (in
-						Deffield) or insert_field params option will automatically create
-						it. Existing fields: link_qty [float fieldtype], link_rate [float
-						fieldtype] (for trans-payment link) </i></td>
-			</tr>
+        <td><i>additional data</i></td>
+        <td><i>by definition or text</i></td>
+        <td>Valid for any additional fieldname already defined
+            (in DEFFIELD) or insert_field params option will automatically
+            create it.<br>
+            <i>The part after the ~ sign will be set in the
+            notes (other data) field, the part before in the value field. If
+            the same field name is used more times in an object the
+            [fieldname~index]=[value~notes] format can be used to set the
+            value.<br> 
+            The "~index" and "~notes" section is optional and may be
+            omitted.</i>
+        </td>
+      </tr>
 		</tbody>
 	</table>
 
 	<p>
-		<u><a name="log_fields">Log items fieldname and type values:</a></u>
+		<u><a name="log_fields"><b>LOG</b> items fieldname and type values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>empnumber~crdate</b></li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
 				<th>Type</th>
 				<th width="100%">Comment</th>
 			</tr>
+      <tr>
+        <td><b>empnumber</b></td>
+        <td>text</td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td><b>crdate</b></td>
+        <td>datetime</td>
+        <td>Valid datetime format:
+            YYYY-MM-DD HH:MM:SS Default: current datetime.</td>
+      </tr>
+      <tr>
+        <td>nervatype</td>
+        <td>text</td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td>refnumber</td>
+        <td>text</td>
+        <td><br></td>
+      </tr>
+      <tr>
+        <td>logstate*</td>
+        <td>text</td>
+        <td>Required. Valid values: all groupvalue from GROUPS, where groupname
+          equal logstate: update, closed, deleted, print, login, logout.</td>
+      </tr>
 			<tr>
-				<td>nervatype</td>
-				<td>text</td>
-				<td><br></td>
-			</tr>
-			<tr>
-				<td>refnumber</td>
-				<td>text</td>
-				<td><br></td>
-			</tr>
-			<tr>
-				<td>logstate</td>
-				<td>text</td>
-				<td>Valid values: all groupvalue from Groups, where groupname
-					equal logstate</td>
-			</tr>
-			<tr>
-				<td>empnumber</td>
-				<td>text</td>
-				<td><br></td>
-			</tr>
-			<tr>
-				<td>crdate</td>
-				<td>datetime</td>
-				<td><br></td>
-			</tr>
-			<tr>
-				<td><i>additional data</i></td>
-				<td><i>by definition or text</i></td>
-				<td><i>Valid for any additional fieldname already defined (in
-						Deffield) or insert_field params option will automatically create
-						it.</i></td>
-			</tr>
+        <td><i>additional data</i></td>
+        <td><i>by definition or text</i></td>
+        <td>Valid for any additional fieldname already defined
+            (in DEFFIELD) or insert_field params option will automatically
+            create it.<br>
+            <i>The part after the ~ sign will be set in the
+            notes (other data) field, the part before in the value field. If
+            the same field name is used more times in an object the
+            [fieldname~index]=[value~notes] format can be used to set the
+            value.<br> 
+            The "~index" and "~notes" section is optional and may be
+            omitted.</i>
+        </td>
+      </tr>
 		</tbody>
 	</table>
 
 	<p>
-		<u><a name="movement_fields">Movement fieldname and type
+		<u><a name="movement_fields"><b>MOVEMENT</b> fieldname and type
 				values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>refnumber~rownumber</b></li>
+    <li>Logging settings: <i>log_movement_update, log_movement_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -1512,14 +1546,13 @@ a {
 			</tr>
 			<tr>
 				<td><b>transnumber*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value (transnumber+rownumber).
-						Valid transnumber(Transaction)</b></td>
+				<td>text</td>
+				<td>Required. Valid transnumber (TRANS)</td>
 			</tr>
 			<tr>
 				<td><b>rownumber*</b></td>
-				<td><b>integer</b></td>
-				<td><b>Required. UNIQUE value (transnumber+rownumber).</b></td>
+				<td>integer</td>
+				<td>Required.</td>
 			</tr>
 			<tr>
 				<td>movetype*</td>
@@ -1531,19 +1564,19 @@ a {
 				<td>partnumber*</td>
 				<td>text</td>
 				<td>Required in case of new value entry for movetype, inventory,
-					store, plan or head. Valid partnumber(Product).</td>
+					store, plan or head. Valid partnumber (PRODUCT).</td>
 			</tr>
 			<tr>
 				<td>serial*</td>
 				<td>text</td>
 				<td>Required in case of new value entry for movetype, tool. Valid
-					serial(Tool).</td>
+					serial (TOOL).</td>
 			</tr>
 			<tr>
 				<td>planumber*</td>
 				<td>text</td>
 				<td>Required in case of new value entry for movetype, inventory or
-					store. Valid planumber (Place).</td>
+					store. Valid planumber (PLACE).</td>
 			</tr>
 			<tr>
 				<td>shippingdate</td>
@@ -1554,7 +1587,7 @@ a {
 			<tr>
 				<td>qty</td>
 				<td>real</td>
-				<td>Product quantity. Default value: 0</td>
+				<td>PRODUCT quantity. Default value: 0</td>
 			</tr>
 			<tr>
         <td>shared</td>
@@ -1568,27 +1601,34 @@ a {
 				<td><br></td>
 			</tr>
 			<tr>
-				<td><i>additional data</i></td>
-				<td><i>by definition or text</i></td>
-				<td><i>Valid for any additional fieldname already defined (in
-						Deffield) or insert_field params option will automatically create
-						it.</i></td>
-			</tr>
-			<tr>
-				<td colspan="3"><i>*Logging values: log_trans_update,
-						log_trans_delete.</i></td>
-			</tr>
+        <td><i>additional data</i></td>
+        <td><i>by definition or text</i></td>
+        <td>Valid for any additional fieldname already defined
+            (in DEFFIELD) or insert_field params option will automatically
+            create it.<br>
+            <i>The part after the ~ sign will be set in the
+            notes (other data) field, the part before in the value field. If
+            the same field name is used more times in an object the
+            [fieldname~index]=[value~notes] format can be used to set the
+            value.<br> 
+            The "~index" and "~notes" section is optional and may be
+            omitted.</i>
+        </td>
+      </tr>
 		</tbody>
 	</table>
 
 	<p>
-		<u><a name="numberdef_fields">Numberdef fieldname and type
+		<u><a name="numberdef_fields"><b>NUMBERDEF</b> fieldname and type
 				values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>numberkey</b></li>
+    <li>Logging settings: <i>log_numberdef_update, log_numberdef_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -1597,8 +1637,8 @@ a {
 			</tr>
 			<tr>
 				<td><b>numberkey*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value.</b></td>
+				<td>text</td>
+				<td>Required.</td>
 			</tr>
 			<tr>
 				<td>prefix</td>
@@ -1653,12 +1693,15 @@ a {
 	</table>
 
 	<p>
-		<u><a name="pattern_fields">Pattern fieldname and type values:</a></u>
+		<u><a name="pattern_fields"><b>PATTERN</b> fieldname and type values:</a></u>
 	</p>
-	
+	<ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>description</b></li>
+    <li>Logging settings: <i>log_pattern_update, log_pattern_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -1667,14 +1710,14 @@ a {
 			</tr>
 			<tr>
 				<td><b>description*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value.</b></td>
+				<td>text</td>
+				<td>Required.</td>
 			</tr>
 			<tr>
 				<td>transtype*</td>
 				<td>text</td>
-				<td>Required in case of new value entry. Valid values: all groupvalue from Groups, 
-				  where groupname equal transtype(Trans)</td>
+				<td>Required in case of new value entry. Valid values: all groupvalue from GROUPS, 
+				  where groupname equal transtype (TRANS)</td>
 			</tr>
 			<tr>
 				<td>notes</td>
@@ -1691,12 +1734,15 @@ a {
 	</table>
 
 	<p>
-		<u><a name="payment_fields">Payment fieldname and type values:</a></u>
+		<u><a name="payment_fields"><b>PAYMENT</b> fieldname and type values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>refnumber~rownumber</b></li>
+    <li>Logging settings: <i>log_payment_update, log_payment_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -1705,14 +1751,13 @@ a {
 			</tr>
 			<tr>
 				<td><b>transnumber*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value (transnumber+rownumber).
-						Valid transnumber(Transaction)</b></td>
+				<td>text</td>
+				<td>Required. Valid transnumber (TRANS)</td>
 			</tr>
 			<tr>
 				<td><b>rownumber*</b></td>
-				<td><b>integer</b></td>
-				<td><b>Required. UNIQUE value (transnumber+rownumber).</b></td>
+				<td>integer</td>
+				<td>Required.</td>
 			</tr>
 			<tr>
 				<td>paiddate</td>
@@ -1730,26 +1775,33 @@ a {
 				<td><br></td>
 			</tr>
 			<tr>
-				<td><i>additional data</i></td>
-				<td><i>by definition or text</i></td>
-				<td><i>Valid for any additional fieldname already defined (in
-						Deffield) or insert_field params option will automatically create
-						it.</i></td>
-			</tr>
-			<tr>
-				<td colspan="3"><i>*Logging values: log_trans_update,
-						log_trans_delete.</i></td>
-			</tr>
+        <td><i>additional data</i></td>
+        <td><i>by definition or text</i></td>
+        <td>Valid for any additional fieldname already defined
+            (in DEFFIELD) or insert_field params option will automatically
+            create it.<br>
+            <i>The part after the ~ sign will be set in the
+            notes (other data) field, the part before in the value field. If
+            the same field name is used more times in an object the
+            [fieldname~index]=[value~notes] format can be used to set the
+            value.<br> 
+            The "~index" and "~notes" section is optional and may be
+            omitted.</i>
+        </td>
+      </tr>
 		</tbody>
 	</table>
 
 	<p>
-		<u><a name="place_fields">Place fieldname and type values:</a></u>
+		<u><a name="place_fields"><b>PLACE</b> fieldname and type values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>planumber</b></li>
+    <li>Logging settings: <i>log_place_update, log_place_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -1758,15 +1810,15 @@ a {
 			</tr>
 			<tr>
 				<td><b>planumber*</b></td>
-				<td><b>text</b></td>
-				<td><b> Required. UNIQUE value. Add new, if not set, the function
-						retrieves the next value.</b></td>
+				<td>text</td>
+				<td>Required. Add new, if not set, the function
+						retrieves the next value.</td>
 			</tr>
 			<tr>
 				<td>placetype*</td>
 				<td>text</td>
 				<td>Required in case of new value entry, not editable. Valid values: all
-					groupvalue from Groups, where groupname equal placetype (bank,
+					groupvalue from GROUPS, where groupname equal placetype (bank,
 					cash, warehouse, store).</td>
 			</tr>
 			<tr>
@@ -1777,19 +1829,19 @@ a {
 			<tr>
 				<td>ref_planumber</td>
 				<td>text</td>
-				<td>If placetype equal store. Valid Place (inventory) link.</td>
+				<td>If placetype equal store. Valid PLACE (inventory) link.</td>
 			</tr>
 			<tr>
 				<td>curr*</td>
 				<td>text</td>
 				<td>Required in case of new value entry, if placetype equals bank or cash.
-					Valid currency code from Currency.</td>
+					Valid currency code from CURRENCY.</td>
 			</tr>
 			<tr>
 				<td>storetype*</td>
 				<td>text</td>
 				<td>Required in case of new value entry, if placetype equals store.
-					Valid values: all groupvalue from Groups, where groupname equal
+					Valid values: all groupvalue from GROUPS, where groupname equal
 					storetype.</td>
 			</tr>
 			<tr>
@@ -1810,26 +1862,33 @@ a {
           TRUE,true,T,t,Y,y,YES,yes,ON,on,1 or FALSE. Default value: FALSE.</td>
 			</tr>
 			<tr>
-				<td><i>additional data</i></td>
-				<td><i>by definition or text</i></td>
-				<td><i>Valid for any additional fieldname already defined (in
-						Deffield) or insert_field params option will automatically create
-						it.</i></td>
-			</tr>
-			<tr>
-				<td colspan="3"><i>*Logging values: log_place_update,
-						log_place_delete.</i></td>
-			</tr>
+        <td><i>additional data</i></td>
+        <td><i>by definition or text</i></td>
+        <td>Valid for any additional fieldname already defined
+            (in DEFFIELD) or insert_field params option will automatically
+            create it.<br>
+            <i>The part after the ~ sign will be set in the
+            notes (other data) field, the part before in the value field. If
+            the same field name is used more times in an object the
+            [fieldname~index]=[value~notes] format can be used to set the
+            value.<br> 
+            The "~index" and "~notes" section is optional and may be
+            omitted.</i>
+        </td>
+      </tr>
 		</tbody>
 	</table>
 
 	<p>
-		<u><a name="price_fields">Price fieldname and type values:</a></u>
+		<u><a name="price_fields"><b>PRICE</b> fieldname and type values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>partnumber~pricetype~validfrom~curr~qty</b></li>
+    <li>Logging settings: <i>log_price_update, log_price_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -1838,38 +1897,35 @@ a {
 			</tr>
 			<tr>
 				<td><b>partnumber*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value
-						(partnumber+pricetype+validfrom+curr+qty). Valid product number value.</b></td>
+				<td>text</td>
+				<td>Required. Valid product number value.</td>
 			</tr>
 			<tr>
 				<td><b>pricetype*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value
-						(partnumber+pricetype+validfrom+curr+qty). Valid values: price or discount.</b></td>
+				<td>text</td>
+				<td>Required. Valid values: price or discount.</td>
 			</tr>
 			<tr>
 				<td><b>validfrom*</b></td>
-				<td><b>date</b></td>
-				<td><b>Required. UNIQUE value
-						(partnumber+pricetype+validfrom+curr+qty). Valid date format: YYYY-MM-DD</b></td>
-			</tr>
-			<tr>
-				<td>validto</td>
 				<td>date</td>
-				<td>Valid date format: YYYY-MM-DD</td>
+				<td>Required. Valid date format: YYYY-MM-DD</td>
 			</tr>
 			<tr>
-				<td>curr</td>
+				<td><b>curr</b></td>
 				<td>text</td>
-				<td>Valid currency code from Currency. If not set, default
+				<td>Valid currency code from CURRENCY. If not set, default
 					currency.</td>
 			</tr>
 			<tr>
-				<td>qty</td>
+				<td><b>qty</b></td>
 				<td>real</td>
 				<td>Limit quantity. Default value: 0.</td>
 			</tr>
+			<tr>
+        <td>validto</td>
+        <td>date</td>
+        <td>Valid date format: YYYY-MM-DD</td>
+      </tr>
 			<tr>
 				<td>pricevalue</td>
 				<td>real</td>
@@ -1885,7 +1941,7 @@ a {
 				<td>calcmode</td>
 				<td>text</td>
 				<td>If type = discount. Valid values: all groupvalue from
-					Groups, where groupname equal calcmode.</td>
+					GROUPS, where groupname equal calcmode.</td>
 			</tr>
 			<tr>
 				<td>vendorprice</td>
@@ -1894,26 +1950,33 @@ a {
           TRUE,true,T,t,Y,y,YES,yes,ON,on,1 or FALSE. Default value: FALSE.</td>
 			</tr>
 			<tr>
-				<td><i>additional data</i></td>
-				<td><i>by definition or text</i></td>
-				<td><i>Valid for any additional fieldname already defined (in
-						Deffield) or insert_field params option will automatically create
-						it.</i></td>
-			</tr>
-			<tr>
-				<td colspan="3"><i>*Logging values: log_product_update,
-						log_product_delete.</i></td>
-			</tr>
+        <td><i>additional data</i></td>
+        <td><i>by definition or text</i></td>
+        <td>Valid for any additional fieldname already defined
+            (in DEFFIELD) or insert_field params option will automatically
+            create it.<br>
+            <i>The part after the ~ sign will be set in the
+            notes (other data) field, the part before in the value field. If
+            the same field name is used more times in an object the
+            [fieldname~index]=[value~notes] format can be used to set the
+            value.<br> 
+            The "~index" and "~notes" section is optional and may be
+            omitted.</i>
+        </td>
+      </tr>
 		</tbody>
 	</table>
 
 	<p>
-		<u><a name="product_fields">Product fieldname and type values:</a></u>
+		<u><a name="product_fields"><b>PRODUCT</b> fieldname and type values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>partnumber</b></li>
+    <li>Logging settings: <i>log_product_update, log_product_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -1922,9 +1985,9 @@ a {
 			</tr>
 			<tr>
 				<td><b>partnumber*</b></td>
-				<td><b>text</b></td>
-				<td><b>UNIQUE value. Add new, if not set, the function retrieves the
-						next value.</b></td>
+				<td>text</td>
+				<td>Add new, if not set, the function retrieves the
+						next value.</td>
 			</tr>
 			<tr>
 				<td>description*</td>
@@ -1939,13 +2002,13 @@ a {
 			<tr>
 				<td>unit</td>
 				<td>text</td>
-				<td>Default value: <i>default_unit</i> in the Setting fields.
+				<td>Default value: <i>default_unit</i>.
 				</td>
 			</tr>
 			<tr>
 				<td>taxcode</td>
 				<td>text</td>
-				<td>Valid value: taxcode from Tax. Default value: <i>default_taxcode</i> in the Setting fields.
+				<td>Valid value: taxcode from TAX. Default value: <i>default_taxcode</i>.
 				</td>
 			</tr>
 			<tr>
@@ -1966,26 +2029,33 @@ a {
           TRUE,true,T,t,Y,y,YES,yes,ON,on,1 or FALSE. Default value: FALSE.</td>
 			</tr>
 			<tr>
-				<td><i>additional data</i></td>
-				<td><i>by definition or text</i></td>
-				<td><i>Valid for any additional fieldname already defined (in
-						Deffield) or insert_field params option will automatically create
-						it.</i></td>
-			</tr>
-			<tr>
-				<td colspan="3"><i>*Logging values: log_product_update,
-						log_product_delete.</i></td>
-			</tr>
+        <td><i>additional data</i></td>
+        <td><i>by definition or text</i></td>
+        <td>Valid for any additional fieldname already defined
+            (in DEFFIELD) or insert_field params option will automatically
+            create it.<br>
+            <i>The part after the ~ sign will be set in the
+            notes (other data) field, the part before in the value field. If
+            the same field name is used more times in an object the
+            [fieldname~index]=[value~notes] format can be used to set the
+            value.<br> 
+            The "~index" and "~notes" section is optional and may be
+            omitted.</i>
+        </td>
+      </tr>
 		</tbody>
 	</table>
 
 	<p>
-		<u><a name="project_fields">Project fieldname and type values:</a></u>
+		<u><a name="project_fields"><b>PROJECT</b> fieldname and type values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>pronumber</b></li>
+    <li>Logging settings: <i>log_project_update, log_project_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -1994,9 +2064,9 @@ a {
 			</tr>
 			<tr>
 				<td><b>pronumber*</b></td>
-				<td><b>text</b></td>
-				<td><b>UNIQUE value. Add new, if not set, the function retrieves the
-						next value.</b></td>
+				<td>text</td>
+				<td>Add new, if not set, the function retrieves the
+						next value.</td>
 			</tr>
 			<tr>
 				<td>description*</td>
@@ -2006,7 +2076,7 @@ a {
 			<tr>
 				<td>custnumber</td>
 				<td>text</td>
-				<td>Valid value: custnumber from Customer.</td>
+				<td>Valid value: custnumber from CUSTOMER.</td>
 			</tr>
 			<tr>
 				<td>startdate</td>
@@ -2030,26 +2100,33 @@ a {
           TRUE,true,T,t,Y,y,YES,yes,ON,on,1 or FALSE. Default value: FALSE.</td>
 			</tr>
 			<tr>
-				<td><i>additional data</i></td>
-				<td><i>by definition or text</i></td>
-				<td><i>Valid for any additional fieldname already defined (in
-						Deffield) or insert_field params option will automatically create
-						it.</i></td>
-			</tr>
-			<tr>
-				<td colspan="3"><i>*Logging values: log_project_update,
-						log_project_delete.</i></td>
-			</tr>
+        <td><i>additional data</i></td>
+        <td><i>by definition or text</i></td>
+        <td>Valid for any additional fieldname already defined
+            (in DEFFIELD) or insert_field params option will automatically
+            create it.<br>
+            <i>The part after the ~ sign will be set in the
+            notes (other data) field, the part before in the value field. If
+            the same field name is used more times in an object the
+            [fieldname~index]=[value~notes] format can be used to set the
+            value.<br> 
+            The "~index" and "~notes" section is optional and may be
+            omitted.</i>
+        </td>
+      </tr>
 		</tbody>
 	</table>
 
 	<p>
-		<u><a name="rate_fields">Rate fieldname and type values:</a></u>
+		<u><a name="rate_fields"><b>RATE</b> fieldname and type values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>ratetype~ratedate~curr~planumber</b></li>
+    <li>Logging settings: <i>log_rate_update, log_rate_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -2058,33 +2135,29 @@ a {
 			</tr>
 			<tr>
 				<td><b>ratetype*</b></td>
-				<td><b>text</b></td>
-				<td><b>UNIQUE value(ratetype+ratedate+curr+planumber).
-						Valid values: all groupvalue from Groups, where groupname equal
-						calcmode(rate, buy, sell, average). </b></td>
+				<td>text</td>
+				<td>Valid values: all groupvalue from GROUPS, where groupname equal
+						calcmode(rate, buy, sell, average).</td>
 			</tr>
 			<tr>
 				<td><b>ratedate*</b></td>
-				<td><b>text</b></td>
-				<td><b>UNIQUE value(ratetype+ratedate+curr+planumber).
-						Valid date format: YYYY-MM-DD.</b></td>
+				<td>text</td>
+				<td>Valid date format: YYYY-MM-DD.</td>
 			</tr>
 			<tr>
 				<td><b>curr*</b></td>
-				<td><b>text</b></td>
-				<td><b>UNIQUE value(ratetype+ratedate+curr+planumber).
-						Valid currency code from Currency.</b></td>
+				<td>text</td>
+				<td>Valid currency code from CURRENCY.</td>
 			</tr>
 			<tr>
 				<td><b>planumber*</b></td>
-				<td><b>text</b></td>
-				<td><b>UNIQUE value(ratetype+ratedate+curr+planumber).
-						Valid planumber code from Place.</b></td>
+				<td>text</td>
+				<td>Valid planumber code from PLACE.</td>
 			</tr>
 			<tr>
 				<td>rategroup</td>
 				<td>text</td>
-				<td>Valid values: all groupvalue from Groups, where groupname
+				<td>Valid values: all groupvalue from GROUPS, where groupname
 					equal rategroup.</td>
 			</tr>
 			<tr>
@@ -2092,16 +2165,34 @@ a {
 				<td>real</td>
 				<td>Default value: 0.</td>
 			</tr>
+			<tr>
+        <td><i>additional data</i></td>
+        <td><i>by definition or text</i></td>
+        <td>Valid for any additional fieldname already defined
+            (in DEFFIELD) or insert_field params option will automatically
+            create it.<br>
+            <i>The part after the ~ sign will be set in the
+            notes (other data) field, the part before in the value field. If
+            the same field name is used more times in an object the
+            [fieldname~index]=[value~notes] format can be used to set the
+            value.<br> 
+            The "~index" and "~notes" section is optional and may be
+            omitted.</i>
+        </td>
+      </tr>
 		</tbody>
 	</table>
 
 	<p>
-		<u><a name="tax_fields">Tax fieldname and type values:</a></u>
+		<u><a name="tax_fields"><b>TAX</b> fieldname and type values:</a></u>
 	</p>
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>taxcode</b></li>
+    <li>Logging settings: <i>log_tax_update, log_tax_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -2110,8 +2201,8 @@ a {
 			</tr>
 			<tr>
 				<td><b>taxcode*</b></td>
-				<td><b>text</b></td>
-				<td><b>UNIQUE value.</b></td>
+				<td>text</td>
+				<td>Required.</td>
 			</tr>
 			<tr>
 				<td>description*</td>
@@ -2129,25 +2220,34 @@ a {
 				<td>Boolean type, valid TRUE values:
           TRUE,true,T,t,Y,y,YES,yes,ON,on,1 or FALSE. Default value: FALSE.</td>
 			</tr>
+			<tr>
+        <td><i>additional data</i></td>
+        <td><i>by definition or text</i></td>
+        <td>Valid for any additional fieldname already defined
+            (in DEFFIELD) or insert_field params option will automatically
+            create it.<br>
+            <i>The part after the ~ sign will be set in the
+            notes (other data) field, the part before in the value field. If
+            the same field name is used more times in an object the
+            [fieldname~index]=[value~notes] format can be used to set the
+            value.<br> 
+            The "~index" and "~notes" section is optional and may be
+            omitted.</i>
+        </td>
+      </tr>
 		</tbody>
 	</table>
 
-
-
-
 	<p>
-		<u><a name="tool_fields">Tool fieldname and type values:</a></u>
+		<u><a name="tool_fields"><b>TOOL</b> fieldname and type values:</a></u>
 	</p>
-
-
-
+  <ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>serial</b></li>
+    <li>Logging settings: <i>log_tool_update, log_tool_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
-
-
-
-
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -2156,8 +2256,8 @@ a {
 			</tr>
 			<tr>
 				<td><b>serial*</b></td>
-				<td><b>text</b></td>
-				<td><b>UNIQUE value.</b></td>
+				<td>text</td>
+				<td><br></td>
 			</tr>
 			<tr>
 				<td>description</td>
@@ -2167,12 +2267,12 @@ a {
 			<tr>
 				<td>partnumber*</td>
 				<td>text</td>
-				<td>Required in case of new value entry.Valid partnumber code from Product.</td>
+				<td>Required in case of new value entry.Valid partnumber code from PRODUCT.</td>
 			</tr>
 			<tr>
 				<td>toolgroup</td>
 				<td>text</td>
-				<td>Valid values: all groupvalue from Groups, where groupname
+				<td>Valid values: all groupvalue from GROUPS, where groupname
 					equal toolgroup.</td>
 			</tr>
 			<tr>
@@ -2187,35 +2287,33 @@ a {
           TRUE,true,T,t,Y,y,YES,yes,ON,on,1 or FALSE. Default value: FALSE.</td>
 			</tr>
 			<tr>
-				<td><i>additional data</i></td>
-				<td><i>by definition or text</i></td>
-				<td><i>Valid for any additional fieldname already defined (in
-						Deffield) or insert_field params option will automatically create
-						it.</i></td>
-			</tr>
-			<tr>
-				<td colspan="3"><i>*Logging values: log_tool_update,
-						log_tool_delete.</i></td>
-			</tr>
+        <td><i>additional data</i></td>
+        <td><i>by definition or text</i></td>
+        <td>Valid for any additional fieldname already defined
+            (in DEFFIELD) or insert_field params option will automatically
+            create it.<br>
+            <i>The part after the ~ sign will be set in the
+            notes (other data) field, the part before in the value field. If
+            the same field name is used more times in an object the
+            [fieldname~index]=[value~notes] format can be used to set the
+            value.<br> 
+            The "~index" and "~notes" section is optional and may be
+            omitted.</i>
+        </td>
+      </tr>
 		</tbody>
 	</table>
 
-
-
-
 	<p>
-		<u><a name="trans_fields">Trans fieldname and type values:</a></u>
+		<u><a name="trans_fields"><b>TRANS</b> fieldname and type values:</a></u>
 	</p>
-
-
-
+	<ul style="line-height: 25px;">
+    <li>Primary key / unique value: <b>transnumber</b></li>
+    <li>Logging settings: <i>log_trans_update, log_trans_delete</i> (or log_update, log_deleted)</li>
+  </ul>
 	<table
 		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
-
-
-
-
+		border="1" cellpadding="4" cellspacing="0" width="100%">
 		<tbody>
 			<tr bgcolor="#E5E5E5">
 				<th>Name</th>
@@ -2224,15 +2322,15 @@ a {
 			</tr>
 			<tr>
 				<td><b>transnumber*</b></td>
-				<td><b>text</b></td>
-				<td><b>UNIQUE value. Add new, if not set, the function retrieves the
-						next value.</b></td>
+				<td>text</td>
+				<td>Add new, if not set, the function retrieves the
+						next value.</td>
 			</tr>
 			<tr>
 				<td>transtype*</td>
 				<td>text</td>
 				<td>Required in case of new value entry, or readonly. Valid values:
-					all groupvalue from Groups, where groupname equals transtype.</td>
+					all groupvalue from GROUPS, where groupname equals transtype.</td>
 			</tr>
 			<tr>
         <td>direction*</td>
@@ -2269,52 +2367,52 @@ a {
 				<td>custnumber*</td>
 				<td>text</td>
 				<td>Required in case of new value entry, exception: receipt. Valid
-					values: custnumber(Customer).</td>
+					values: custnumber (CUSTOMER).</td>
 			</tr>
 			<tr>
 				<td>empnumber</td>
 				<td>text</td>
-				<td>Valid values: empnumber(Employee)</td>
+				<td>Valid values: empnumber (EMPLOYEE)</td>
 			</tr>
 			<tr>
 				<td>department</td>
 				<td>text</td>
-				<td>Valid values: all groupvalue from Groups, where groupname
+				<td>Valid values: all groupvalue from GROUPS, where groupname
 					equal department.</td>
 			</tr>
 			<tr>
 				<td>pronumber</td>
 				<td>text</td>
-				<td>Valid values: pronumber(Project).</td>
+				<td>Valid values: pronumber (PROJECT).</td>
 			</tr>
 			<tr>
 				<td>planumber</td>
 				<td>text</td>
-				<td>Valid planumber (Place).</td>
+				<td>Valid planumber (PLACE).</td>
 			</tr>
 			<tr>
 				<td>paidtype</td>
 				<td>text</td>
-				<td>Valid values: all groupvalue from Groups, where groupname
+				<td>Valid values: all groupvalue from GROUPS, where groupname
 					equal paidtype. If not set, default paidtype.</td>
 			</tr>
 			<tr>
 				<td>curr</td>
 				<td>text</td>
-				<td>Valid currency code from Currency. If not set, default
+				<td>Valid currency code from CURRENCY. If not set, default
 					currency. Not used: invoice_stock.</td>
 			</tr>
 			<tr>
 				<td>notax</td>
 				<td>boolean</td>
-				<td>Boolean type, valid TRUE values:
+				<td style="text-align: left;">Boolean type, valid TRUE values:
           TRUE,true,T,t,Y,y,YES,yes,ON,on,1 or FALSE. Default value: FALSE. Not
 					used: invoice_stock.</td>
 			</tr>
 			<tr>
 				<td>paid</td>
 				<td>boolean</td>
-				<td>Boolean type, valid TRUE values:
+				<td style="text-align: left;">Boolean type, valid TRUE values:
           TRUE,true,T,t,Y,y,YES,yes,ON,on,1 or FALSE. Default value: FALSE. Not
 					used: invoice_stock.</td>
 			</tr>
@@ -2341,7 +2439,7 @@ a {
 			<tr>
 				<td>transstate</td>
 				<td>text</td>
-				<td>Valid values: all groupvalue from Groups, where groupname
+				<td>Valid values: all groupvalue from GROUPS, where groupname
 					equal transstate. Default value: ok</td>
 			</tr>
 			<tr>
@@ -2351,76 +2449,25 @@ a {
           TRUE,true,T,t,Y,y,YES,yes,ON,on,1 or FALSE. Default value: FALSE.</td>
 			</tr>
 			<tr>
-				<td><i>additional data</i></td>
-				<td><i>by definition or text</i></td>
-				<td><i>Valid for any additional fieldname already defined (in
-						Deffield) or insert_field params option will automatically create
-						it.</i></td>
-			</tr>
+        <td>username</td>
+        <td>text</td>
+        <td>Read only</td>
+      </tr>
 			<tr>
-				<td colspan="3"><i>*Logging values: log_trans_update,
-						log_trans_delete.</i></td>
-			</tr>
-		</tbody>
-	</table>
-
-
-
-
-	<p>
-		<u><a name="setting_fields">Setting items fieldname and type
-				values:</a></u>
-	</p>
-
-
-
-	<table
-		style="border-width: 1px; border-style: solid; border-collapse: collapse;"
-		border="1" cellpadding="2" cellspacing="0" width="100%">
-
-
-
-
-		<tbody>
-			<tr bgcolor="#E5E5E5">
-				<th>Name</th>
-				<th>Type</th>
-				<th width="100%">Comment</th>
-			</tr>
-			<tr>
-				<td><b>fieldname*</b></td>
-				<td><b>text</b></td>
-				<td><b>Required. UNIQUE value. Valid inifields value (Deffield).
-						First, create (if it does not exist) in a fieldname of the
-						datatype deffield(deftype=inifields)!</b></td>
-			</tr>
-			<tr>
-				<td>fieldtype</td>
-				<td>text</td>
-				<td>Readonly value! (from Deffield)</td>
-			</tr>
-			<tr>
-				<td>value*</td>
-				<td>text</td>
-				<td>Required.</td>
-			</tr>
-			<tr>
-				<td>visible</td>
-				<td>boolean</td>
-				<td>Readonly value! (from Deffield) Boolean type, valid TRUE values:
-          TRUE,true,T,t,Y,y,YES,yes,ON,on,1 or FALSE. Default value: FALSE.</td>
-			</tr>
-			<tr>
-				<td>readonly</td>
-				<td>boolean</td>
-				<td>Readonly value! (from Deffield) Boolean type, valid TRUE values:
-          TRUE,true,T,t,Y,y,YES,yes,ON,on,1 or FALSE. Default value: FALSE.</td>
-			</tr>
-			<tr>
-				<td>notes</td>
-				<td>text</td>
-				<td><br></td>
-			</tr>
+        <td><i>additional data</i></td>
+        <td><i>by definition or text</i></td>
+        <td>Valid for any additional fieldname already defined
+            (in DEFFIELD) or insert_field params option will automatically
+            create it.<br>
+            <i>The part after the ~ sign will be set in the
+            notes (other data) field, the part before in the value field. If
+            the same field name is used more times in an object the
+            [fieldname~index]=[value~notes] format can be used to set the
+            value.<br> 
+            The "~index" and "~notes" section is optional and may be
+            omitted.</i>
+        </td>
+      </tr>
 		</tbody>
 	</table>
 

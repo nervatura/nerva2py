@@ -1,7 +1,19 @@
+0.9.9
+- update web2py to 2.9.4
+- support for GAE
+- NWC, NDI: source code optimization, a new class structure
+- NAS,NDR: new create, backup and restore database 
+- NOM: relations pyramid
+- NWC: new server printers tools
+- update ndi_demo and demo source
+- update DEMO database
+- update documentation
+- many bug fixes
+
 0.9.8
+- update web2py to 2.7.4
 - new base look and feel
 - Mobil Client: new ui
 - Web Client: rewritten and optimized code and style
-- update web2py to 2.7.4
 - many bug fixes
 

@@ -3,12 +3,12 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2013, Csaba Kappel
+Copyright © 2011-2014, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
 
-from gluon.contrib.fpdf.fpdf import FPDF #@UnresolvedImport
+from gluon.contrib.fpdf.fpdf import FPDF
 import xml.etree.ElementTree as et
 from nerva2py.fpdf_html import HTMLMixin
 

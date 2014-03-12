@@ -3,13 +3,15 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2013, Csaba Kappel
+Copyright © 2011-2014, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
 
 if 0:
   global request; request = globals.Request()
+  from gluon.globals import Session
+  global session; session = Session()
   global response; response = globals.Response()
   import gluon.languages.translator as T
   from gluon.sql import DAL
@@ -20,7 +22,7 @@ from nerva2py.ndi import Ndi
 from nerva2py.ordereddict import OrderedDict
 import base64
 
-ns = NervaStore(request, T, db)
+ns = NervaStore(request, session, T, db)
 ndi = Ndi(ns)
   
 #----------------------------------------------------------------------------------------------------

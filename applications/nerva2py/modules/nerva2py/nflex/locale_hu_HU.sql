@@ -41,7 +41,7 @@ INSERT INTO ui_message(secname, fieldname, lang, msg)     VALUES ('fieldtype', '
 INSERT INTO ui_message(secname, fieldname, lang, msg)     VALUES ('fieldtype', 'valuelist', 'hu', 'értéklista');
 INSERT INTO ui_message(secname, fieldname, lang, msg)     VALUES ('fieldtype', 'notes', 'hu', 'feljegyzés');
 INSERT INTO ui_message(secname, fieldname, lang, msg)     VALUES ('fieldtype', 'filter', 'hu', 'szűrés');
-INSERT INTO ui_message(secname, fieldname, lang, msg)     VALUES ('fieldtype', 'flink', 'hu', 'hivatkozás');
+INSERT INTO ui_message(secname, fieldname, lang, msg)     VALUES ('fieldtype', 'urlink', 'hu', 'hivatkozás');
 INSERT INTO ui_message(secname, fieldname, lang, msg)     VALUES ('fieldtype', 'customer', 'hu', 'ügyfél');
 INSERT INTO ui_message(secname, fieldname, lang, msg)     VALUES ('fieldtype', 'tool', 'hu', 'eszköz');
 INSERT INTO ui_message(secname, fieldname, lang, msg)     VALUES ('fieldtype', 'trans', 'hu', 'bizonylat');

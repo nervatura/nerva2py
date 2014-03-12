@@ -171,7 +171,7 @@ th,td {
             <br>
             var op:AbstractOperation = ro.getOperation('getLogin_amf');<br>
             op.addEventListener(ResultEvent.RESULT, getLogin_amf); op.addEventListener(FaultEvent.FAULT, connectFault);<br>
-            op.send("localdemo", "admin", null, true);<br>
+            op.send("demo", "admin", null, true);<br>
             <br>
             private function getLogin_amf(event:Event):void {if (ResultEvent(event).result["valid"]== true) {}}<br>
             private function connectFault(event:FaultEvent):void {}<br>
@@ -179,13 +179,9 @@ th,td {
 					  <br>
 					  <b><i>Python and <a href="http://www.pyamf.org/index.html">PyAMF</a>:</i></b><br>
 					  service = RemotingService("http://127.0.0.1:8000/nerva2py/npi/call/amfrpc3").getService("default")<br>
-            login = service.getLogin_amf("localdemo", "admin", None, True)<br>
+            login = service.getLogin_amf("demo", "admin", None, True)<br>
             if login["valid"]==True:<br>
-            &nbsp;&nbsp;pass<br>
-					  <br>
-					  
-					  <b><i>Microsoft .NET and <a href="http://www.fluorinefx.com/">FluorineFx</a>:</i></b><br>
-					  (...)
+            &nbsp;&nbsp;pass<br>					  
 					</p>
 					
 				</td>
@@ -210,11 +206,11 @@ th,td {
             ro = (...)<br>
             var op:AbstractOperation = ro.getOperation('callFunction_amf');<br>
             op.addEventListener(ResultEvent.RESULT, getCustnumber); op.addEventListener(FaultEvent.FAULT, connectFault);<br>
-            op.send({database: "localdemo", username: "admin", password: null}, "nextNumber", {id:"custnumber", step:true});<br>
+            op.send({database: "demo", username: "admin", password: null}, "nextNumber", {id:"custnumber", step:true});<br>
             <br>
             <b><i>Python and <a href="http://www.pyamf.org/index.html">PyAMF</a>:</i></b><br>
             service = RemotingService("http://127.0.0.1:8000/nerva2py/npi/call/amfrpc3").getService("default")<br>
-            result = service.callFunction_amf({"database": "localdemo", "username": "admin", "password": None}, 
+            result = service.callFunction_amf({"database": "demo", "username": "admin", "password": None}, 
               "nextNumber", {"id":"customer_number", "step":False})<br>
           </p>   
 				</td>
@@ -253,7 +249,7 @@ th,td {
             
             var op:AbstractOperation = ro.getOperation('executeSql_amf');<br>
             op.addEventListener(ResultEvent.RESULT, closedResult); op.addEventListener(FaultEvent.FAULT, connectFault);<br>
-            op.send({database: "localdemo", username: "admin", password: null}, null, sqlStr, paramList);<br>
+            op.send({database: "demo", username: "admin", password: null}, null, sqlStr, paramList);<br>
             <br>
             <b><i>Python and <a href="http://www.pyamf.org/index.html">PyAMF</a>:</i></b><br>
             service = RemotingService("http://127.0.0.1:8000/nerva2py/npi/call/amfrpc3").getService("default")<br>
@@ -262,7 +258,7 @@ th,td {
             paramList.append({"name":"@from_date", "value":"2011-01-01", "wheretype":"in", "type":"date"})<br>
             paramList.append({"name":"@to_date", "value":"2011-02-01", "wheretype":"in", "type":"date"})<br><br>
             
-            result = service.executeSql_amf({"database": "localdemo", "username": "admin", "password": None}, 
+            result = service.executeSql_amf({"database": "demo", "username": "admin", "password": None}, 
               null, sqlStr, paramList)<br>
           </p>
         </td>
@@ -320,7 +316,7 @@ th,td {
             
             var op:AbstractOperation = ro.getOperation('loadView_amf');<br>
             op.addEventListener(ResultEvent.RESULT, loadResult); op.addEventListener(FaultEvent.FAULT, connectFault);<br>
-            op.send({database: "localdemo", username: "admin", password: null}, 
+            op.send({database: "demo", username: "admin", password: null}, 
               null, sqlStr, whereStr, havingStr, paramList, False, orderStr);<br>
             <br>
             <b><i>Python and <a href="http://www.pyamf.org/index.html">PyAMF</a>:</i></b><br>
@@ -331,7 +327,7 @@ th,td {
             paramList.append({"name":"@from_amount", "value":0, "wheretype":"having", "type":"number"})<br>
             paramList.append({"name":"@to_amount", "value":1000000, "wheretype":"having", "type":"number"})<br><br>
             
-            result = service.loadView_amf({"database": "localdemo", "username": "admin", "password": None}, 
+            result = service.loadView_amf({"database": "demo", "username": "admin", "password": None}, 
               null, sqlStr, whereStr, havingStr, paramList, False, orderStr)<br>
           </p>
         </td>
@@ -362,11 +358,11 @@ th,td {
             ro = (...)<br>
             var op:AbstractOperation = ro.getOperation('loadTable_amf');<br>
             op.addEventListener(ResultEvent.RESULT, getCustomer); op.addEventListener(FaultEvent.FAULT, connectFault);<br>
-            op.send({database: "localdemo", username: "admin", password: null}, "models.customer", "id=1", null);<br>
+            op.send({database: "demo", username: "admin", password: null}, "models.customer", "id=1", null);<br>
             <br>
             <b><i>Python and <a href="http://www.pyamf.org/index.html">PyAMF</a>:</i></b><br>
             service = RemotingService("http://127.0.0.1:8000/nerva2py/npi/call/amfrpc3").getService("default")<br>
-            result = service.loadTable_amf({"database": "localdemo", "username": "admin", "password": None}, 
+            result = service.loadTable_amf({"database": "demo", "username": "admin", "password": None}, 
               "models.customer", "id=1", None)<br>
           </p>
         </td>
@@ -409,7 +405,7 @@ th,td {
             <br>
             var op:AbstractOperation = ro.getOperation('loadDataSet_amf');<br>
             op.addEventListener(ResultEvent.RESULT, getDataSet); op.addEventListener(FaultEvent.FAULT, connectFault);<br>
-            op.send({database: "localdemo", username: "admin", password: null}, dataSetInfo);<br>
+            op.send({database: "demo", username: "admin", password: null}, dataSetInfo);<br>
             <br>
             <b><i>Python and <a href="http://www.pyamf.org/index.html">PyAMF</a>:</i></b><br>
             service = RemotingService("http://127.0.0.1:8000/nerva2py/npi/call/amfrpc3").getService("default")<br>
@@ -428,7 +424,7 @@ th,td {
             dataSetInfo.append({"infoName":"custnumber", "infoType":"function", "functionName":"nextNumber",<br>
             &nbsp;&nbsp;"paramList":{id:"custnumber", step:false}})<br>
             <br>
-            result = service.loadDataSet_amf({"database": "localdemo", "username": "admin", "password": None}, dataSetInfo)<br>
+            result = service.loadDataSet_amf({"database": "demo", "username": "admin", "password": None}, dataSetInfo)<br>
           </p>
         </td>
       </tr>

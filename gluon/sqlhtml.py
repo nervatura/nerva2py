@@ -17,11 +17,11 @@ import os
 from gluon.http import HTTP
 from gluon.html import XmlComponent
 from gluon.html import XML, SPAN, TAG, A, DIV, CAT, UL, LI, TEXTAREA, BR, IMG, SCRIPT
-from gluon.html import FORM, INPUT, LABEL, OPTION, SELECT
+from gluon.html import FORM, INPUT, LABEL, OPTION, SELECT, COL, COLGROUP
 from gluon.html import TABLE, THEAD, TBODY, TR, TD, TH, STYLE
 from gluon.html import URL, truncate_string, FIELDSET
 from gluon.dal import DAL, Field, Table, Row, CALLABLETYPES, smart_query, \
-    bar_encode, Reference, REGEX_TABLE_DOT_FIELD, Expression
+    bar_encode, Reference, Expression, SQLCustomType
 from gluon.storage import Storage
 from gluon.utils import md5_hash
 from gluon.validators import IS_EMPTY_OR, IS_NOT_EMPTY, IS_LIST_OF, IS_DATE, \
@@ -44,6 +44,9 @@ except ImportError:
 
 table_field = re.compile('[\w_]+\.[\w_]+')
 widget_class = re.compile('^\w*')
+
+def add_class(a,b):
+    return a+' '+b if a else b
 
 def represent(field, value, record):
     f = field.represent
@@ -334,7 +337,7 @@ class RadioWidget(OptionsWidget):
 
 
         attr = cls._attributes(field, {}, **attributes)
-        attr['_class'] = attr.get('_class', 'web2py_radiowidget')
+        attr['_class'] = add_class(attr.get('_class'), 'web2py_radiowidget')
 
         requires = field.requires
         if not isinstance(requires, (list, tuple)):
@@ -358,7 +361,7 @@ class RadioWidget(OptionsWidget):
         wrappers = dict(
             table=(TABLE, TR, TD),
             ul=(DIV, UL, LI),
-            divs=(CAT, DIV, DIV)
+            divs=(DIV, DIV, DIV)
         )
         parent, child, inner = wrappers[attributes.get('style', 'table')]
 
@@ -398,7 +401,9 @@ class CheckboxesWidget(OptionsWidget):
             values = [str(value)]
 
         attr = cls._attributes(field, {}, **attributes)
-        attr['_class'] = attr.get('_class', 'web2py_checkboxeswidget')
+        attr['_class'] = add_class(attr.get('_class'), 'web2py_checkboxeswidget')
+
+        label = attr.get('label',True)
 
         requires = field.requires
         if not isinstance(requires, (list, tuple)):
@@ -422,7 +427,7 @@ class CheckboxesWidget(OptionsWidget):
         wrappers = dict(
             table=(TABLE, TR, TD),
             ul=(DIV, UL, LI),
-            divs=(CAT, DIV, DIV)
+            divs=(DIV, DIV, DIV)
         )
         parent, child, inner = wrappers[attributes.get('style', 'table')]
 
@@ -439,7 +444,8 @@ class CheckboxesWidget(OptionsWidget):
                                        requires=attr.get('requires', None),
                                        hideerror=True, _value=k,
                                        value=r_value),
-                                 LABEL(v, _for='%s%s' % (field.name, k))))
+                                 LABEL(v, _for='%s%s' % (field.name, k)) 
+                                 if label else ''))
             opts.append(child(tds))
 
         if opts:
@@ -490,7 +496,7 @@ class UploadWidget(FormWidget):
 
     DEFAULT_WIDTH = '150px'
     ID_DELETE_SUFFIX = '__delete'
-    GENERIC_DESCRIPTION = 'file'
+    GENERIC_DESCRIPTION = 'file ## download'
     DELETE_FILE = 'delete'
 
     @classmethod
@@ -540,7 +546,7 @@ class UploadWidget(FormWidget):
             else:
                 inp = DIV(inp,
                           SPAN('[',
-                               A(cls.GENERIC_DESCRIPTION, _href=url),
+                               A(current.T(cls.GENERIC_DESCRIPTION),_href=url),
                                ']', _style='white-space:nowrap'),
                           br, image)
         return inp
@@ -559,7 +565,7 @@ class UploadWidget(FormWidget):
         :param download_url: url for the file download (default = None)
         """
 
-        inp = cls.GENERIC_DESCRIPTION
+        inp = current.T(cls.GENERIC_DESCRIPTION)
 
         if download_url and value:
             if callable(download_url):
@@ -716,8 +722,8 @@ def formstyle_table2cols(form, fields):
         _help = TD(help, _class='w2p_fc', _width='50%')
         _controls = TD(controls, _class='w2p_fw', _colspan='2')
         _label = TD(label, _class='w2p_fl', _width='50%')
-        table.append(TR(_label, _help, _id=id + '1', _class='even'))
-        table.append(TR(_controls, _id=id + '2', _class='odd'))
+        table.append(TR(_label, _help, _id=id + '1', _class='w2p_even even'))
+        table.append(TR(_controls, _id=id + '2', _class='w2p_even odd'))
     return table
 
 
@@ -795,6 +801,61 @@ def formstyle_bootstrap(form, fields):
         else:
             # unwrapped label
             parent.append(DIV(label, _controls, _class='control-group', _id=id))
+    return parent
+
+def formstyle_bootstrap3(form, fields):
+    ''' bootstrap 3 format form layout '''
+    form.add_class('form-horizontal')
+    parent = FIELDSET()
+    for id, label, controls, help in fields:
+        # wrappers
+        _help = SPAN(help, _class='help-block')
+        # embed _help into _controls
+        _controls = DIV(controls, _help, _class='col-lg-4')
+        # submit unflag by default
+        _submit = False
+        if isinstance(controls, INPUT):
+            controls.add_class('col-lg-4')
+
+            if controls['_type'] == 'submit':
+                # flag submit button
+                _submit = True
+                controls['_class'] = 'btn btn-primary'
+            if controls['_type'] == 'button':
+                controls['_class'] = 'btn btn-default'
+            elif controls['_type'] == 'file':
+                controls['_class'] = 'input-file'
+            elif controls['_type'] == 'text':
+                controls['_class'] = 'form-control'
+            elif controls['_type'] == 'password':
+                controls['_class'] = 'form-control'
+            elif controls['_type'] == 'checkbox':
+                controls['_class'] = 'checkbox'
+
+
+
+        # For password fields, which are wrapped in a CAT object.
+        if isinstance(controls, CAT) and isinstance(controls[0], INPUT):
+            controls[0].add_class('col-lg-2')
+
+        if isinstance(controls, SELECT):
+            controls.add_class('form-control')
+
+        if isinstance(controls, TEXTAREA):
+            controls.add_class('form-control')
+
+        if isinstance(label, LABEL):
+            label['_class'] = 'col-lg-2 control-label'
+
+
+        if _submit:
+            # submit button has unwrapped label and controls, different class
+            parent.append(DIV(label, DIV(controls,_class="col-lg-4 col-lg-offset-2"), _class='form-group', _id=id))
+            # unflag submit (possible side effect)
+            _submit = False
+        else:
+            # unwrapped label
+            parent.append(DIV(label, _controls, _class='form-group', _id=id))
     return parent
 
 
@@ -875,6 +936,7 @@ class SQLFORM(FORM):
         divs=formstyle_divs,
         ul=formstyle_ul,
         bootstrap=formstyle_bootstrap,
+        bootstrap3=formstyle_bootstrap3,
         inline=formstyle_inline,
     ))
 
@@ -1473,8 +1535,20 @@ class SQLFORM(FORM):
                 if not value is None:
                     fields[fieldname] = safe_int(value)
             elif field.type.startswith('reference'):
-                if not value is None and isinstance(self.table, Table) and not keyed:
-                    fields[fieldname] = safe_int(value)
+                ## Avoid "constraint violation" exception when you have a
+                ## optional reference field without the dropdown in form. I.e.,
+                ## a field with code to be typed, in a data-entry form.
+                ##
+                ## When your reference field doesn't have IS_EMPTY_OR()
+                ## validator, "value" will come here as a string. So,
+                ## safe_int() will return 0. In this case, insert will raise
+                ## the constraint violation because there's no id=0 in
+                ## referenced table.
+                if isinstance(self.table, Table) and not keyed:
+                    if not value:
+                        fields[fieldname] = None
+                    else:
+                        fields[fieldname] = safe_int(value)
             elif field.type == 'double':
                 if not value is None:
                     fields[fieldname] = safe_float(value)
@@ -1629,7 +1703,10 @@ class SQLFORM(FORM):
             name = str(field).replace('.', '-')
             # treat ftype 'decimal' as 'double'
             # (this fixes problems but needs refactoring!
-            ftype = field.type.split(' ')[0]
+            if isinstance(field.type, SQLCustomType):
+                            ftype = field.type.type.split(' ')[0]
+            else:
+                ftype = field.type.split(' ')[0]
             if ftype.startswith('decimal'): ftype = 'double'
             elif ftype=='bigint': ftype = 'integer'
             elif ftype.startswith('big-'): ftype = ftype[4:]
@@ -1670,16 +1747,16 @@ class SQLFORM(FORM):
                         _type='text', _id=_id, _class=field.type)
 
                 new_button = INPUT(
-                    _type="button", _value=T('New'), _class="btn",
+                    _type="button", _value=T('New Search'), _class="btn btn-default", _title = T('Start building a new search'),
                     _onclick="%s_build_query('new','%s')" % (prefix,field))
                 and_button = INPUT(
-                    _type="button", _value=T('And'), _class="btn",
+                    _type="button", _value=T('+ And'), _class="btn btn-default", _title = T('Add this to the search as an AND term'),
                     _onclick="%s_build_query('and','%s')" % (prefix, field))
                 or_button = INPUT(
-                    _type="button", _value=T('Or'), _class="btn",
+                    _type="button", _value=T('+ Or'), _class="btn btn-default",_title = T('Add this to the search as an OR term'),
                     _onclick="%s_build_query('or','%s')" % (prefix, field))
                 close_button = INPUT(
-                    _type="button", _value=T('Close'), _class="btn",
+                    _type="button", _value=T('Close'), _class="btn btn-default",
                     _onclick="jQuery('#%s').slideUp()" % panel_id)
 
                 criteria.append(DIV(
@@ -1795,15 +1872,15 @@ class SQLFORM(FORM):
                       cornerall='',
                       cornertop='',
                       cornerbottom='',
-                      button='button btn',
+                      button='button btn btn-default',
                       buttontext='buttontext button',
-                      buttonadd='icon plus icon-plus',
-                      buttonback='icon leftarrow icon-arrow-left',
-                      buttonexport='icon downarrow icon-download',
-                      buttondelete='icon trash icon-trash',
-                      buttonedit='icon pen icon-pencil',
-                      buttontable='icon rightarrow icon-arrow-right',
-                      buttonview='icon magnifier icon-zoom-in',
+                      buttonadd='icon plus icon-plus glyphicon glyphicon-plus',
+                      buttonback='icon leftarrow icon-arrow-left glyphicon glyphicon-arrow-left',
+                      buttonexport='icon downarrow icon-download glyphicon glyphicon-download',
+                      buttondelete='icon trash icon-trash glyphicon glyphicon-trash',
+                      buttonedit='icon pen icon-pencil glyphicon glyphicon-arrow-pencil',
+                      buttontable='icon rightarrow icon-arrow-right glyphicon glyphicon-arrow-right',
+                      buttonview='icon magnifier icon-zoom-in glyphicon glyphicon-arrow-zoom-in',
                       )
         elif not isinstance(ui, dict):
             raise RuntimeError('SQLFORM.grid ui argument must be a dictionary')
@@ -1883,10 +1960,10 @@ class SQLFORM(FORM):
 
         def gridbutton(buttonclass='buttonadd', buttontext=T('Add'),
                        buttonurl=url(args=[]), callback=None,
-                       delete=None, trap=True, noconfirm=None):
+                       delete=None, trap=True, noconfirm=None, title=None):
             if showbuttontext:
                 return A(SPAN(_class=ui.get(buttonclass)),
-                         SPAN(T(buttontext), _title=T(buttontext),
+                         SPAN(T(buttontext), _title=title or T(buttontext),
                               _class=ui.get('buttontext')),
                          _href=buttonurl,
                          callback=callback,
@@ -1900,7 +1977,7 @@ class SQLFORM(FORM):
                          callback=callback,
                          delete=delete,
                          noconfirm=noconfirm,
-                         _title=T(buttontext),
+                         _title=title or T(buttontext),
                          _class=ui.get('buttontext'),
                          cid=request.cid)
 
@@ -1981,15 +2058,14 @@ class SQLFORM(FORM):
             _class='form_footer row_buttons %(header)s %(cornerbottom)s' % ui)
 
         create_form = update_form = view_form = search_form = None
-        sqlformargs = dict(formargs)
 
         if create and request.args(-2) == 'new':
             table = db[request.args[-1]]
+            sqlformargs = dict(ignore_rw=ignore_rw, formstyle=formstyle,
+                               _class='web2py_form')
+            sqlformargs.update(formargs)
             sqlformargs.update(createargs)
-            create_form = SQLFORM(
-                table, ignore_rw=ignore_rw, formstyle=formstyle,
-                _class='web2py_form',
-                **sqlformargs)
+            create_form = SQLFORM(table, **sqlformargs)
             create_form.process(formname=formname,
                                 next=referrer,
                                 onvalidation=onvalidation,
@@ -2006,11 +2082,12 @@ class SQLFORM(FORM):
         elif details and request.args(-3) == 'view':
             table = db[request.args[-2]]
             record = table(request.args[-1]) or redirect(referrer)
+            sqlformargs = dict(upload=upload, ignore_rw=ignore_rw,
+                               formstyle=formstyle, readonly=True,
+                               _class='web2py_form')
+            sqlformargs.update(formargs)
             sqlformargs.update(viewargs)
-            view_form = SQLFORM(
-                table, record, upload=upload, ignore_rw=ignore_rw,
-                formstyle=formstyle, readonly=True, _class='web2py_form',
-                **sqlformargs)
+            view_form = SQLFORM(table, record, **sqlformargs)
             res = DIV(buttons(edit=editable, record=record), view_form,
                       formfooter, _class=_class)
             res.create_form = create_form
@@ -2022,16 +2099,16 @@ class SQLFORM(FORM):
         elif editable and request.args(-3) == 'edit':
             table = db[request.args[-2]]
             record = table(request.args[-1]) or redirect(URL('error'))
+            deletable_ = deletable(record) \
+                if callable(deletable) else deletable
+            sqlformargs = dict(upload=upload, ignore_rw=ignore_rw,
+                               formstyle=formstyle, deletable=deletable_,
+                               _class='web2py_form',
+                               submit_button=T('Submit'),
+                               delete_label=T('Check to delete'))
+            sqlformargs.update(formargs)
             sqlformargs.update(editargs)
-            deletable_ = deletable(record) if callable(deletable) else deletable
-            update_form = SQLFORM(
-                table,
-                record, upload=upload, ignore_rw=ignore_rw,
-                formstyle=formstyle, deletable=deletable_,
-                _class='web2py_form',
-                submit_button=T('Submit'),
-                delete_label=T('Check to delete'),
-                **sqlformargs)
+            update_form = SQLFORM(table, record, **sqlformargs)
             update_form.process(
                 formname=formname,
                 onvalidation=onvalidation,
@@ -2076,17 +2153,17 @@ class SQLFORM(FORM):
                 redirect(referrer, client_side=client_side_delete)
 
         exportManager = dict(
-            csv_with_hidden_cols=(ExporterCSV, 'CSV (hidden cols)'),
-            csv=(ExporterCSV, 'CSV'),
-            xml=(ExporterXML, 'XML'),
-            html=(ExporterHTML, 'HTML'),
-            json=(ExporterJSON, 'JSON'),
+            csv_with_hidden_cols=(ExporterCSV_hidden, 'CSV (hidden cols)',T('Comma-separated export including columns not shown; fields from other tables are exported as raw values for faster export')),
+            csv=(ExporterCSV, 'CSV',T('Comma-separated export of visible columns. Fields from other tables are exported as they appear on-screen but this may be slow for many rows')),
+            xml=(ExporterXML, 'XML',T('XML export of columns shown')),
+            html=(ExporterHTML, 'HTML',T('HTML export of visible columns')),
+            json=(ExporterJSON, 'JSON',T('JSON export of visible columns')),
             tsv_with_hidden_cols=
-                (ExporterTSV, 'TSV (Excel compatible, hidden cols)'),
-            tsv=(ExporterTSV, 'TSV (Excel compatible)'))
+                (ExporterTSV, 'TSV (Spreadsheets, hidden cols)',T('Spreadsheet-optimised export of tab-separated content including hidden columns. May be slow')),
+            tsv=(ExporterTSV, 'TSV (Spreadsheets)',T('Spreadsheet-optimised export of tab-separated content, visible columns only. May be slow.')))
         if not exportclasses is None:
             """
-            remember: allow to set exportclasses=dict(csv=False) to disable the csv format
+            remember: allow to set exportclasses=dict(csv=False, csv_with_hidden_cols=False) to disable the csv format
             """
             exportManager.update(exportclasses)
 
@@ -2104,29 +2181,42 @@ class SQLFORM(FORM):
                         orderby = (order[:1] == '~' and ~sort_field) or sort_field
 
             expcolumns = [str(f) for f in columns]
+            selectable_columns = [str(f) for f in columns if not isinstance(f,Field.Virtual)]
             if export_type.endswith('with_hidden_cols'):
-                expcolumns = []
+                #expcolumns = [] start with the visible columns, which includes visible virtual fields
+                selectable_columns=[]  #like expcolumns but excluding virtual
                 for table in tables:
                     for field in table:
                         if field.readable and field.tablename in tablenames:
-                            expcolumns.append(field)
+                            if not str(field) in expcolumns:
+                                expcolumns.append(str(field))
+                            if not(isinstance(field,Field.Virtual)):
+                                selectable_columns.append(str(field))
+                    #look for virtual fields not displayed (and virtual method fields to be added here?)
+                    for (field_name,field) in table.iteritems():
+                        if isinstance(field,Field.Virtual) and not str(field) in expcolumns:
+                             expcolumns.append(str(field))
 
             if export_type in exportManager and exportManager[export_type]:
                 if request.vars.keywords:
                     try:
+                        #the query should be constructed using searchable fields but not virtual fields
+                        sfields = reduce(lambda a, b: a + b,
+                            [[f for f in t if f.readable and not isinstance(f,Field.Virtual)] for t in tables])
                         dbset = dbset(SQLFORM.build_query(
-                            fields, request.vars.get('keywords', '')))
+                            sfields, request.vars.get('keywords', '')))
                         rows = dbset.select(left=left, orderby=orderby,
-                                            cacheable=True, *expcolumns)
+                                            cacheable=True, *selectable_columns)
                     except Exception, e:
                         response.flash = T('Internal Error')
                         rows = []
                 else:
                     rows = dbset.select(left=left, orderby=orderby,
-                                    cacheable=True, *expcolumns)
+                                    cacheable=True, *selectable_columns)
 
                 value = exportManager[export_type]
                 clazz = value[0] if hasattr(value, '__getitem__') else value
+                rows.colnames = expcolumns # expcolumns is all cols to be exported including virtual fields
                 oExp = clazz(rows)
                 filename = '.'.join(('rows', oExp.file_ext))
                 response.headers['Content-Type'] = oExp.content_type
@@ -2147,7 +2237,8 @@ class SQLFORM(FORM):
         if create:
             add = gridbutton(
                 buttonclass='buttonadd',
-                buttontext=T('Add'),
+                buttontext=T('Add Record'),
+                title=T("Add record to database"),
                 buttonurl=url(args=['new', tablename]))
             if not searchable:
                 console.append(add)
@@ -2169,8 +2260,8 @@ class SQLFORM(FORM):
                     INPUT(_name='keywords', _value=request.vars.keywords,
                           _id=skeywords_id,
                           _onfocus="jQuery('#%s').change();jQuery('#%s').slideDown();" % (spanel_id, sfields_id)),
-                    INPUT(_type='submit', _value=T('Search'), _class="btn"),
-                    INPUT(_type='submit', _value=T('Clear'), _class="btn",
+                    INPUT(_type='submit', _value=T('Search'), _class="btn btn-default"),
+                    INPUT(_type='submit', _value=T('Clear'), _class="btn btn-default",
                           _onclick="jQuery('#%s').val('');" % skeywords_id),
                     _method="GET", _action=url), search_menu)
             form = search_widget and search_widget(sfields, url()) or ''
@@ -2241,14 +2332,18 @@ class SQLFORM(FORM):
             headcols.append(TH(header, _class=ui.get('default')))
 
         toadd = []
+        left_cols = 0
+        right_cols = 0
         if links and links_in_grid:
             for link in links:
                 if isinstance(link, dict):
                     toadd.append(TH(link['header'], _class=ui.get('default')))
             if links_placement in ['right', 'both']:
                 headcols.extend(toadd)
+                right_cols += len(toadd)
             if links_placement in ['left', 'both']:
                 linsert(headcols, 0, toadd)
+                left_cols += len(toadd)
 
         # Include extra column for buttons if needed.
         include_buttons_column = (details or editable or deletable or
@@ -2257,8 +2352,10 @@ class SQLFORM(FORM):
         if include_buttons_column:
             if buttons_placement in ['right', 'both']:
                 headcols.append(TH(_class=ui.get('default','')))
+                right_cols += 1
             if buttons_placement in ['left', 'both']:
                 headcols.insert(0, TH(_class=ui.get('default','')))
+                left_cols += 1
 
         head = TR(*headcols, **dict(_class=ui.get('header')))
 
@@ -2355,7 +2452,15 @@ class SQLFORM(FORM):
             limitby = None
 
         if rows:
-            htmltable = TABLE(THEAD(head))
+            cols = [COL(_id=str(c).replace('.', '-'),
+                        data={'column': left_cols + i + 1}) 
+                    for i,c in enumerate(columns)]
+            n = len(head.components)
+            cols = [COL(data={'column': i + 1}) for i in range(left_cols)] + \
+                   cols + \
+                   [COL(data={'column': left_cols + len(cols) + i + 1})
+                    for i in range(right_cols)]
+            htmltable = TABLE(COLGROUP(*cols),THEAD(head))
             tbody = TBODY()
             numrec = 0
             for row in rows:
@@ -2370,7 +2475,6 @@ class SQLFORM(FORM):
                         continue
                     if field.type == 'blob':
                         continue
-#                     print row
                     value = row[str(field)]
                     maxlength = maxtextlengths.get(str(field), maxtextlength)
                     if field.represent:
@@ -2435,9 +2539,9 @@ class SQLFORM(FORM):
                     if buttons_placement in ['left', 'both']:
                         trcols.insert(0, row_buttons)
                 if numrec % 2 == 0:
-                    classtr = 'even'
+                    classtr = 'w2p_even even'
                 else:
-                    classtr = 'odd'
+                    classtr = 'w2p_odd odd'
                 numrec += 1
                 if id:
                     rid = id
@@ -2496,11 +2600,12 @@ class SQLFORM(FORM):
                 if not v:
                     continue
                 label = v[1] if hasattr(v, "__getitem__") else k
+                title = v[2] if hasattr(v, "__getitem__") else label
                 link = url2(vars=dict(
                     order=request.vars.order or '',
                     _export_type=k,
                     keywords=request.vars.keywords or ''))
-                export_links.append(A(T(label), _href=link))
+                export_links.append(A(T(label), _href=link,_title=title,_class='btn btn-default'))
             export_menu = \
                 DIV(T('Export:'), _class="w2p_export_menu", *export_links)
         else:
@@ -2665,7 +2770,7 @@ class SQLFORM(FORM):
                 if isinstance(item,Table) and item._tablename in check:
                     tablename = item._tablename
                     linked_fieldnames = check[tablename]
-                    td = item
+                    tb = item
                 elif isinstance(item,str) and item in check:
                     tablename = item
                     linked_fieldnames = check[item]
@@ -2808,6 +2913,7 @@ class SQLTABLE(TABLE):
         selectid=None,
         renderstyle=False,
         cid=None,
+        colgroup=False,
         **attributes
         ):
 
@@ -2820,7 +2926,7 @@ class SQLTABLE(TABLE):
         if not sqlrows:
             return
         if not columns:
-            columns = sqlrows.colnames
+            columns = ['.'.join(sqlrows.db._adapter.REGEX_TABLE_DOT_FIELD.match(c).groups()) for c in sqlrows.colnames]
         if headers == 'fieldname:capitalize':
             headers = {}
             for c in columns:
@@ -2831,6 +2937,14 @@ class SQLTABLE(TABLE):
                 (t, f) = c.split('.')
                 field = sqlrows.db[t][f]
                 headers[c] = field.label
+        if colgroup:
+            cols = [COL(_id=c.replace('.', '-'), data={'column': i + 1}) 
+                    for i, c in enumerate(columns)]
+            if extracolumns:
+                cols += [COL(data={'column': len(cols) + i + 1})
+                         for i, c in enumerate(extracolumns)]
+            components.append(COLGROUP(*cols))
+            
         if headers is None:
             headers = {}
         else:
@@ -2864,9 +2978,9 @@ class SQLTABLE(TABLE):
         for (rc, record) in enumerate(sqlrows):
             row = []
             if rc % 2 == 0:
-                _class = 'even'
+                _class = 'w2p_even even'
             else:
-                _class = 'odd'
+                _class = 'w2p_odd odd'
 
             if not selectid is None:  # new implement
                 if record.get('id') == selectid:
@@ -2982,10 +3096,10 @@ class SQLTABLE(TABLE):
     def style(self):
 
         css = '''
-        table tbody tr.odd {
+        table tbody tr.w2p_odd {
             background-color: #DFD;
         }
-        table tbody tr.even {
+        table tbody tr.w2p_even {
             background-color: #EFE;
         }
         table tbody tr.rowselected {
@@ -3035,7 +3149,7 @@ class ExportClass(object):
         for record in self.rows:
             row = []
             for col in self.rows.colnames:
-                if not REGEX_TABLE_DOT_FIELD.match(col):
+                if not self.rows.db._adapter.REGEX_TABLE_DOT_FIELD.match(col):
                     row.append(record._extra[col])
                 else:
                     (t, f) = col.split('.')
@@ -3056,18 +3170,15 @@ class ExportClass(object):
     def export(self):
         raise NotImplementedError
 
-
 class ExporterTSV(ExportClass):
-
     label = 'TSV'
     file_ext = "csv"
     content_type = "text/tab-separated-values"
 
     def __init__(self, rows):
-        ExportClass.__init__(self, rows)
+        ExportClass.__init__(self,rows)
 
     def export(self):
-
         out = cStringIO.StringIO()
         final = cStringIO.StringIO()
         import csv
@@ -3082,6 +3193,7 @@ class ExporterTSV(ExportClass):
             data = data[2:]
             final.write(data)
             out.truncate(0)
+
         records = self.represented()
         for row in records:
             writer.writerow(
@@ -3090,17 +3202,35 @@ class ExporterTSV(ExportClass):
             data = data.encode("utf-16")
             data = data[2:]
             final.write(data)
+
             out.truncate(0)
         return str(final.getvalue())
 
-
 class ExporterCSV(ExportClass):
+    #CSV, represent == True
     label = 'CSV'
     file_ext = "csv"
     content_type = "text/csv"
 
     def __init__(self, rows):
         ExportClass.__init__(self, rows)
+
+    def export(self):  #export CSV with rows.represent
+        if self.rows:
+            s = cStringIO.StringIO()
+            self.rows.export_to_csv_file(s,represent=True)
+            return s.getvalue()
+        else:
+            return None
+
+class ExporterCSV_hidden(ExportClass):
+    #pure csv, no represent.
+    label = 'CSV'
+    file_ext = "csv"
+    content_type = "text/csv"
+
+    def __init__(self, rows):
+        ExportClass.__init__(self,rows)
 
     def export(self):
         if self.rows:
@@ -3117,7 +3247,8 @@ class ExporterHTML(ExportClass):
         ExportClass.__init__(self, rows)
 
     def export(self):
-        return '<html>\n<head>\n<meta http-equiv="content-type" content="text/html; charset=UTF-8" />\n</head>\n<body>\n%s\n</body>\n</html>' % (self.rows.xml() or '')
+        xml = self.rows.xml() if self.rows else ''
+        return '<html>\n<head>\n<meta http-equiv="content-type" content="text/html; charset=UTF-8" />\n</head>\n<body>\n%s\n</body>\n</html>' % (xml or '')
 
 class ExporterXML(ExportClass):
     label = 'XML'

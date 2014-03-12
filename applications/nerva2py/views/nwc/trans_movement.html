@@ -104,7 +104,7 @@ var ms_err_movement_load_formula_err = "{{=T('Error while processing the data!')
                   <td style="padding: 5px 5px 0px 0px;width: 100px;">
                     <div class="label">{{=form.custom.label.transnumber}}</div>
                   </td>
-                  <td style="padding: 4px 10px 0px 10px;">
+                  <td style="padding: 4px 10px 0px 10px;min-width: 100px;">
                     {{=form.custom.widget.transnumber}}
                   </td>
                   <td style="padding: 5px 5px 0px 10px;width: 100px;">
@@ -178,13 +178,13 @@ var ms_err_movement_load_formula_err = "{{=T('Error while processing the data!')
                   <td style="padding: 5px 5px 0px 0px;width: 100px;">
                     <div class="label">{{=form.custom.label.transnumber}}</div>
                   </td>
-                  <td style="padding: 4px 10px 0px 10px;">
+                  <td style="padding: 4px 10px 0px 10px;min-width: 90px;">
                     {{=form.custom.widget.transnumber}}
                   </td>
                   <td style="padding: 5px 5px 0px 10px;width: 70px;">
                     <div class="label">{{=form.custom.label.ref_transnumber}}</div>
                   </td>
-                  <td style="padding: 4px 5px 0px 10px;">
+                  <td style="padding: 4px 5px 0px 10px;min-width: 90px;">
                     {{=response.trans_transnumber}}{{=response.ref_transnumber}}{{=response.trans_id}}
                   </td>
                   <td style="padding: 5px 5px 0px 5px;width: 20px;">
@@ -287,13 +287,13 @@ var ms_err_movement_load_formula_err = "{{=T('Error while processing the data!')
                   <td style="padding: 5px 10px 0px 0px;width: 80px;">
                     <div class="label">{{=form.custom.label.transnumber}}</div>
                   </td>
-                  <td style="padding: 5px 10px 0px 5px;">
+                  <td style="padding: 5px 10px 0px 5px;min-width: 90px;">
                     {{=form.custom.widget.transnumber}}
                   </td>
                   <td style="padding: 5px 10px 0px 10px;width: 80px;">
                     <div class="label">{{=form.custom.label.ref_transnumber}}</div>
                   </td>
-                  <td style="padding: 5px 5px 0px 5px;">
+                  <td style="padding: 5px 5px 0px 5px;min-width: 90px;">
                     {{=response.trans_transnumber}}{{=response.ref_transnumber}}{{=response.trans_id}}
                   </td>
                   {{if not response.direction:}}

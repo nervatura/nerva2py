@@ -11,7 +11,7 @@ INSERT INTO ui_message(secname, fieldname, lang, msg)     VALUES ('fieldtype', '
 INSERT INTO ui_message(secname, fieldname, lang, msg)     VALUES ('fieldtype', 'valuelist', 'en', 'value list');
 INSERT INTO ui_message(secname, fieldname, lang, msg)     VALUES ('fieldtype', 'notes', 'en', 'notes');
 INSERT INTO ui_message(secname, fieldname, lang, msg)     VALUES ('fieldtype', 'filter', 'en', 'filter');
-INSERT INTO ui_message(secname, fieldname, lang, msg)     VALUES ('fieldtype', 'flink', 'en', 'link');
+INSERT INTO ui_message(secname, fieldname, lang, msg)     VALUES ('fieldtype', 'urlink', 'en', 'link');
 INSERT INTO ui_message(secname, fieldname, lang, msg)     VALUES ('fieldtype', 'customer', 'en', 'customer');
 INSERT INTO ui_message(secname, fieldname, lang, msg)     VALUES ('fieldtype', 'tool', 'en', 'tool');
 INSERT INTO ui_message(secname, fieldname, lang, msg)     VALUES ('fieldtype', 'trans', 'en', 'transaction');

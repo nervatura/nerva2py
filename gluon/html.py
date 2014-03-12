@@ -160,7 +160,8 @@ def URL(
     host=None,
     port=None,
     encode_embedded_slash=False,
-    url_encode=True
+    url_encode=True,
+    language=None,
 ):
     """
     generate a URL
@@ -369,7 +370,7 @@ def URL(
         raise SyntaxError('CRLF Injection Detected')
 
     url = url_out(r, env, application, controller, function,
-                  args, other, scheme, host, port)
+                  args, other, scheme, host, port, language=language)
     return url
 
 
@@ -1481,8 +1482,11 @@ class A(DIV):
     def xml(self):
         if not self.components and self['_href']:
             self.append(self['_href'])
-        if not self['_disable_with']:
-            self['_data-w2p_disable_with'] = 'default'
+        disable_needed = ['callback', 'cid', 'delete', 'component', 'target']
+        disable_needed = any((self[attr] for attr in disable_needed))
+        if disable_needed:
+            self['_data-w2p_disable_with'] = self['_disable_with'] or 'default'
+            self['_disable_with'] = None
         if self['callback'] and not self['_id']:
             self['_id'] = web2py_uuid()
         if self['delete']:
@@ -1683,7 +1687,7 @@ class TFOOT(DIV):
 
 class COL(DIV):
 
-    tag = 'col'
+    tag = 'col/'
 
 
 class COLGROUP(DIV):
@@ -2218,10 +2222,12 @@ class FORM(DIV):
     REDIRECT_JS = "window.location='%s';return false"
 
     def add_button(self, value, url, _class=None):
-        submit = self.element('input[type=submit]')
+        submit = self.element(_type='submit')
+        _class = "%s w2p-form-button" % _class if _class else "w2p-form-button" 
         submit.parent.append(
-            INPUT(_type="button", _value=value, _class=_class,
-                  _onclick=self.REDIRECT_JS % url))
+            TAG['button'](value, _class=_class,
+                          _onclick=url if url.startswith('javascript:') else
+                          self.REDIRECT_JS % url))
 
     @staticmethod
     def confirm(text='OK', buttons=None, hidden=None):
@@ -2516,7 +2522,7 @@ def test():
 
     >>> from validators import *
     >>> print DIV(A('click me', _href=URL(a='a', c='b', f='c')), BR(), HR(), DIV(SPAN("World"), _class='unknown')).xml()
-    <div><a data-w2p_disable_with="default" href="/a/b/c">click me</a><br /><hr /><div class=\"unknown\"><span>World</span></div></div>
+    <div><a href="/a/b/c">click me</a><br /><hr /><div class=\"unknown\"><span>World</span></div></div>
     >>> print DIV(UL("doc","cat","mouse")).xml()
     <div><ul><li>doc</li><li>cat</li><li>mouse</li></ul></div>
     >>> print DIV(UL("doc", LI("cat", _class='feline'), 18)).xml()
@@ -2529,7 +2535,7 @@ def test():
     >>> print form.accepts({'myvar':'34'}, formname=None)
     False
     >>> print form.xml()
-    <form action="#" enctype="multipart/form-data" method="post"><input class="invalidinput" name="myvar" type="text" value="34" /><div class="error_wrapper"><div class="error" id="myvar__error">invalid expression</div></div></form>
+    <form action="#" enctype="multipart/form-data" method="post"><input class="invalidinput" name="myvar" type="text" value="34" /><div class="error_wrapper"><div class="error" id="myvar__error">Invalid expression</div></div></form>
     >>> print form.accepts({'myvar':'4'}, formname=None, keepvalues=True)
     True
     >>> print form.xml()
@@ -2697,12 +2703,14 @@ class MARKMIN(XmlComponent):
     """
     For documentation: http://web2py.com/examples/static/markmin.html
     """
-    def __init__(self, text, extra=None, allowed=None, sep='p',
+    def __init__(self,
+                 text, extra=None, allowed=None, sep='p',
                  url=None, environment=None, latex='google',
                  autolinks='default',
                  protolinks='default',
                  class_prefix='',
-                 id_prefix='markmin_'):
+                 id_prefix='markmin_',
+                 **kwargs):
         self.text = text
         self.extra = extra or {}
         self.allowed = allowed or {}
@@ -2714,34 +2722,22 @@ class MARKMIN(XmlComponent):
         self.protolinks = protolinks
         self.class_prefix = class_prefix
         self.id_prefix = id_prefix
+        self.kwargs = kwargs
+
+    def flatten(self):
+        return self.text
 
     def xml(self):
-        """
-        calls the gluon.contrib.markmin render function to convert the wiki syntax
-        """
         from gluon.contrib.markmin.markmin2html import render
-        return render(self.text, extra=self.extra,
+        html = render(self.text, extra=self.extra,
                       allowed=self.allowed, sep=self.sep, latex=self.latex,
                       URL=self.url, environment=self.environment,
                       autolinks=self.autolinks, protolinks=self.protolinks,
                       class_prefix=self.class_prefix, id_prefix=self.id_prefix)
+        return html if not self.kwargs else DIV(XML(html), **self.kwargs).xml()
 
     def __str__(self):
         return self.xml()
-
-    def flatten(self, render=None):
-        """
-        return the text stored by the MARKMIN object rendered by the render function
-        """
-        return self.text
-
-    def elements(self, *args, **kargs):
-        """
-        to be considered experimental since the behavior of this method is questionable
-        another options could be TAG(self.text).elements(*args,**kargs)
-        """
-        return [self.text]
-
 
 if __name__ == '__main__':
     import doctest

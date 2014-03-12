@@ -23,6 +23,7 @@ import urllib2
 import Cookie
 import cStringIO
 import ConfigParser
+import email.utils
 from email import MIMEBase, MIMEMultipart, MIMEText, Encoders, Header, message_from_string, Charset
 
 from gluon.contenttype import contenttype
@@ -277,7 +278,8 @@ class Mail(object):
         sender=None,
         encoding='utf-8',
         raw=False,
-        headers={}
+        headers={},
+        from_address=None
     ):
         """
         Sends an email using data specified in constructor
@@ -307,8 +309,9 @@ class Mail(object):
             encoding: encoding of all strings passed to this method (including
                       message bodies)
             headers: dictionary of headers to refine the headers just before
-                     sending mail, e.g. {'Return-Path' : 'bounces@example.org'}
-
+                     sending mail, e.g. {'X-Mailer' : 'web2py mailer'}
+            from_address: address to appear in the 'From:' header, this is not the
+                          envelope sender. If not specified the sender will be used
         Examples:
 
             #Send plain text message to single address:
@@ -654,7 +657,10 @@ class Mail(object):
             # no cryptography process as usual
             payload = payload_in
 
-        payload['From'] = encoded_or_raw(sender.decode(encoding))
+        if from_address:
+            payload['From'] = encoded_or_raw(from_address.decode(encoding))
+        else:
+            payload['From'] = encoded_or_raw(sender.decode(encoding))
         origTo = to[:]
         if to:
             payload['To'] = encoded_or_raw(', '.join(to).decode(encoding))
@@ -666,8 +672,7 @@ class Mail(object):
         if bcc:
             to.extend(bcc)
         payload['Subject'] = encoded_or_raw(subject.decode(encoding))
-        payload['Date'] = time.strftime("%a, %d %b %Y %H:%M:%S +0000",
-                                        time.gmtime())
+        payload['Date'] = email.utils.formatdate()
         for k, v in headers.iteritems():
             payload[k] = encoded_or_raw(v.decode(encoding))
         result = {}
@@ -751,7 +756,8 @@ class Recaptcha(DIV):
         error=None,
         error_message='invalid',
         label='Verify:',
-        options=''
+        options='',
+        comment = ''
     ):
         self.request_vars = request and request.vars or current.request.vars
         self.remote_addr = request.env.remote_addr
@@ -765,7 +771,7 @@ class Recaptcha(DIV):
         self.attributes = {}
         self.label = label
         self.options = options
-        self.comment = ''
+        self.comment = comment
 
     def _validate(self):
 
@@ -1124,12 +1130,12 @@ class Auth(object):
                    f=f, args=args, vars=vars, scheme=scheme)
 
     def here(self):
-        return current.request.env.request_uri
+        return URL(args=current.request.args,vars=current.request.get_vars)
 
     def __init__(self, environment=None, db=None, mailer=True,
                  hmac_key=None, controller='default', function='user',
                  cas_provider=None, signature=True, secure=False,
-                 csrf_prevention=True):
+                 csrf_prevention=True, propagate_extension=None):
         """
         auth=Auth(db)
 
@@ -1152,20 +1158,32 @@ class Auth(object):
         self.user_groups = auth and auth.user_groups or {}
         if secure:
             request.requires_https()
-        if auth and auth.last_visit and auth.last_visit + \
-                datetime.timedelta(days=0, seconds=auth.expiration) > request.now:
-            self.user = auth.user
-            # this is a trick to speed up sessions
-            if (request.now - auth.last_visit).seconds > (auth.expiration / 10):
-                auth.last_visit = request.now
+        now = request.now        
+        # if we have auth info
+        #    if not expired it, used it
+        #    if expired, clear the session
+        # else, only clear auth info in the session
+        if auth:
+            delta = datetime.timedelta(days=0, seconds=auth.expiration)
+            if auth.last_visit and auth.last_visit + delta > now:
+                self.user = auth.user
+                # this is a trick to speed up sessions to avoid many writes
+                if (now - auth.last_visit).seconds > (auth.expiration / 10):
+                    auth.last_visit = request.now
+            else:
+                self.user = None
+                if session.auth:
+                    del session.auth
+                session.renew(clear_session=True)                
         else:
             self.user = None
             if session.auth:
-                del session.auth
+                del session.auth            
         # ## what happens after login?
 
         url_index = URL(controller, 'index')
-        url_login = URL(controller, function, args='login')
+        url_login = URL(controller, function, args='login',
+                        extension = propagate_extension)
         # ## what happens after registration?
 
         settings = self.settings = Settings()
@@ -1397,24 +1415,27 @@ class Auth(object):
             for item in items:
                 self.bar[0][3].append((item['name'], False, item['href']))
 
-        def bootstrap():  # Default web2py scaffolding
-            self.bar = UL(LI(Anr(I(_class=items[0]['icon']),
+        def bootstrap3():  # Default web2py scaffolding
+            def rename(icon): return icon+' '+icon.replace('icon','glyphicon')
+            self.bar = UL(LI(Anr(I(_class=rename('icon '+items[0]['icon'])),
                                  ' ' + items[0]['name'],
-                                 _href=items[0]['href'])),
-                          _class='dropdown-menu')
+                                 _href=items[0]['href'])),_class='dropdown-menu')
             del items[0]
             for item in items:
-                self.bar.insert(-1, LI(Anr(I(_class=item['icon']),
+                self.bar.insert(-1, LI(Anr(I(_class=rename('icon '+item['icon'])),
                                            ' ' + item['name'],
                                            _href=item['href'])))
             self.bar.insert(-1, LI('', _class='divider'))
             if self.user_id:
                 self.bar = LI(Anr(prefix, user_identifier, _href='#'),
-                              self.bar,
-                              _class='dropdown')
+                              self.bar,_class='dropdown')
             else:
-                self.bar = LI(Anr(T('Login'), _href='#'), self.bar,
+                self.bar = LI(Anr(T('Login'),
+                                  _href='#',_class="dropdown-toggle",
+                                  data={'toggle':'dropdown'}), self.bar,
                               _class='dropdown')
+                
+
 
         def bare():
             """ In order to do advanced customization we only need the
@@ -1497,7 +1518,7 @@ class Auth(object):
             self.bar = bare
 
         options = {'asmenu': menu,
-                   'dropdown': bootstrap,
+                   'dropdown': bootstrap3,
                    'bare': bare
                    }  # Define custom modes.
 
@@ -1997,12 +2018,8 @@ class Auth(object):
 
     def _get_login_settings(self):
         table_user = self.table_user()
-        if self.settings.login_userfield:
-            userfield = self.settings.login_userfield
-        elif 'username' in table_user.fields:
-            userfield = 'username'
-        else:
-            userfield = 'email'
+        userfield = self.settings.login_userfield or 'username' \
+            if 'username' in table_user.fields else 'email'
         passfield = self.settings.password_field
         return Storage({"table_user": table_user,
                         "userfield": userfield,
@@ -2018,7 +2035,7 @@ class Auth(object):
         if user and user.get(settings.passfield, False):
             password = settings.table_user[
                 settings.passfield].validate(password)[0]
-            if not user.registration_key and password == \
+            if not user.registration_key.strip() and password == \
                 user[settings.passfield]:
                 self.login_user(user)
                 return user
@@ -2114,12 +2131,8 @@ class Auth(object):
         row = table(ticket=ticket)
         success = False
         if row:
-            if self.settings.login_userfield:
-                userfield = self.settings.login_userfield
-            elif 'username' in table.fields:
-                userfield = 'username'
-            else:
-                userfield = 'email'
+            userfield = self.settings.login_userfield or 'username' \
+                if 'username' in table.fields else 'email'
             # If ticket is a service Ticket and RENEW flag respected
             if ticket[0:3] == 'ST-' and \
                     not ((row.renew and renew) ^ renew):
@@ -2557,14 +2570,12 @@ class Auth(object):
             if self.settings.registration_requires_verification:
                 link = self.url(
                     self.settings.function, args=('verify_email', key), scheme=True)
-
-                if not self.settings.mailer or \
-                   not self.settings.mailer.send(
-                    to=form.vars.email,
-                    subject=self.messages.verify_email_subject,
-                    message=self.messages.verify_email
-                        % dict(key=key, link=link,
-                               username=form.vars[username])):
+                d = dict(request.vars)
+                d.update(dict(key=key, link=link,username=form.vars[username]))
+                if not (self.settings.mailer and self.settings.mailer.send(
+                        to=form.vars.email,
+                        subject=self.messages.verify_email_subject,                    
+                        message=self.messages.verify_email % d)):
                     self.db.rollback()
                     response.flash = self.messages.unable_send_email
                     return form
@@ -2692,18 +2703,19 @@ class Auth(object):
         if form.accepts(request, session if self.csrf_prevention else None,
                         formname='retrieve_username', dbio=False,
                         onvalidation=onvalidation, hideerror=self.settings.hideerror):
-            user = table_user(email=form.vars.email)
-            if not user:
+            users = table_user._db(table_user.email==form.vars.email).select()
+            if not users:
                 current.session.flash = \
                     self.messages.invalid_email
                 redirect(self.url(args=request.args))
-            username = user.username
+            username = ', '.join(u.username for u in users)
             self.settings.mailer.send(to=form.vars.email,
                     subject=self.messages.retrieve_username_subject,
                     message=self.messages.retrieve_username
                      % dict(username=username))
             session.flash = self.messages.email_sent
-            self.log_event(log, user)
+            for user in users:
+                self.log_event(log, user)
             callback(onaccept, form)
             if not next:
                 next = self.url(args=request.args)
@@ -2896,12 +2908,19 @@ class Auth(object):
             onaccept = self.settings.reset_password_onaccept
         if log is DEFAULT:
             log = self.messages['reset_password_log']
-        table_user.email.requires = [
-            IS_EMAIL(error_message=self.messages.invalid_email),
-            IS_IN_DB(self.db, table_user.email,
-                     error_message=self.messages.invalid_email)]
+        userfield = self.settings.login_userfield or 'username' \
+            if 'username' in table_user.fields else 'email'        
+        if userfield=='email':
+            table_user.email.requires = [
+                IS_EMAIL(error_message=self.messages.invalid_email),
+                IS_IN_DB(self.db, table_user.email,
+                         error_message=self.messages.invalid_email)]
+        else:
+            table_user.username.requires = [
+                IS_IN_DB(self.db, table_user.username,
+                         error_message=self.messages.invalid_username)]
         form = SQLFORM(table_user,
-                       fields=['email'],
+                       fields=[userfield],
                        hidden=dict(_next=next),
                        showid=self.settings.showid,
                        submit_button=self.messages.password_reset_button,
@@ -2916,9 +2935,9 @@ class Auth(object):
                         formname='reset_password', dbio=False,
                         onvalidation=onvalidation,
                         hideerror=self.settings.hideerror):
-            user = table_user(email=form.vars.email)
+            user = table_user(**{userfield:form.vars.get(userfield)})
             if not user:
-                session.flash = self.messages.invalid_email
+                session.flash = self.messages['invalid_%s' % userfield]
                 redirect(self.url(args=request.args),
                          client_side=self.settings.client_side)
             elif user.registration_key in ('pending', 'disabled', 'blocked'):
@@ -2944,11 +2963,12 @@ class Auth(object):
         link = self.url(self.settings.function,
                         args=('reset_password', reset_password_key),
                         scheme=True)
-        if self.settings.mailer.send(
+        d = dict(user)
+        d.update(dict(key=reset_password_key, link=link))
+        if self.settings.mailer and self.settings.mailer.send(
             to=user.email,
             subject=self.messages.reset_password_subject,
-            message=self.messages.reset_password %
-                dict(key=reset_password_key, link=link)):
+            message=self.messages.reset_password % d):
             user.update_record(reset_password_key=reset_password_key)
             return True
         return False
@@ -3196,7 +3216,7 @@ class Auth(object):
         """
         if current.request.ajax:
             raise HTTP(403, 'ACCESS DENIED')
-        return 'ACCESS DENIED'
+        return self.messages.access_denied
 
     def requires(self, condition, requires_login=True, otherwise=None):
         """
@@ -3635,7 +3655,8 @@ class Auth(object):
              migrate=True,
              controller=None,
              function=None,
-             force_render=False):
+             force_render=False,
+             groups=None):
 
         if controller and function: resolve = False
 
@@ -3649,7 +3670,8 @@ class Auth(object):
                               templates=templates,
                               migrate=migrate,
                               controller=controller,
-                              function=function)
+                              function=function,
+                              groups=groups)
         else:
             self._wiki.env.update(env or {})
 
@@ -3657,9 +3679,8 @@ class Auth(object):
         # resolve=False allows initial setup without wiki redirection
         wiki = None
         if resolve:
-            action = str(current.request.args(0)).startswith("_")
-            if slug and not action:
-                wiki = self._wiki.read(slug,force_render)
+            if slug:
+                wiki = self._wiki.read(slug, force_render)
                 if isinstance(wiki, dict) and wiki.has_key('content'):
                     # We don't want to return a dict object, just the wiki
                     wiki = wiki['content']
@@ -4828,9 +4849,15 @@ class Service(object):
         for method, (function, returns, args, doc) in procedures.iteritems():
             dispatcher.register_function(method, function, returns, args, doc)
         if request.env.request_method == 'POST':
+            fault = {}
             # Process normal Soap Operation
             response.headers['Content-Type'] = 'text/xml'
-            return dispatcher.dispatch(request.body.read())
+            xml = dispatcher.dispatch(request.body.read(), fault=fault)
+            if fault:
+                # May want to consider populating a ticket here...
+                response.status = 500
+            # return the soap response
+            return xml
         elif 'WSDL' in request.vars:
             # Return Web Service Description
             response.headers['Content-Type'] = 'text/xml'
@@ -5245,9 +5272,16 @@ class Wiki(object):
         elif callable(self.settings.render):
             r = self.settings.render
         elif isinstance(self.settings.render, dict):
-            return lambda page: self.settings.render.get(page.render,
-                getattr(self,
-                    "%s_render" % (page.render or 'markmin')))(page)
+            def custom_render(page):
+                if page.render:
+                    if page.render in self.settings.render.keys():
+                        my_render = self.settings.render[page.render]
+                    else:
+                        my_render = getattr(self, "%s_render" % page.render)
+                else:
+                    my_render = self.markmin_render
+                return my_render(page)
+            r = custom_render
         else:
             raise ValueError(
                 "Invalid render type %s" % type(self.settings.render))
@@ -5257,7 +5291,7 @@ class Wiki(object):
                  manage_permissions=False, force_prefix='',
                  restrict_search=False, extra=None,
                  menu_groups=None, templates=None, migrate=True,
-                 controller=None, function=None):
+                 controller=None, function=None, groups=None):
 
         settings = self.settings = auth.settings.wiki
 
@@ -5289,7 +5323,9 @@ class Wiki(object):
         settings.templates = templates
         settings.controller = controller
         settings.function = function
-
+        settings.groups = auth.user_groups.values() \
+            if groups is None else groups
+        
         db = auth.db
         self.env = env or {}
         self.env['component'] = Wiki.component
@@ -5383,7 +5419,8 @@ class Wiki(object):
 
         if (auth.user and
             check_credentials(current.request, gae_login=False) and
-            not 'wiki_editor' in auth.user_groups.values()):
+            not 'wiki_editor' in auth.user_groups.values() and
+            self.settings.groups == auth.user_groups.values()):
             group = db.auth_group(role='wiki_editor')
             gid = group.id if group else db.auth_group.insert(
                 role='wiki_editor')
@@ -5401,7 +5438,7 @@ class Wiki(object):
             self.settings.manage_permissions:
             return True
         elif self.auth.user:
-            groups = self.auth.user_groups.values()
+            groups = self.settings.groups
             if ('wiki_editor' in groups or
                 set(groups).intersection(set(page.can_read + page.can_edit)) or
                 page.created_by == self.auth.user.id):
@@ -5411,7 +5448,7 @@ class Wiki(object):
     def can_edit(self, page=None):
         if not self.auth.user:
             redirect(self.auth.settings.login_url)
-        groups = self.auth.user_groups.values()
+        groups = self.settings.groups
         return ('wiki_editor' in groups or
                 (page is None and 'wiki_author' in groups) or
                 not page is None and (
@@ -5421,7 +5458,7 @@ class Wiki(object):
     def can_manage(self):
         if not self.auth.user:
             return False
-        groups = self.auth.user_groups.values()
+        groups = self.settings.groups
         return 'wiki_editor' in groups
 
     def can_search(self):
@@ -5432,7 +5469,7 @@ class Wiki(object):
             if self.settings.menu_groups is None:
                 return True
             else:
-                groups = self.auth.user_groups.values()
+                groups = self.settings.groups
                 if any(t in self.settings.menu_groups for t in groups):
                     return True
         return False
@@ -5441,7 +5478,9 @@ class Wiki(object):
 
     def automenu(self):
         """adds the menu if not present"""
-        if not self.wiki_menu_items and self.settings.controller and self.settings.function:
+        if (not self.wiki_menu_items and 
+            self.settings.controller and 
+            self.settings.function):
             self.wiki_menu_items = self.menu(self.settings.controller,
                                              self.settings.function)
             current.response.menu += self.wiki_menu_items
@@ -5500,16 +5539,14 @@ class Wiki(object):
         elif slug in '_search':
             return self.search()
         page = self.auth.db.wiki_page(slug=slug)
-        if not page:
-            redirect(URL(args=('_create', slug)))
-        if not self.can_read(page):
+        if page and (not self.can_read(page)):
             return self.not_authorized(page)
         if current.request.extension == 'html':
             if not page:
-                url = URL(args=('_edit', slug))
+                url = URL(args=('_create', slug))
                 return dict(content=A('Create page "%s"' % slug, _href=url, _class="btn"))
             else:
-                html = page.html if not force_render else self.get_renderer(page)
+                html = page.html if not force_render else self.get_renderer()(page)
                 content = XML(self.fix_hostname(html))
                 return dict(title=page.title,
                             slug=page.slug,
@@ -5531,17 +5568,6 @@ class Wiki(object):
                             tags=page.tags,
                             created_on=page.created_on,
                             modified_on=page.modified_on)
-
-    def check_editor(self, role='wiki_editor', act=False):
-        if not self.auth.user:
-            if not act:
-                return False
-            redirect(self.auth.settings.login_url)
-        elif not self.auth.has_membership(role):
-            if not act:
-                return False
-            raise HTTP(401, "Not Authorized")
-        return True
 
     def edit(self,slug,from_template=0):
         auth = self.auth
@@ -5890,7 +5916,7 @@ class Wiki(object):
 class Config(object):
     def __init__(
         self,
-                filename,
+        filename,
         section,
         default_values={}
     ):
