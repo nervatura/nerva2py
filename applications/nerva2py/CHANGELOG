@@ -5,6 +5,7 @@
 - NAS,NDR: new create, backup and restore database 
 - NOM: relations pyramid
 - NWC: new server printers tools
+- NWC mobil: set Mobile Viewport Fix
 - update ndi_demo and demo source
 - update DEMO database
 - update documentation
