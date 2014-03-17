@@ -15,6 +15,7 @@ GAID
 errors
 sessions
 private
+datastore
 session.sqlite
 storage.sqlite
 
