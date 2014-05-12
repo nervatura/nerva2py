@@ -35,6 +35,9 @@ service = Service()
 def call():
   session.forget()
   return service()
+
+def getVernum():
+  return response.verNo
   
 @service.amfrpc3("default")
 def getLogin_amf(database, username, password, validdata=False):

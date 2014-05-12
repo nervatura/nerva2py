@@ -81,7 +81,7 @@
   </style>
 </head>
 <body>
-  <div id="appl_url" class="{{=response.appl_url}}"></div>
+  <div id="appl_url" class="{{=request.application+'/'+request.controller}}"></div>
   
   
   <div class="wrapper"><!-- for sticky footer -->
@@ -140,9 +140,9 @@
           </div>
           <div style="float: right;white-space: nowrap;">
             {{=response.icon_user}}
-		        {{=response.username}}&nbsp;
+		        {{=session.auth.user.username}}&nbsp;
 		        {{=response.icon_address}}
-		        {{=response.alias}}&nbsp;&nbsp;
+		        {{=session.alias}}&nbsp;&nbsp;
 		        <a href="http://www.web2py.com/" target="_blank">
               <img style="vertical-align: middle;padding-bottom: 0;" src="{{=URL('static','images/poweredby.png')}}"/>
             </a>

@@ -14,7 +14,7 @@ from StringIO import StringIO
 from gluon.html import URL, INPUT, CAT, FORM, CENTER, HTML, TITLE, BODY, LINK, HEAD, H1
 from gluon.sqlhtml import SQLFORM, DIV, SPAN, IMG, A, HTTP
 from gluon.html import HR, SELECT, OPTION, XML
-from gluon.html import TABLE, TR, TD
+from gluon.html import TABLE, TR, TD, LABEL
 from gluon.utils import web2py_uuid
 from gluon.sql import Field
 from gluon.validators import IS_IN_DB, IS_IN_SET
@@ -588,6 +588,7 @@ class WebUiControl(object):
       table["_id"] = tbl_id
     table["_class"] = "ui-body-d ui-shadow table-stripe ui-responsive"
     table["_data-column-btn-theme"] = "a"
+    table["_width"] = "100%"
     if columntoggle:
       table["_data-mode"] = "columntoggle"
       table["_data-column-btn-text"] = self.ui.ns.T("Columns to display...")
@@ -602,14 +603,13 @@ class WebUiControl(object):
       else:
         head = table[1][0]
     head["_class"] = "ui-bar-d"
-    pnum=1
     for i in range(len(head)):
       if len(head[i])>0:
         try:
           str(priority).split(",").index(str(i))
+          head[i]["_data-priority"] = "critical"
         except Exception:
-          head[i]["_data-priority"] = pnum
-          pnum+=1
+          head[i]["_data-priority"] = "6"
                 
 class WebUiSelector(object):
   
@@ -792,7 +792,7 @@ class WebUiSelector(object):
         if bool_fields:
           filter_table.append(TR(
                          TD(filter_form.custom.widget.bool_filter_name),
-                         TD(filter_form.custom.widget.bool_filter_value,_class="td_checkbox")))
+                         TD(filter_form.custom.widget.bool_filter_value)))
         filter_div.append(DIV(filter_table,_id="dv_type",_name="divs",_style="display: none;"))
         self.ui.response.cmd_filter_type = self.ui.control.get_popup_cmd(pop_id="pop_filter",label=self.ui.ns.T("Type & State"),theme="e",inline=False,mini=False,
                                                  onclick="show_div('dv_type','"+self.ui.ns.T("Type & State")+"');", picon="gear")
@@ -1199,13 +1199,12 @@ class WebUiSelector(object):
       rtable.append(TABLE(TR(TD(cmb_doctypes, _style="padding-right: 5px;"),
                        TD(cmb_directions)),
                        _style="width: 100%;",_cellpadding="0px;", _cellspacing="0px;"))
-      rtable.append(TABLE(TR(TD(DIV(self.ui.ns.T("Invoiced amount deduction"), _id='cb_netto_label', _class="label", _style="padding-bottom:0px;color:"+netto_color)),
-                       TD(INPUT(_type='checkbox', _id='cb_netto', value='on', _disabled=(netto_color=="#C5C5C5")), _class="td_checkbox")),
-                       _style="width: 100%;",_cellpadding="0px;", _cellspacing="0px;"))
-      rtable.append(TABLE(TR(TD(DIV(self.ui.ns.T("Create by delivery"), _id='cb_from_label', _class="label",_style="color:"+from_color)),
-                       TD(INPUT(_type='checkbox', _id='cb_from', value='', _disabled=(from_color=="#C5C5C5"), _onChange = "from_delivery_change();"), _class="td_checkbox")),
-                       _style="width: 100%;",_cellpadding="0px;", _cellspacing="0px;"))
-    
+      rtable.append(TABLE(TR(TD(LABEL(INPUT(_type='checkbox', _id='cb_netto', value='on', _disabled=(netto_color=="#C5C5C5"),_class="boolean"),
+                                self.ui.ns.T("Invoiced amount deduction"), _style="margin-bottom:0px;"))),
+                    _style="width: 100%;",_cellpadding="0px;", _cellspacing="0px;"))
+      rtable.append(TABLE(TR(TD(LABEL(INPUT(_type='checkbox', _id='cb_from', value='', _disabled=(from_color=="#C5C5C5"),_class="boolean", _onChange = "from_delivery_change();"),
+                                self.ui.ns.T("Create by delivery"), _style=""))),
+                    _style="width: 100%;",_cellpadding="0px;", _cellspacing="0px;"))
       rtable_cmd = DIV(_style="background-color: #393939;padding: 10px;") 
       rtable_cmd["_data-role"] = "controlgroup"
       rtable_cmd.append(self.ui.control.get_mobil_button(self.ui.ns.T("Creating a document"), href="#", cformat=None, icon="page", style="text-align: left;padding:0px;margin:0px;",
@@ -2341,7 +2340,7 @@ class WebUiMenu(object):
        
       audit_filter = self.ui.connect.get_audit_filter("trans", "rent")[0]
       if audit_filter=="all":
-        mnu_rent = (self.ui.ns.T('RENT'), False, None, [])
+        mnu_rent = (self.ui.ns.T('RENTAL'), False, None, [])
         mnu_rent[3].append((self.ui.ns.T('New Customer Rental'), False, URL('frm_trans/new/trans/rent/out'), []))
         mnu_rent[3].append((self.ui.ns.T('New Supplier Rental'), False, URL('frm_trans/new/trans/rent/in'), []))
         mnu_operation[3].append(mnu_rent)
@@ -2721,9 +2720,7 @@ class WebUi(object):
   control = WebUiControl(None)
   connect = WebUiConnect(None)
   
-  def __init__(self, ns, response, appl, cont):
-    self.application = appl
-    self.controller = cont
+  def __init__(self, ns, response):
     self.ns = ns
     self.response = response
     self.tool = NervaTools(ns)
@@ -2753,7 +2750,6 @@ class WebUi(object):
       self.ns.session.mobile = True
   
   def set_ini_values(self):
-    self.response.appl_url = self.application+"/"+self.controller
     if self.ns.session.mobile:
       self.dir_view = "nmc"
       self.dir_images = "static/resources/application/nmc/images"
@@ -2784,9 +2780,6 @@ class WebUi(object):
                                     _style="vertical-align: middle;",_height="16px",_width="16px")
       self.response.icon_address = IMG(_src=URL(self.dir_images,'icon16_address.png'),
                                     _style="vertical-align: middle;",_height="16px",_width="16px")
-
-  def login_methods(self, username, password):
-    if self.ns.session.nas_login: return False
   
   def nwc_ini(self):
     #check and create some ui and version specifics settings

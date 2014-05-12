@@ -1,3 +1,9 @@
+1.0.0-beta1
+- update web2py to 2.9.5
+- NAS: source code optimization, a new class structure
+- NWC mobil: set jquery mobil checkbox style
+- many bug fixes
+
 0.9.9
 - update web2py to 2.9.4
 - support for GAE
@@ -6,7 +12,7 @@
 - NOM: relations pyramid
 - NWC: new server printers tools
 - NWC mobil: set Mobile Viewport Fix
-- update ndi_demo and demo source
+- update wizard and demo source
 - update DEMO database
 - update documentation
 - many bug fixes

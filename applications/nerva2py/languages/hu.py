@@ -738,7 +738,7 @@
 'NDI Encrypt Password': 'NDI Mesterjelszó',
 'NDI Md5 Password': 'NDI Md5 jelszó',
 'NDI URL': 'NDI URL',
-'Nervatura Data Interface Demo': 'Nervatura Data Interface Demo',
+'Nervatura Data Interface Wizard': 'Nervatura Data Interface Wizard',
 'Nervatura Framework': 'Nervatura Framework',
 'Nervatura Login': 'Nervatura Login',
 'Nervatura Mobil Client': 'Nervatura Mobil Client',

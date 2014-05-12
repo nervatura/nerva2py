@@ -16,164 +16,19 @@ if 0:
   from gluon.sql import DAL
   global db; db = DAL()
   import gluon.languages.translator as T
+  from db import DEMO_MODE
 
 from gluon.http import redirect
-from gluon.sqlhtml import SQLFORM, DIV, SPAN, A, INPUT, FORM
+from gluon.sqlhtml import DIV, SPAN, A, INPUT, FORM
 from gluon.html import BR, HR, SELECT, OPTION, P, IMG, TABLE, TR, TD
 from gluon.validators import IS_NOT_EMPTY
-from gluon.tools import Auth, Crud
 from gluon.html import URL
 from gluon.storage import Storage 
 import os
 
 from nerva2py.nervastore import NervaStore
 from nerva2py.tools import DatabaseTools
-    
-def get_back_button(url,title= T('Back to Admin menu')):
-  return A(SPAN(_class="icon leftarrow"), _style="padding-top: 8px;padding-bottom: 8px;font-size: 14px;", 
-           _class="w2p_trap buttontext button", _title= title, _href=url)
-  
-def get_command_button(caption,title,color="444444",cmd="",_id="",_height="30px", _top="2px", _href=""):
-  return INPUT(_type="button", _value=caption, _title=title, _id=_id,
-               _style="height: "+_height+" !important;padding-top: "+_top+" !important;color: #"+color+";font-size: 16px;", _onclick= cmd)
-
-def get_mobil_button(label, href, icon="forward", cformat="ui-btn-right", ajax="true", iconpos="left", 
-  rel=None, target=None, style=None, onclick=None, theme=None, cmd_id=None, mini=None, 
-  transition=None, position=None, title=None):
-  cmd = A(SPAN(label), _href=href, _class=cformat)
-  cmd["_data-role"] = "button"
-  cmd["_data-icon"] = icon
-  cmd["_data-ajax"] = ajax
-  cmd["_data-iconpos"] = iconpos
-  if title:
-    cmd["_title"] = title
-  if cformat:
-    cmd["_class"] = cformat
-  if rel:
-    cmd["_data-rel"] = rel
-  if target:
-    cmd["_target"] = "_blank"
-  if style:
-    cmd["_style"] = style
-  if onclick:
-    cmd["_onclick"] = onclick
-  if theme:
-    cmd["_data-theme"] = theme
-  if cmd_id:
-    cmd["_id"] = cmd_id
-  if mini:
-    cmd["_data-mini"] = mini
-  if transition:
-    cmd["_data-transition"] = transition
-  if position:
-    cmd["_data-position-to"] = position
-  return cmd
-
-def set_counter_bug(form):
-  counter = form.elements("div.web2py_counter")
-  if len(counter)>0:
-    if counter[0][0]==None:
-      counter[0][0] = ""
-
-def set_htmltable_style(table, tbl_id=None, priority="0", columntoggle=True):
-  table["_data-role"] = "table"
-  if tbl_id:
-    table["_id"] = tbl_id
-  table["_class"] = "ui-body-d ui-shadow table-stripe ui-responsive"
-  table["_data-column-btn-theme"] = "a"
-  if columntoggle:
-    table["_data-mode"] = "columntoggle"
-    table["_data-column-btn-text"] = T("Columns to display...")
-    table["_data-column-popup-theme"] = "a"
-  thead = table.elements("thead")
-  if len(thead)>0:
-    head = thead[0][0]
-  else:
-    colgroup = table.elements("col")
-    if len(colgroup)==0:    
-      head = table[0][0]
-    else:
-      head = table[1][0]
-  head["_class"] = "ui-bar-d"
-  pnum=1
-  for i in range(len(head)):
-    if len(head[i])>0:
-      try:
-        str(priority).split(",").index(str(i))
-      except Exception:
-        head[i]["_data-priority"] = pnum
-        pnum+=1
-
-def delete_row(rowtype, row_id):
-  db(db[rowtype].id==row_id).delete()
-  db.commit()
-  return True
-
-def get_frm_type(ruri):
-  if ruri.find("/edit/")>0:
-    return "edit"
-  elif ruri.find("/new/")>0:
-    return "new"
-  elif ruri.find("/delete/")>0:
-    return "delete"
-  else:
-    return "view"
-  
-def set_input_form(form):
-  form["_id"]="frm_input"
-  form["_data-ajax"]="false"
-  text_inputs = form.elements('input',_type='text')
-  for i in range(len(text_inputs)):
-    text_inputs[i]["_onkeydown"]="if (event.keyCode == 13) document.forms['frm_input'].submit();"
-  text_inputs = form.elements('input',_type='password')
-  for i in range(len(text_inputs)):
-    text_inputs[i]["_onkeydown"]="if (event.keyCode == 13) document.forms['frm_input'].submit();"
-  submit_row = form.element("#submit_record__row")
-  submit_row[1][0] = get_mobil_button(label=T("Save"), href="#", 
-        cformat=None, style="text-align: left;", icon="check", ajax="false", theme="a",
-        onclick= "document.forms[0].submit();")
-  return form
-
-def get_form(query,field_id,orderby,fields=None,headers={},frm_type="view",priority="0,1"):
-  gform = SQLFORM.grid(query=query, field_id=field_id, fields=fields, headers=headers, 
-                       orderby=orderby, paginate=20, maxtextlength=25,
-                       searchable=False, csv=False, details=False, showbuttontext=False,
-                       create=_editable, deletable=False, editable=True, selectable=False)
-  if type(gform[1][0][0]).__name__!="TABLE":
-    if frm_type in ("edit","new"):
-      gform = set_input_form(gform)
-      if frm_type == "edit":
-        gform[1][0][0] = ""
-  else:
-    htable = gform.elements("div.web2py_htmltable")
-    if len(htable)>0:
-      set_htmltable_style(htable[0][0],"form_search",priority)
-      htable[0][0]["_width"]="100%"
-  set_counter_bug(gform)
-  if gform[len(gform)-1]["_class"].startswith("web2py_paginator"):
-    pages = gform[len(gform)-1].elements("a")
-    for i in range(len(pages)):
-      pages[i]["_data-ajax"] = "false"
-  return gform
-
-def login_methods(username, password):
-  if session.alias!=None:
-    auth.messages.invalid_login = T("The NWC and NAS at the same time can not be logged in!")
-  return False
-
-def login_onaccept(form):
-  session.nas_login=True
-  
-def logout_onlogout(form):
-  session.nas_login=None
-
-def requires_login():
-  if session.alias!=None:
-    auth.messages.access_denied = T("The NWC and NAS at the same time can not be logged in!")
-    auth.settings.on_failed_authorization = URL("user/login")
-    return auth.requires(False)
-  else:
-    return auth.requires(True)
+from nerva2py.nas import AdminUi
                                  
 def create_menu():
   ns_menu = []
@@ -182,59 +37,37 @@ def create_menu():
   ns_menu_dbs = (T('Database Management'), False, None, [])
   ns_menu.append(ns_menu_dbs)
   ns_menu.append((T('Server Settings'), False, URL("settings"), []))
-  ns_menu.append((T('Change Password'), False, URL("nas/index", "change_password"), []))
+  ns_menu.append((T('Change Password'), False, URL("change_password"), []))
   
-  ns_menu_dbs[3].append((T('Database Creation'), False, URL("createDb"), []))
-  ns_menu_dbs[3].append((T('Database Backup'), False, URL("createBackup"), []))
-  ns_menu_dbs[3].append((T('Restore the Database'), False, URL("restoreBackup"), []))
+  ns_menu_dbs[3].append((T('Database Creation'), False, URL("create_db"), []))
+  ns_menu_dbs[3].append((T('Database Backup'), False, URL("create_backup"), []))
+  ns_menu_dbs[3].append((T('Restore the Database'), False, URL("restore_backup"), []))
   return ns_menu
-   
-auth = Auth(db, controller="nas")
-crud = Crud(db)
 
-auth.define_tables(username=True, migrate=False, fake_migrate=False) 
-auth.settings.remember_me_form = False
-auth.settings.reset_password_requires_verification = True
-auth.settings.actions_disabled.append('request_reset_password')
-auth.settings.register_next = URL('index')
-auth.settings.change_password_next = URL('index')
-auth.settings.formstyle = 'table3cols'
-auth.settings.allow_basic_login=True
-auth.messages.submit_button = T('Save')
-auth.settings.login_methods.append(login_methods)
-auth.settings.login_onaccept.append(login_onaccept)
-auth.settings.logout_onlogout = logout_onlogout
-auth.requires_login = requires_login
-response.auth = auth
-
-if db(db.auth_user.id > 0).count() > 0:
-  auth.settings.actions_disabled.append('register')
-    
 ns = NervaStore(request, session, T, db)
+ui = AdminUi('nas_admin',request, session, db)
 dbtool = DatabaseTools(ns)
 response.title=T('NAS ADMIN')
-response.cmd_menu = get_mobil_button(label=T("MENU"), href="#main-menu",
-                                             icon="bars", cformat="ui-btn-left", ajax="true", iconpos="left")
-response.cmd_exit = get_mobil_button(label=T("EXIT"), href=URL("nas/user", "logout"),
-                                             icon="power", cformat="ui-btn-right", ajax="false", iconpos="left",
-                                             style="color: red;margin:2px;")
-response.cmd_home = get_mobil_button(label=T("HOME"), href=URL('index'),
-                                             icon="home", cformat="ui-btn-left", ajax="false", iconpos="left")
-response.cmd_close = get_mobil_button(label=T("Close"), href="#",
-                                          icon="delete", cformat="ui-btn-right", ajax="true", iconpos="notext", 
-                                          rel="close")
-response.ns_menu = create_menu()
+   
+auth = response.auth = ui.connect.auth_ini(controller="nas",use_username=True,reset_password=False,register=True)
+if db(db.auth_user.id > 0).count() > 0:
+  auth.settings.actions_disabled.append('register')
 
+response.ns_menu = create_menu()
+ui.control.create_cmd(response,T)
+
+_editable =True
 if session.auth:
-  if session.auth.user.username=="demo":
-    _editable=False
-    if request.post_vars:
-      request.post_vars = Storage()
-      response.flash = T("Demo user: This action is not allowed!")
+  if session.auth.user.has_key("username"):
+    if session.auth.user.username=="demo":
+      _editable=False
+      if request.post_vars:
+        request.post_vars = Storage()
+        response.flash = T("Demo user: This action is not allowed!")
   else:
     _editable =True
       
-@auth.requires_login()
+@auth.requires(session.alias=='nas_admin', requires_login=True)
 def index():
   response.view='nas/index.html'
   response.subtitle = T("Home")
@@ -249,29 +82,44 @@ def index():
               P(A("©2011-2014 Nervatura Framework", _href="http://www.nervatura.com", _target="_blank", 
                   _title="Nervatura", _style="font-weight: bold;")),
               _align="center", _style="padding-top:30px;")
-  if len(request.args)>0:        
-    if request.args[0]=="change_password":
-      response.subtitle = T("Change Password")
-      return dict(form=set_input_form(auth()))
   return dict(form=gform)
+
+def login():
+  if DEMO_MODE:
+    return ui.connect.show_disabled(response.title)
+  response.view='nas/login.html'
+  form=auth()
+  if type(form).__name__=="str":
+    session.flash = form
+    form = auth.login()
+  return dict(form=ui.control.set_input_form(form,submit_label=T("Login")))
+  
+def logout():
+  auth.logout()
+  
+@auth.requires(session.alias=='nas_admin', requires_login=True)
+def change_password():
+  response.subtitle = T("Change Password")
+  response.view='nas/index.html'
+  return dict(form=ui.control.set_input_form(auth.change_password(),submit_label=T("Change password")))
               
-@auth.requires_login()
+@auth.requires(session.alias=='nas_admin', requires_login=True)
 def accounts():
   response.subtitle = T("User Accounts")
   response.view='nas/index.html'
   ruri = request.wsgi.environ["REQUEST_URI"]
-  frm_type = get_frm_type(ruri)
+  frm_type = ui.control.get_frm_type(ruri)
   
   if frm_type=="delete":
     rid = int(ruri.split("?")[0].split("/")[len(ruri.split("?")[0].split("/"))-1])
-    if delete_row("auth_user",rid):
+    if ui.connect.delete_data("auth_user",rid):
       redirect(URL('accounts'))
       
   if frm_type in("edit","new"):
-    response.cmd_back = get_mobil_button(label=T("BACK"), href=URL("accounts"),
+    response.cmd_back = ui.control.get_mobil_button(label=T("BACK"), href=URL("accounts"),
           icon="back", ajax="false", theme="a")
   else:
-    response.cmd_new = get_mobil_button(label=T("New"), 
+    response.cmd_new = ui.control.get_mobil_button(label=T("New"), 
           href=URL("accounts/new/auth_user",**{'user_signature': True}),
           icon="plus", ajax="false", theme="a")
   fields = (db.auth_user.id, db.auth_user.username, db.auth_user.first_name, 
@@ -281,67 +129,69 @@ def accounts():
              'auth_user.email': T('Email') }
 
   if _editable:
-    db.auth_user.username.represent = lambda value,row: get_mobil_button(value, 
+    db.auth_user.username.represent = lambda value,row: ui.control.get_mobil_button(value, 
         href=URL("accounts/edit/auth_user/"+str(row["id"]),**{'user_signature': True}), 
         cformat=None, icon=None, iconpos=None, style="text-align: left;", ajax="false")
     db.auth_user.id.label=T("Delete")
-    db.auth_user.id.represent = lambda value,row: get_mobil_button(T("Delete"), href="#", cformat=None, 
+    db.auth_user.id.represent = lambda value,row: ui.control.get_mobil_button(T("Delete"), href="#", cformat=None, 
           icon="delete", iconpos="notext", ajax="false", theme="d",
           onclick="if(confirm(w2p_ajax_confirm_message||'"+T("Are you sure you want to delete this object?")
             +"')){ajax('"+URL('accounts/delete/auth_user'+"/"+str(row["id"]),**{'user_signature': True})
-            +"',[],'');window.location.reload();};var e = arguments[0] || window.event; e.cancelBubble=true; if (e.stopPropagation) {e.stopPropagation(); e.stopImmediatePropagation(); e.preventDefault();}")
+            +"',[],'');jQuery(this).closest('tr').remove();};var e = arguments[0] || window.event; e.cancelBubble=true; if (e.stopPropagation) {e.stopPropagation(); e.stopImmediatePropagation(); e.preventDefault();}")
   else:
     db.auth_user.id.readable = db.auth_user.id.writable = False
   
-  gform = get_form(query=db.auth_user,field_id=db.auth_user.id,orderby=db.auth_user.username,
-                   fields=fields,headers=headers,frm_type=frm_type,priority="0,1")
+  gform = ui.control.get_form(query=db.auth_user,field_id=db.auth_user.id,orderby=db.auth_user.username,
+                   fields=fields,headers=headers,frm_type=frm_type,priority="0,1",create=_editable)
   return dict(form=gform)
 
-@auth.requires_login()
+@auth.requires(session.alias=='nas_admin', requires_login=True)
 def databases():
   response.subtitle = T("Customer Databases")
   response.view='nas/index.html'
   ruri = request.wsgi.environ["REQUEST_URI"]
-  frm_type = get_frm_type(ruri)
+  frm_type = ui.control.get_frm_type(ruri)
     
   if frm_type=="delete":
     rid = int(ruri.split("?")[0].split("/")[len(ruri.split("?")[0].split("/"))-1])
-    if delete_row("databases",rid):
+    if ui.connect.delete_data("databases",rid):
       redirect(URL('databases'))
       
   if frm_type in("edit","new"):
-    response.cmd_back = get_mobil_button(label=T("BACK"), href=URL("databases"),
+    response.cmd_back = ui.control.get_mobil_button(label=T("BACK"), href=URL("databases"),
           icon="back", ajax="false", theme="a")
   else:
-    response.cmd_new = get_mobil_button(label=T("New"), 
+    response.cmd_new = ui.control.get_mobil_button(label=T("New"), 
           href=URL("databases/new/databases",**{'user_signature': True}),
           icon="plus", ajax="false", theme="a")
   
   fields = (db.databases.id, db.databases.alias, db.databases.host, 
             db.databases.dbname)
+  query = ((db.databases.deleted==False))
   
   if _editable:
-    db.databases.alias.represent = lambda value,row: get_mobil_button(value, 
+    db.databases.alias.represent = lambda value,row: ui.control.get_mobil_button(value, 
         href=URL("databases/edit/databases/"+str(row["id"]),**{'user_signature': True}), 
         cformat=None, icon=None, iconpos=None, style="text-align: left;", ajax="false")
     db.databases.id.label=T("Delete")
-    db.databases.id.represent = lambda value,row: get_mobil_button(T("Delete"), href="#", cformat=None, 
+    db.databases.id.represent = lambda value,row: ui.control.get_mobil_button(T("Delete"), href="#", cformat=None, 
           icon="delete", iconpos="notext", ajax="false", theme="d",
           onclick="if(confirm(w2p_ajax_confirm_message||'"+T("Are you sure you want to delete this object?")
             +"')){ajax('"+URL('databases/delete/databases'+"/"+str(row["id"]),**{'user_signature': True})
-            +"',[],'');window.location.reload();};var e = arguments[0] || window.event; e.cancelBubble=true; if (e.stopPropagation) {e.stopPropagation(); e.stopImmediatePropagation(); e.preventDefault();}")
+            +"',[],'');jQuery(this).closest('tr').remove();};var e = arguments[0] || window.event; e.cancelBubble=true; if (e.stopPropagation) {e.stopPropagation(); e.stopImmediatePropagation(); e.preventDefault();}")
   else:
     db.databases.id.readable = db.databases.id.writable = False
   
-  gform = get_form(query=db.databases,field_id=db.databases.id,orderby=db.databases.alias,
-                   fields=fields,headers={},frm_type=frm_type,priority="0,1")
+  db.databases.user_id.default=session.auth.user.id
+  gform = ui.control.get_form(query=query,field_id=db.databases.id,orderby=db.databases.alias,
+                   fields=fields,headers={},frm_type=frm_type,priority="0,1",create=_editable)
   return dict(form=gform)
 
-@auth.requires_login()
-def createDb():
+@auth.requires(session.alias=='nas_admin', requires_login=True)
+def create_db():
   response.subtitle = T("Database Creation")
   response.view='nas/index.html'
-  alias = db().select(db.databases.id,db.databases.alias,orderby=db.databases.alias).as_list()
+  alias = db((db.databases.deleted==False)).select(db.databases.id,db.databases.alias,orderby=db.databases.alias)
   cmb_alias = SELECT(*[OPTION(field["alias"],_value=field["alias"]) for field in alias], _id="cmb_alias", _style="margin-top: 0px;")
   if len(cmb_alias)==0:
     cmb_alias.insert(0, OPTION("", _value=""))
@@ -356,18 +206,18 @@ def createDb():
                SPAN(T('4. Please select an alias, and start the creation:'))
                ,_style="font-style: italic;"),
              DIV(SPAN(T('Database alias:'),_style="padding-right: 15px;padding-left: 15px;"),cmb_alias,
-               P(get_mobil_button(label=T("Start"), href="#", onclick="createDatabase();", icon="check", theme="a"),
+               P(ui.control.get_mobil_button(label=T("Start"), href="#", onclick="createDatabase();", icon="check", theme="a"),
                  SPAN(T('Starting the process?'), _id="msg_result",_style="padding-left: 15px;font-style: italic;"),
                _style="padding-top: 0px;")),
              HR()
              ,_style="font-weight: bold;", _align="left")
   return dict(form=gform)
 
-@auth.requires_login()
-def createBackup():
+@auth.requires(session.alias=='nas_admin', requires_login=True)
+def create_backup():
   response.subtitle = T("Create a Backup")
   response.view='nas/index.html'
-  alias = db().select(db.databases.id,db.databases.alias,orderby=db.databases.alias).as_list()
+  alias = db((db.databases.deleted==False)).select(db.databases.id,db.databases.alias,orderby=db.databases.alias)
   cmb_alias = SELECT(*[OPTION(field["alias"],_value=field["alias"]) for field in alias], _id="cmb_alias")
   if len(cmb_alias)==0:
     cmb_alias.insert(0, OPTION("", _value=""))
@@ -396,7 +246,7 @@ def createBackup():
                DIV(SPAN(T('Filename:') ,_style="padding-right: 15px;padding-left: 15px;"),cmb_filename, SPAN(" "),
                cust_filename, _style="padding-top: 10px;"), 
                DIV(SPAN(T('Backup format:'),_style="padding-right: 15px;padding-left: 15px;"),cmb_format, _style="padding-top: 10px;"),
-             P(SPAN(get_mobil_button(label=T("Start"), href="#", onclick="createDataBackup();", icon="check", theme="a",
+             P(SPAN(ui.control.get_mobil_button(label=T("Start"), href="#", onclick="createDataBackup();", icon="check", theme="a",
                                  title=ns.T('Start customer backup creation')),
                     SPAN(T('Starting the process?'),_style="padding-left: 15px;", _id="msg_result"),_style="font-style: italic;"),
                _style="padding-top: 5px;"),
@@ -405,8 +255,8 @@ def createBackup():
              ,_style="font-weight: bold;", _align="left")
   return dict(form=gform)
 
-@auth.requires_login()
-def restoreBackup():
+@auth.requires(session.alias=='nas_admin', requires_login=True)
+def restore_backup():
   response.subtitle = T("Restore the Customer Data")
   response.view='nas/index.html'
   
@@ -426,7 +276,7 @@ def restoreBackup():
         msg_result = dbtool.loadBackupData(alias=request.vars.alias, filename=request.post_vars.filename)
     request.post_vars = None
   
-  alias = db().select(db.databases.id,db.databases.alias,orderby=db.databases.alias).as_list()
+  alias = db((db.databases.deleted==False)).select(db.databases.id,db.databases.alias,orderby=db.databases.alias)
   cmb_alias = SELECT(*[OPTION(field["alias"],_value=field["alias"]) for field in alias], _name="alias", _id="cmb_alias")
   if len(cmb_alias)==0:
     cmb_alias.insert(0, OPTION("", _value=""))
@@ -482,7 +332,7 @@ def restoreBackup():
               ,_style="font-weight: bold;", _align="left")
   return dict(form=gform)
   
-@auth.requires_login()
+@auth.requires(session.alias=='nas_admin', requires_login=True)
 def createDatabase():
   if session.auth.user.username=="demo":
     return P(SPAN(T("Demo user: This action is not allowed!"),_style="color:red;"))
@@ -490,7 +340,7 @@ def createDatabase():
     return str(T("Error: Missing alias parameter!"))
   return P(dbtool.createDatabase(request.vars.alias))
 
-@auth.requires_login()
+@auth.requires(session.alias=='nas_admin', requires_login=True)
 def createDataBackup():
   if request.vars.alias==None:
     return P(str(T("Error: Missing alias parameter!")))
@@ -499,7 +349,11 @@ def createDataBackup():
   else:
     bformat = "backup"
   if ns.local.setEngine(request.vars.alias,True, False)==False:
-    return P("Error: "+str(ns.error_message))
+    if request.vars.filename == "download":
+      session.flash = str(ns.error_message)
+      redirect(URL("create_backup"))
+    else:
+      return P("Error: "+str(ns.error_message))
   retbc = dbtool.createDataBackup(alias=request.vars.alias, bformat=bformat, filename=request.vars.filename,verNo=response.verNo)
   if request.vars.filename == "download":
     if (not str(retbc).startswith("<span")) and (not str(retbc).startswith("<div")):
@@ -507,26 +361,29 @@ def createDataBackup():
       response.headers['Content-Type']='application/octet-stream'
       response.headers['Content-Disposition'] = 'attachment;filename="'+str(request.vars.alias)+'_'+time.strftime("%Y%m%d_%H%M")+'.'+bformat+'"'
       return retbc
+    else:
+      session.flash = str(retbc)
+      redirect(URL("create_backup"))
   return P(retbc)
   
-@auth.requires_login()
+@auth.requires(session.alias=='nas_admin', requires_login=True)
 def settings():
   response.subtitle = T("Server Settings")
   response.view='nas/index.html'
   
   ruri = request.wsgi.environ["REQUEST_URI"]
-  frm_type = get_frm_type(ruri)
+  frm_type = ui.control.get_frm_type(ruri)
     
   if frm_type=="delete":
     rid = int(ruri.split("?")[0].split("/")[len(ruri.split("?")[0].split("/"))-1])
-    if delete_row("settings",rid):
+    if ui.connect.delete_data("settings",rid):
       redirect(URL('settings'))
       
   if frm_type in("edit","new"):
-    response.cmd_back = get_mobil_button(label=T("BACK"), href=URL("settings"),
+    response.cmd_back = ui.control.get_mobil_button(label=T("BACK"), href=URL("settings"),
           icon="back", ajax="false", theme="a")
   else:
-    response.cmd_new = get_mobil_button(label=T("New"), 
+    response.cmd_new = ui.control.get_mobil_button(label=T("New"), 
           href=URL("settings/new/settings",**{'user_signature': True}),
           icon="plus", ajax="false", theme="a")
     
@@ -534,22 +391,18 @@ def settings():
             db.settings.description)
   
   if _editable:
-    db.settings.fieldname.represent = lambda value,row: get_mobil_button(value, 
+    db.settings.fieldname.represent = lambda value,row: ui.control.get_mobil_button(value, 
         href=URL("settings/edit/settings/"+str(row["id"]),**{'user_signature': True}), 
         cformat=None, icon=None, iconpos=None, style="text-align: left;", ajax="false")
     db.settings.id.label=T("Delete")
-    db.settings.id.represent = lambda value,row: get_mobil_button(T("Delete"), href="#", cformat=None, 
+    db.settings.id.represent = lambda value,row: ui.control.get_mobil_button(T("Delete"), href="#", cformat=None, 
           icon="delete", iconpos="notext", ajax="false", theme="d",
           onclick="if(confirm(w2p_ajax_confirm_message||'"+T("Are you sure you want to delete this object?")
             +"')){ajax('"+URL('settings/delete/settings'+"/"+str(row["id"]),**{'user_signature': True})
-            +"',[],'');window.location.reload();;};var e = arguments[0] || window.event; e.cancelBubble=true; if (e.stopPropagation) {e.stopPropagation(); e.stopImmediatePropagation(); e.preventDefault();}")
+            +"',[],'');jQuery(this).closest('tr').remove();};var e = arguments[0] || window.event; e.cancelBubble=true; if (e.stopPropagation) {e.stopPropagation(); e.stopImmediatePropagation(); e.preventDefault();}")
   else:
     db.settings.id.readable = db.settings.id.writable = False
   
-  gform = get_form(query=db.settings,field_id=db.settings.id,orderby=db.settings.fieldname,
-                   fields=fields,headers={},frm_type=frm_type,priority="0,1,2")
+  gform = ui.control.get_form(query=db.settings,field_id=db.settings.id,orderby=db.settings.fieldname,
+                   fields=fields,headers={},frm_type=frm_type,priority="0,1,2",create=_editable)
   return dict(form=gform)
-
-def user():
-  response.view='nas/index.html'
-  return dict(form=set_input_form(auth()))

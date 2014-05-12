@@ -16,6 +16,7 @@ if 0:
   import gluon.languages.translator as T
   from gluon.sql import DAL
   global db; db = DAL()
+  from db import DEMO_MODE
 
 from gluon.html import URL
 from gluon.http import redirect
@@ -25,7 +26,7 @@ from gluon.validators import IS_IN_DB, IS_NOT_EMPTY, IS_IN_SET, IS_EMPTY_OR
 from gluon.html import INPUT, CENTER, HTML, TITLE, BODY, LINK, HEAD, H1, UL, LI, H3, P, STRONG
 from gluon.sqlhtml import SQLFORM, DIV, SPAN, IMG, A
 from gluon.html import SELECT, OPTION, XML
-from gluon.html import TABLE, TR, TD, TBODY, THEAD, TH
+from gluon.html import TABLE, TR, TD, TBODY, THEAD, TH, LABEL
 from gluon.utils import web2py_uuid
 import gluon.contrib.simplejson as json
 
@@ -39,23 +40,15 @@ from nerva2py.nwc import WebUi
 
 import os, datetime, math, base64, re
 
-DEMO_MODE = False
 ns = NervaStore(request,session,T,db)
-ui = WebUi(ns,response,"nerva2py","nwc")
-
+ui = WebUi(ns,response)
 ns_auth=auth_ini(session,URL('frm_login'))
-if session.alias!=None:
-  if session.auth:
-    if getattr(session.auth.user, "alias",None) != session.alias:
-      session.alias=None
-      redirect(URL('frm_login'))
+if ns_auth.check_login():
   if ns.local.setEngine(session.alias):
-    response.alias = session.alias
     ns_auth = Auth(ns.db, hmac_key=Auth.get_or_create_key(), controller=ui.controller, function="frm_login")
     ns_auth.define_tables(username=True, migrate=False, fake_migrate=False)
     if session.auth!=None:
       session.auth.user.alias = session.alias
-      response.username = session.auth.user.username
       if session.auth.user.username=="demo" and session.alias=="demo":
         DEMO_MODE = True
   ui.menu.create_menu()
@@ -125,7 +118,7 @@ def frm_login():
   #Opera and IE hack
   if request.vars.has_key("alias") and request.vars.has_key("username") and request.vars.has_key("password") and not request.vars.has_key("_formname"):
     request.vars["_formname"] = "login/create"
-  if form.accepts(request.vars) and session.nas_login==None:
+  if form.accepts(request.vars):
     if ns.local.setEngine(form.vars.alias):
       session.alias = form.vars.alias
       ns_auth = Auth(ns.db, hmac_key=Auth.get_or_create_key(), controller=ui.controller, function="frm_login")
@@ -133,7 +126,6 @@ def frm_login():
       ns_auth.settings.table_user_name = 'employee'
       ns_auth.settings.login_next = URL('index')
       ns_auth.settings.logout_next = URL('frm_login')
-      ns_auth.settings.login_methods = [ui.login_methods]
       
       ns_auth.settings.expiration = 3600  # seconds
       ns_auth.settings.long_expiration = 3600*24*30 # one month
@@ -162,8 +154,6 @@ def frm_login():
         
     else:
       response.flash = str(ns.error_message)
-  elif session.nas_login!=None:
-    response.flash = T("The NWC and NAS at the same time can not be logged in!")
   elif form.errors:
     flash=""
     for error in form.errors.keys():
@@ -172,7 +162,7 @@ def frm_login():
   return dict(form=form)
 
 def frm_logout():
-  session.alias=None
+#   session.alias=None
   mobile = session.mobile
   try:
     ns_auth.logout(next=URL('frm_login'),log=None)
@@ -2769,8 +2759,8 @@ def find_product_discount():
                                 TR(TD(
                                       TABLE(TR(TD(DIV(response.edit_form.custom.label.curr, _class="label")),
                                                TD(response.edit_form.custom.widget.curr, _style="padding-left:10px;padding-right:10px;"),
-                                               TD(DIV(response.edit_form.custom.label.vendorprice, _class="label")),
-                                               TD(response.edit_form.custom.widget.vendorprice, _class="td_checkbox")
+                                               TD(LABEL(response.edit_form.custom.widget.vendorprice,response.edit_form.custom.label.vendorprice)
+                                                  ,_style="width: 200px;")
                                                ),
                                             _style="width: 100%;",_cellpadding="0px;", _cellspacing="0px;"),
                                       _colspan="2")),
@@ -3392,8 +3382,8 @@ def find_product_price():
                                 TR(TD(
                                       TABLE(TR(TD(DIV(response.edit_form.custom.label.curr, _class="label")),
                                                TD(response.edit_form.custom.widget.curr, _style="padding-left:10px;padding-right:10px;"),
-                                               TD(DIV(response.edit_form.custom.label.vendorprice, _class="label")),
-                                               TD(response.edit_form.custom.widget.vendorprice, _class="td_checkbox")
+                                               TD(LABEL(response.edit_form.custom.widget.vendorprice,response.edit_form.custom.label.vendorprice)
+                                                  ,_style="width: 200px;")
                                                ),
                                             _style="width: 100%;",_cellpadding="0px;", _cellspacing="0px;"),
                                       _colspan="2")),
@@ -4895,6 +4885,7 @@ def find_transitem_trans():
   ns.db.trans.crdate.label = T('Date')
   ns.db.trans.transdate.label = T('TransDate/ StartDate')
   ns.db.trans.duedate.label = T('DueDate/ EndDate')
+  ns.db.trans.paid.label = T('Released/Paid')
   
   groupfields=[ns.db.trans.id,ns.db.trans.transtype,ns.db.trans.direction,ns.db.fieldvalue.value,ns.db.trans.id,ns.db.trans.transnumber,
                ns.db.trans.ref_transnumber,ns.db.trans.crdate,ns.db.trans.transdate,ns.db.trans.duedate,ns.db.trans.customer_id,ns.db.trans.employee_id,

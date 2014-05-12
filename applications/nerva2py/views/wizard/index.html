@@ -1,4 +1,4 @@
-{{extend 'ndi_demo/layout.html'}}
+{{extend 'wizard/layout.html'}}
 
 <style>
 .vernum {
@@ -72,7 +72,7 @@
 }
 </style>
 
-<script src="{{=URL('static','js/ndi_demo.js')}}"></script>
+<script src="{{=URL('static','js/wizard.js')}}"></script>
 <script src="{{=URL('static','js/jquery.base64.min.js')}}"></script>
 
 <script type="text/javascript">
@@ -106,23 +106,6 @@ var ms_missing = "{{=T('Missing required field!')}}"
         {{=T('NOM OBJECT')}}</div>
       <div style="width: 100%;padding: 5px;">
         {{=response.lst_nom}}
-      </div>
-      <div style="width: 100%; background-color: #8B8B83; font-weight: bold;font-style:italic;color: #FFFFFF;text-align: center;padding: 5px;color: #FFD700;">
-        {{=T('MORE NDI DEMO')}}</div>
-      <div style="width: 100%;padding: 5px;">
-        <a href="{{=URL( 'ndr', 'show_codefile')+'?fname=demo.py'}}" 
-          title="{{=T('Server side sample program using NDI. Insert (or update) DEMO data to selected database.')}}"
-          target="_blank" style="font-weight: bold;">{{=T('Server side DEMO')}}</a>
-      </div>
-      <div style="width: 100%;padding: 5px;">
-        <a href="{{=URL( 'ndr', 'getResource')+'?file_name=download/vba_demo&content=application/zip&file_type=zip'}}"
-          title="{{=T('Sample MS Excel VBA functions using NDI.')}}"
-          target="_blank" style="font-weight: bold;">{{=T('MS Excel Loader')}}</a>
-      </div>
-      <div style="width: 100%;padding: 5px;">
-        <a href="https://docs.google.com/spreadsheet/ccc?key=0Av_B8qcKt_8pdDNhRVZYNzM0VVVrMHJzSURLWlhXY3c#gid=0"
-          title="{{=T('Sample Google Apps Script functions using NDI.')}}"
-          target="_blank" style="font-weight: bold;">{{=T('Google Spreadsheet')}}</a>
       </div>
     </td>
     <td style="padding-top: 5px;">
@@ -194,14 +177,14 @@ var ms_missing = "{{=T('Missing required field!')}}"
 			                    {{=T('database')}}</div>
 			                </td>
 			                <td class="td_input">
-			                  <input id="database" type="text" style="width: 100%" value="demo" />
+			                  <input id="database" type="text" style="width: 100%" value="{{=request.vars.database if request.vars.database else 'demo'}}" />
 			                </td>
 			                <td class="td_label">
 			                  <div class="div_label">
 			                    {{=T('username')}}</div>
 			                </td>
 			                <td class="td_input">
-			                  <input id="username" type="text" style="width: 100%;" value="demo" />
+			                  <input id="username" type="text" style="width: 100%;" value="{{=request.vars.username if request.vars.username else 'demo'}}" />
 			                </td>
 			                <td class="td_label">
 			                  <div class="div_label">
@@ -248,7 +231,7 @@ var ms_missing = "{{=T('Missing required field!')}}"
                     <ul>     
                       <li style="padding-top: 5px;">
                       <a class="tab_label" style="padding-top: 3px;" href="#tabs-1">
-                        <img style="vertical-align: top;"  height="16px" width="16px" src="{{=URL('static','resources/application/ndi_demo/images/icon16_browser.png')}}" />
+                        <img style="vertical-align: top;"  height="16px" width="16px" src="{{=URL('static','resources/application/wizard/images/icon16_browser.png')}}" />
                           {{=T('VIEW')}}</a>
                       <a id="cmd_create_view" class="w2p_trap buttontext button" title="Create a URL" 
                         style="cursor: pointer;height: 14px;padding-top: 0px;" href="#" onclick="createView();">
@@ -258,7 +241,7 @@ var ms_missing = "{{=T('Missing required field!')}}"
                       </li>
                       <li style="padding-top: 5px;">
                       <a class="tab_label" style="padding-top: 3px;" href="#tabs-2">
-                        <img style="vertical-align: top;"  height="16px" width="16px" src="{{=URL('static','resources/application/ndi_demo/images/icon16_save.png')}}" />
+                        <img style="vertical-align: top;"  height="16px" width="16px" src="{{=URL('static','resources/application/wizard/images/icon16_save.png')}}" />
                           {{=T('INSERT/UPDATE')}}</a>
                       <a class="w2p_trap buttontext button" title="Create a URL" style="cursor: pointer;height: 14px;padding-top: 0px;" href="#" onclick="createUpdate();">
                            <span style="vertical-align: middle;" class="icon check"></span>
@@ -267,7 +250,7 @@ var ms_missing = "{{=T('Missing required field!')}}"
                       </li>
                       <li style="padding-top: 5px;">
                       <a class="tab_label" style="padding-top: 3px;" href="#tabs-3">
-                        <img style="vertical-align: top;"  height="16px" width="16px" src="{{=URL('static','resources/application/ndi_demo/images/icon16_delete.png')}}" />
+                        <img style="vertical-align: top;"  height="16px" width="16px" src="{{=URL('static','resources/application/wizard/images/icon16_delete.png')}}" />
                           {{=T('DELETE')}}</a>
                       <a class="w2p_trap buttontext button" title="Create a URL" style="cursor: pointer;height: 14px;padding-top: 0px;" href="#" onclick="createDelete();">
                            <span style="vertical-align: middle;" class="icon check"></span>

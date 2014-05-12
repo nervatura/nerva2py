@@ -44,11 +44,12 @@
   <table width="100%" cellpadding="0px;" cellspacing="0px;">
     <tr>
       <td style="padding-right:5px;"><div class="label">{{=response.filter.custom.label.product}}</div></td>
-      <td><div class="label">{{=response.filter.custom.label.nocomp}}</div></td>
-      <td class="td_checkbox">{{=response.filter.custom.widget.nocomp}}</td>
+      <td style="width: 200px;padding-left: 5px;">
+        <label style="margin: 0px;">{{=response.filter.custom.widget.nocomp}}{{=response.filter.custom.label.nocomp}}</label>
+      </td>
     </tr>
     <tr>
-      <td colspan="3">{{=response.filter.custom.widget.product}}</td>
+      <td colspan="2">{{=response.filter.custom.widget.product}}</td>
     </tr>
   </table>
   {{=response.filter.custom.end}}

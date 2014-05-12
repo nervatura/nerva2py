@@ -1,15 +1,16 @@
-var appl_url = "nerva2py/nas";
-var base_url = window.location.protocol+'//'+window.location.host+'/'+appl_url;
+function get_base_url() {
+	return window.location.protocol+'//'+window.location.host+"/"+document.getElementById('appl_url').className;
+}
 
 function createDatabase() {
 	var cmb_alias=document.getElementById('cmb_alias').value;
 	if (cmb_alias=="") {
 		alert("Missing database!"); return false;}
+	document.getElementById('msg_result').innerHTML='Process started. Waiting for the server to respond ...';
     if(confirm('Start the database creation. Do you want to continue?')) {
-    	msg_result.innerHTML='Process started. Waiting for the server to respond ...';
-        callFunction(base_url+'/createDatabase?alias='+cmb_alias,'msg_result');
+        callFunction(get_base_url()+'/createDatabase?alias='+cmb_alias,'msg_result');
         }
-    else {msg_result.innerHTML='Starting the process?'}
+    else {document.getElementById('msg_result').innerHTML='Starting the process?'}
     return true;
 }
 
@@ -32,16 +33,16 @@ function createDataBackup() {
 	}
 	if(confirm('Start the customer backup creation. Do you want to continue?')) {
     	if (cmb_filename=="download") {
-    		msg_result.innerHTML='Starting the process?';
-    		window.location.assign(base_url+'/createDataBackup?alias='+cmb_alias+'&bformat='+cmb_format
+    		document.getElementById('msg_result').innerHTML='Starting the process?';
+    		window.location.assign(get_base_url()+'/createDataBackup?alias='+cmb_alias+'&bformat='+cmb_format
     		  +'&filename='+cmb_filename)
     	} else {
-    		msg_result.innerHTML='Process started. Waiting for the server to respond ...';
-    		callFunction(base_url+'/createDataBackup?alias='+cmb_alias+'&bformat='+cmb_format
+    		document.getElementById('msg_result').innerHTML='Process started. Waiting for the server to respond ...';
+    		callFunction(get_base_url()+'/createDataBackup?alias='+cmb_alias+'&bformat='+cmb_format
             		+'&filename='+cmb_filename,'msg_result');	
     	}
     } 
-	else {msg_result.innerHTML='Starting the process?'}
+	else {document.getElementById('msg_result').innerHTML='Starting the process?'}
 	return true;
 }
 

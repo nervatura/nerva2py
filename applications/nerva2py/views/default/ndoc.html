@@ -30,9 +30,9 @@
   <li><a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/nom/nom&content=view&lang=auto'}} 
     target="_blank"><span class="sname">NOM</span>&nbsp;<b><i>Nervatura Object Model</i></b></a>
   </li>
-  <li><a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/nas/nas&content=view&lang=auto'}} 
-    target="_blank"><span class="sname">NAS</span>&nbsp;<b><i>Nervatura Application Server</i></b></a>
-  </li>
+<!--   <li><a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/nas/nas&content=view&lang=auto'}}  -->
+<!--     target="_blank"><span class="sname">NAS</span>&nbsp;<b><i>Nervatura Application Server</i></b></a> -->
+<!--   </li> -->
   <li><a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/ndi/ndi&content=view&lang=auto'}} 
     target="_blank"><span class="sname">NDI</span>&nbsp;<b><i>Nervatura Data Interface</i></b></a>
   </li>
@@ -49,19 +49,19 @@
 
 <h3 style="color: #3B7687;">2. {{=T('DEMO Applications')}}</h3>
 <ul>
-  <li><a href={{=URL( 'nwc', 'index',vars={'desktop':'true'})}} target="_blank"><span class="sname">NWC</span>&nbsp;<b><i>Nervatura Web Client</i></b></a><br>
+  <li><a href="{{=URL( 'nwc', 'index',vars={'desktop':'true'})}}" target="_blank"><span class="sname">NWC</span>&nbsp;<b><i>Nervatura Web Client</i></b></a><br>
   {{=T('Database')}}: <b><i>demo</i></b>, {{=T('Username')}}: <b><i>demo</i></b>, {{=T('Password')}}: {{=T('leave the field empty, not need')}}<br>
   <i>{{=T('Restricted DEMO MODE version! Restricted functions are: Database Settings, Access Rights and Change Password.')}}</i></li>
-  <li><a href={{=URL( 'nwc', 'index',vars={'mobile':'true'})}} target="_blank"><span class="sname">NWC</span>&nbsp;<b><i>Nervatura Mobile Client</i></b></a><br>
+  <li><a href="{{=URL( 'nwc', 'index',vars={'mobile':'true'})}}" target="_blank"><span class="sname">NWC</span>&nbsp;<b><i>Nervatura Mobile Client</i></b></a><br>
   {{=T('Database')}}: <b><i>demo</i></b>, {{=T('Username')}}: <b><i>demo</i></b>, {{=T('Password')}}: {{=T('leave the field empty, not need')}}<br>
   <i>{{=T('Restricted DEMO MODE version! Restricted functions are: Database Settings, Access Rights and Change Password.')}}</i></li>
-  <li><a href={{=URL('ndr', 'getAppl')+'?appl=nflex/nervex.html'}} 
+  <li><a href="{{=URL('ndr', 'getAppl', vars={'appl':'nflex/nervex.html'})}}" 
     target="_blank"><span class="sname">NPI</span>&nbsp;<b><i>Nervatura Flash Client</i></b></a><br>
   {{=T('Database')}}: <b><i>demo</i></b>, {{=T('Username')}}: <b><i>demo</i></b>, {{=T('Password')}}: {{=T('leave the field empty, not need')}}<br>
   <i>{{=T('Restricted DEMO MODE version! Restricted functions are: Database Settings, Access Rights and Change Password.')}}</i>
   </li>
-  <li><a href={{=URL( 'ndi_demo', 'index')}} 
-    target="_blank"><span class="sname">NDI</span>&nbsp;<b><i>Nervatura Data Interface Demo</i></b></a></li>
+  <li><a href={{=URL( 'wizard', 'index')}} 
+    target="_blank"><span class="sname">NDI</span>&nbsp;<b><i>Nervatura Data Interface Wizard</i></b></a></li>
   <li><a href={{=URL( 'report2py', 'index')}} target="_blank"><span class="sname">NDR</span>&nbsp;<b><i>Nervatura Report Help & Demo</i></b></a></li>
 </ul>
 

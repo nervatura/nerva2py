@@ -1,4 +1,10 @@
-
+.error { 
+  background: linear-gradient(#FFFADF, #FFF3A5) repeat scroll 0 0 #FFF9DF;
+  border: 1px solid #F7C942;
+  text-shadow: 0 1px 0 #FFFFFF;
+  color: red; font-weight: bold; 
+  padding: 3px;
+}
 #main-page * {
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -33,10 +39,6 @@
   height: 10px;
   border-width:0;
   background-color: #393939;	
-}
-.td_checkbox {
-  width: 40px;
-  text-align: center;
 }
 
 .label {
@@ -73,9 +75,6 @@
 	border: 1px solid #AAAAAA;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2) inset;
 }
-#fieldvalue_value_bool {
-  top: 12px;
-}
 
 .integer, .decimal, .double {
   text-align: right;
@@ -99,11 +98,6 @@ a.button {
 }
 .ui-btn {
   text-align: left;
-}
-.ui-checkbox input {
-  left: 15px;
-  top: 0px;
-  padding: 0px;
 }
 .ui-panel.ui-panel-open {
   position:fixed;

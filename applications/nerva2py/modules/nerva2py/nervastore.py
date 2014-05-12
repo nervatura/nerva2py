@@ -1679,6 +1679,7 @@ class DataStore(object):
 
       self.ns.db.executesql("CREATE INDEX fieldvalue_fieldname_idx ON fieldvalue (fieldname)")
       self.ns.db.executesql("CREATE INDEX fieldvalue_ref_id_idx ON fieldvalue (ref_id)")
+      #self.ns.db.executesql("CREATE INDEX fieldvalue_value_idx ON fieldvalue (value)")
 
       self.ns.db.executesql("CREATE INDEX log_logstate_idx ON log (logstate)")
       self.ns.db.executesql("CREATE INDEX log_nervatype_idx ON log (nervatype, ref_id)")
@@ -3455,6 +3456,7 @@ class DataStore(object):
       fieldtype_string = self.ns.valid.get_groups_id("fieldtype", "string")
       fieldtype_float = self.ns.valid.get_groups_id("fieldtype", "float")
       fieldtype_bool = self.ns.valid.get_groups_id("fieldtype", "bool")
+      fieldtype_integer = self.ns.valid.get_groups_id("fieldtype", "integer")
       
       deffield_trans = [{'id':self.ns.valid.get_id_from_refnumber('deffield','trans_transitem_link'),
                          'fieldname':'trans_transitem_link', 'nervatype':nervatype_trans_id, 
@@ -3658,7 +3660,7 @@ class DataStore(object):
                            'description':'default currency', 'valuelist':None, 'addnew':0, 'visible':1, 'readonly':0},
                           {'id':self.ns.valid.get_id_from_refnumber('deffield','default_deadline'),
                            'fieldname':'default_deadline', 'nervatype':nervatype_setting_id,
-                           'subtype':None, 'fieldtype':self.ns.valid.get_groups_id("fieldtype", "integer"),
+                           'subtype':None, 'fieldtype':fieldtype_integer,
                            'description':'default deadline (payment)', 'valuelist':None, 'addnew':0, 'visible':1, 'readonly':0},
                           {'id':self.ns.valid.get_id_from_refnumber('deffield','default_paidtype'),
                            'fieldname':'default_paidtype', 'nervatype':nervatype_setting_id,
@@ -3678,11 +3680,11 @@ class DataStore(object):
                            'description':'false string', 'valuelist':None, 'addnew':0, 'visible':1, 'readonly':0},
                           {'id':self.ns.valid.get_id_from_refnumber('deffield','invoice_copy'),
                            'fieldname':'invoice_copy', 'nervatype':nervatype_setting_id,
-                           'subtype':None, 'fieldtype':self.ns.valid.get_groups_id("fieldtype", "integer"),
+                           'subtype':None, 'fieldtype':fieldtype_integer,
                            'description':'invoice copy', 'valuelist':None, 'addnew':0, 'visible':1, 'readonly':0},
                           {'id':self.ns.valid.get_id_from_refnumber('deffield','transyear'),
                            'fieldname':'transyear', 'nervatype':nervatype_setting_id,
-                           'subtype':None, 'fieldtype':self.ns.valid.get_groups_id("fieldtype", "integer"),
+                           'subtype':None, 'fieldtype':fieldtype_integer,
                            'description':'business year', 'valuelist':None, 'addnew':0, 'visible':1, 'readonly':0},
                           {'id':self.ns.valid.get_id_from_refnumber('deffield','true_bool'),
                            'fieldname':'true_bool', 'nervatype':nervatype_setting_id,
@@ -3739,11 +3741,13 @@ class DataStore(object):
                           {'id':self.ns.valid.get_id_from_refnumber('deffield','presave_all'),
                            'fieldname':'presave_all', 'nervatype':nervatype_setting_id,
                            'subtype':None, 'fieldtype':fieldtype_bool,
-                           'description':'set update row control', 'valuelist':None, 'addnew':0, 'visible':1, 'readonly':0}]
+                           'description':'set update row control', 'valuelist':None, 'addnew':0, 'visible':1, 'readonly':0}
+                          ]
       for values in deffield_setting:
         self.ns.connect.updateData("deffield", values=values, log_enabled=False, validate=False, insert_row=True, update_row=False)
       
-      fieldvalue_setting = [{'id':self.ns.valid.get_id_from_refnumber('fieldvalue','printer_gsprint'),
+      fieldvalue_setting = [
+                            {'id':self.ns.valid.get_id_from_refnumber('fieldvalue','printer_gsprint'),
                              'fieldname':'printer_gsprint', 'ref_id':None, 'value':'C:\Progra~1\Ghostgum\gsview\gsprint', 'notes':None},
                             {'id':self.ns.valid.get_id_from_refnumber('fieldvalue','printer_clienthost'),
                              'fieldname':'printer_clienthost', 'ref_id':None, 'value':'localhost:8080', 'notes':None},
@@ -3802,15 +3806,16 @@ class DataStore(object):
                             {'id':self.ns.valid.get_id_from_refnumber('fieldvalue','prenew_all'),
                              'fieldname':'prenew_all', 'ref_id':None, 'value':'false', 'notes':None},
                             {'id':self.ns.valid.get_id_from_refnumber('fieldvalue','presave_all'),
-                             'fieldname':'presave_all', 'ref_id':None, 'value':'false', 'notes':None}]
+                             'fieldname':'presave_all', 'ref_id':None, 'value':'false', 'notes':None}
+                            ]
       for values in fieldvalue_setting:
         self.ns.connect.updateData("fieldvalue", values=values, log_enabled=False, validate=False, insert_row=True, update_row=False)
       
       self.ns.db.commit()  
       return True
     except Exception, err:
-      self.ns.db.rollback()
       self.ns.error_message = err
+      self.ns.db.rollback()
       return False
   
   def upgradeData(self):

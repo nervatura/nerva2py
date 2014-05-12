@@ -92,8 +92,9 @@
         <table width="100%" cellpadding="0px;" cellspacing="0px;">
           <tr>
             <td style="padding-right:5px;"><div class="label">{{=form.custom.label.customer_id}}</div></td>
-            <td><div class="label">{{=form.custom.label.paid}}</div></td>
-            <td class="td_checkbox">{{=form.custom.widget.paid}}</td>
+            <td style="width: 200px;">
+              <label style="margin: 0px;">{{=form.custom.widget.paid}}{{=form.custom.label.paid}}</label>
+            </td>
           </tr>
         </table>
       </td>
@@ -247,8 +248,9 @@
           <tr>
             <td><div class="label">{{=response.item_form.custom.label.product_id}}</div></td>
             {{if response.item_deposit==None:}}
-              <td style="padding-left:5px;"><div class="label">{{=response.item_form.custom.label.deposit}}</div></td>
-              <td class="td_checkbox">{{=response.item_form.custom.widget.deposit}}</td>
+              <td style="width: 200px;padding-left: 5px;">
+                <label style="margin: 0px;">{{=response.item_form.custom.widget.deposit}}{{=response.item_form.custom.label.deposit}}</label>
+              </td>
             {{pass}}
           </tr>
         </table>
@@ -345,8 +347,10 @@
       <td>
         <div id="fieldvalue_value_controls" style="min-height: 30px;vertical-align: middle;">
           <input id="fieldvalue_value" type="hidden" name="value" value="">
-          <input id="fieldvalue_value_bool" 
-           type="checkbox" name="value_bool" class="boolean" value="true" checked="checked" style="display: none;width: 100%;">
+          <label id="fieldvalue_value_bool_label" style="margin: 0px;display: none;width: 100%;">
+            <input id="fieldvalue_value_bool" type="checkbox" name="value_bool" class="boolean" value="true">
+            <span id="fieldvalue_value_bool_text"></span>
+          </label>
           <input id="fieldvalue_value_integer" 
            type="text" name="value_integer" class="integer" value="" style="display: none;width: 100%;text-align: right;" >
           <input id="fieldvalue_value_float" 

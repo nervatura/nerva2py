@@ -78,7 +78,7 @@ def getHelp():
     else:
       lang = "en"
     if request.vars.folder:
-      bfolder+="/"+request.vars.folder
+      bfolder+="/"+str(request.vars.folder)
     else:
       bfolder+='/help'
     if request.vars.title:

@@ -257,7 +257,10 @@ function set_fieldvalue(_fieldvalue_id, _fieldname, _description, _value, _label
 	case "INPUT":
 	case "TEXTAREA":
 		if (_fieldtype=="bool") {
-			control.checked = (_value=="true");
+			document.getElementById("fieldvalue_value_bool_label").style.display = 'block';
+			$("input#fieldvalue_value_bool").prop("checked",(_value=="true")).checkboxradio("refresh");
+			document.getElementById("fieldvalue_value_bool_text").innerHTML =_description;
+			document.getElementById("fieldvalue_description").style.display = 'none';
 		} else {
 			control.value = _value;	
 		}
@@ -359,7 +362,7 @@ function set_item(_item_id, _product_id, _product, _tax_id, _rate, _vatamount, _
 	document.getElementById("item_description").value=_description;
 	if (document.getElementById("item_deposit")) {
 		document.getElementById("item_deposit").value=_deposit;
-		document.getElementById("item_deposit").checked=(_deposit==1);}
+		$("input#item_deposit").prop( "checked",(_deposit==1)).checkboxradio("refresh");}
 	document.getElementById("item_qty").value=_qty;
 	document.getElementById("item_discount").value=_discount;
 	document.getElementById("item_fxprice").value=_fxprice;
@@ -551,7 +554,7 @@ function set_barcode(_barcode_id,_code,_description,_barcodetype,_qty,_defcode) 
 	$('select#barcode_barcodetype').selectmenu("refresh");
 	document.getElementById("barcode_qty").value = _qty;
 	document.getElementById("barcode_defcode").value = _defcode;
-	document.getElementById("barcode_defcode").checked=(_defcode==1);
+	$("input#barcode_defcode").prop( "checked",(_defcode==1)).checkboxradio( "refresh" );
 	
 	document.getElementById('barcode_page').style.display = 'none';
 	document.getElementById('ctr_barcode_page').style.display = 'none';
@@ -674,7 +677,7 @@ function set_price(_price_id,_validfrom,_validto,_curr,_qty,_pricevalue,_discoun
 	document.getElementById("price_qty").value = _qty;
 	document.getElementById("price_pricevalue").value = _pricevalue;
 	document.getElementById("price_vendorprice").value = _vendorprice;
-	document.getElementById("price_vendorprice").checked=(_vendorprice==1);
+	$("input#price_vendorprice").prop("checked",(_vendorprice==1)).checkboxradio("refresh");
 	if (_discount!="None") {
 		document.getElementById("price_discount").value = _discount;
 	} else {
@@ -808,7 +811,7 @@ function set_movement(_movement_id, _shippingdate, _product_id, _product, _tool_
 			if (document.getElementById("movement_shared")) {
 				if (document.getElementById("movement_shared")) {
 					document.getElementById("movement_shared").value=_shared;
-					document.getElementById("movement_shared").checked=(_shared==1);}	
+					$("input#movement_shared").prop("checked",(_shared==1)).checkboxradio("refresh");}
 			}
 		}
 	}
@@ -916,27 +919,24 @@ function copy_trans(copy_url,redir_url){
 //--------------------------------------------------
 function create_newtype_change(){
 	var seltype = document.getElementById('cmb_doctypes').value;
-	var cb_netto = document.getElementById('cb_netto'); var cb_netto_label = document.getElementById('cb_netto_label');
 	var base_transtype = document.getElementById('base_transtype').value;
 	var element_count = document.getElementById('element_count').value;
-	var cb_from = document.getElementById('cb_from'); var cb_from_label = document.getElementById('cb_from_label');
 	if(seltype=='invoice' || seltype=='receipt'){
-		cb_netto.disabled=false; cb_netto_label.style.color='#444444';
+		$("input#cb_netto").checkboxradio("enable");
 	} else {
-		cb_netto.disabled=true; cb_netto_label.style.color='#C5C5C5';}
+		$("input#cb_netto").checkboxradio("disable");}
 	if((seltype=='invoice'||seltype=='receipt') 
 			&& (base_transtype=='order' || base_transtype=='rent' || base_transtype=='worksheet') 
 	    	&& (element_count=='0')) {
-		cb_from.disabled=false; cb_from_label.style.color='#444444';
+		$("input#cb_from").checkboxradio("enable");
 	} else {
-	    cb_from.disabled=true; cb_from_label.style.color='#C5C5C5';}
+		$("input#cb_from").checkboxradio("disable");}
 }
 function from_delivery_change(){
-	var cb_netto = document.getElementById('cb_netto'); var cb_netto_label = document.getElementById('cb_netto_label');
 	if (document.getElementById('cb_from').checked) {
-		cb_netto.disabled=true; cb_netto_label.style.color='#C5C5C5';
+		$("input#cb_netto").checkboxradio("disable");
 	} else {
-		cb_netto.disabled=false; cb_netto_label.style.color='#444444';}
+		$("input#cb_netto").checkboxradio("enable");}
 }
 function create_trans(create_url,redir_url){
 	create_url+="&new_transtype="+document.getElementById('cmb_doctypes').value;

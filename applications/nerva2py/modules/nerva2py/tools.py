@@ -44,13 +44,17 @@ class auth_ini(object):
   def __init__(self,session,login_url):
     self.session = session
     self.login_url = login_url
+  def check_login(self):
+    try:
+      if self.session.auth.user.alias == self.session.alias:
+        return True
+      return False
+    except Exception:
+      return False
   def requires_login(self):
     def decorator(action):
       def f(*a, **b):
-        try:
-          if self.session.alias==None or self.session.auth.user.alias != self.session.alias:
-            redirect(self.login_url)
-        except Exception:
+        if not self.check_login():
           redirect(self.login_url)
         return action(*a, **b)
       f.__doc__ = action.__doc__
@@ -1010,51 +1014,52 @@ class DatabaseTools(object):
           rs.append(DIV(SPAN("OK ",_style="color:green;font-weight: bold;"),
                         SPAN("Creating database tables ...",_style="font-weight: bold;"),BR()))
         
-        if self.ns.store.createIndex()==False:
-          rs.append(DIV(SPAN("Error: "+str(self.ns.error_message),_style="color:red;font-weight: bold;"),BR()))
-          err_no+=1
-        else:
-          rs.append(DIV(SPAN("OK ",_style="color:green;font-weight: bold;"),
-                        SPAN("Creating indexes ...",_style="font-weight: bold;"),BR()))
-          
-        if self.ns.store.setIniData()==False:
-          rs.append(DIV(SPAN("Error: "+str(self.ns.error_message),_style="color:red;font-weight: bold;"),BR()))
-          err_no+=1
-        else:
-          rs.append(DIV(SPAN("OK ",_style="color:green;font-weight: bold;"),
-                        SPAN("Data initialization ...",_style="font-weight: bold;"),BR()))
+        if err_no==0:
+          if self.ns.store.createIndex()==False:
+            rs.append(DIV(SPAN("Error: "+str(self.ns.error_message),_style="color:red;font-weight: bold;"),BR()))
+            err_no+=1
+          else:
+            rs.append(DIV(SPAN("OK ",_style="color:green;font-weight: bold;"),
+                          SPAN("Creating indexes ...",_style="font-weight: bold;"),BR()))
            
-        if self.ns.store.insertDefaultReports()==False:
-          rs.append(DIV(SPAN("Error: "+str(self.ns.error_message),_style="color:red;font-weight: bold;"),BR()))
-          err_no+=1
-        else:
-          rs.append(DIV(SPAN("OK ",_style="color:green;font-weight: bold;"),
-                        SPAN("Loading report templates and data ...",_style="font-weight: bold;"),BR()))
-
-        #only Flash Client ini
-        if self.ns.store.insertFlashClientData()==False:
-          rs.append(DIV(SPAN("Error: "+str(self.ns.error_message),_style="color:red;font-weight: bold;"),BR()))
-          err_no+=1
-        else:
-          rs.append(DIV(SPAN("OK ",_style="color:green;font-weight: bold;"),
-                        SPAN("Flash Client data initialization ...",_style="font-weight: bold;"),BR()))
+          if self.ns.store.setIniData()==False:
+            rs.append(DIV(SPAN("Error: "+str(self.ns.error_message),_style="color:red;font-weight: bold;"),BR()))
+            err_no+=1
+          else:
+            rs.append(DIV(SPAN("OK ",_style="color:green;font-weight: bold;"),
+                          SPAN("Data initialization ...",_style="font-weight: bold;"),BR()))
+             
+          if self.ns.store.insertDefaultReports()==False:
+            rs.append(DIV(SPAN("Error: "+str(self.ns.error_message),_style="color:red;font-weight: bold;"),BR()))
+            err_no+=1
+          else:
+            rs.append(DIV(SPAN("OK ",_style="color:green;font-weight: bold;"),
+                          SPAN("Loading report templates and data ...",_style="font-weight: bold;"),BR()))
+   
+          #only Flash Client ini
+          if self.ns.store.insertFlashClientData()==False:
+            rs.append(DIV(SPAN("Error: "+str(self.ns.error_message),_style="color:red;font-weight: bold;"),BR()))
+            err_no+=1
+          else:
+            rs.append(DIV(SPAN("OK ",_style="color:green;font-weight: bold;"),
+                          SPAN("Flash Client data initialization ...",_style="font-weight: bold;"),BR()))
         if err_no==0:
           rs.append(DIV(SPAN("Result: ",_style="color:blue;font-weight: bold;"),
                   SPAN("The process has run without error!",_style="font-weight: bold;"),BR(),
-                  SPAN("The database created successfully!",_style="font-weight: bold;"),BR()))  
+                  SPAN("The database created successfully!",_style="font-weight: bold;"),BR()))
+          demo_url = A( 
+                      _style="height: 20px;vertical-align: middle;font-weight: bold;color: brown;", 
+                      _href=URL( 'demo', 'create_demo', args=['database','username'], vars=dict(database=str(alias),username='demo')), 
+                      _target="_blank")
+          demo_url["_data-ajax"] = "false"
+          rs.append(DIV(BR(),
+                        SPAN("Create a DEMO database (optional): ",_style="color:blue;font-weight: bold;"),
+                        BR(),demo_url,BR()))  
         else:
           rs.append(DIV(SPAN("Result: ",_style="color:blue;font-weight: bold;"),
                   SPAN("Error messages: "+str(err_no),_style="font-weight: bold;"),BR()))
         rs.append(DIV(SPAN("End process: ",_style="color:blue;font-weight: bold;"),
                 SPAN(str(datetime.datetime.now()),_style="font-weight: bold;"),BR()))
-        demo_url = A( 
-                    _style="height: 20px;vertical-align: middle;font-weight: bold;color: brown;", 
-                    _href=URL( 'demo', 'create_demo', args=['database','username'], vars=dict(database=str(alias),username='demo')), 
-                    _target="_blank")
-        demo_url["_data-ajax"] = "false"
-        rs.append(DIV(BR(),
-                      SPAN("Create a DEMO database (optional): ",_style="color:blue;font-weight: bold;"),
-                      BR(),demo_url,BR()))
     except Exception, err:
       rs.append(P("Error: "+str(err),_style="color:red;font-weight: bold;"))
     finally:
@@ -1110,12 +1115,13 @@ class DatabaseTools(object):
         rs.append(DIV(SPAN("OK ",_style="color:green;font-weight: bold;"),
                       SPAN("Creating database tables ...",_style="font-weight: bold;"),BR()))
       
-      if self.ns.store.createIndex()==False:
-        rs.append(DIV(SPAN("Error: "+str(self.ns.error_message),_style="color:red;font-weight: bold;"),BR()))
-        err_no+=1
-      else:
-        rs.append(DIV(SPAN("OK ",_style="color:green;font-weight: bold;"),
-                      SPAN("Creating indexes ...",_style="font-weight: bold;"),BR()))
+      if err_no==0:
+        if self.ns.store.createIndex()==False:
+          rs.append(DIV(SPAN("Error: "+str(self.ns.error_message),_style="color:red;font-weight: bold;"),BR()))
+          err_no+=1
+        else:
+          rs.append(DIV(SPAN("OK ",_style="color:green;font-weight: bold;"),
+                        SPAN("Creating indexes ...",_style="font-weight: bold;"),BR()))
         
       def loadNomItems():
         items=[]
@@ -1169,35 +1175,36 @@ class DatabaseTools(object):
           items.append(item)
         return items
       
-      ndi = Ndi(self.ns, log_enabled=False, validate=False)
-      for nom in self.ns.store.backup_nom_table_lst:
-        items = loadNomItems()
-        nrs = ndi.callNdiFunc("update_"+nom, param, items)
-        if str(nrs).startswith("OK"):
-          rs.append(DIV(SPAN(nom+": ",_style="color:blue;font-weight: bold;"),SPAN(str(nrs),_style="color:green;font-weight: bold;"),BR()))
-        else:
-          rs.append(DIV(SPAN(nom+": ",_style="color:blue;font-weight: bold;"),SPAN(str(nrs),_style="color:red;font-weight: bold;"),BR()))
+      if err_no==0:
+        ndi = Ndi(self.ns, log_enabled=False, validate=False)
+        for nom in self.ns.store.backup_nom_table_lst:
+          items = loadNomItems()
+          nrs = ndi.callNdiFunc("update_"+nom, param, items)
+          if str(nrs).startswith("OK"):
+            rs.append(DIV(SPAN(nom+": ",_style="color:blue;font-weight: bold;"),SPAN(str(nrs),_style="color:green;font-weight: bold;"),BR()))
+          else:
+            rs.append(DIV(SPAN(nom+": ",_style="color:blue;font-weight: bold;"),SPAN(str(nrs),_style="color:red;font-weight: bold;"),BR()))
+            err_no+=1
+        for nom in self.ns.store.backup_ui_table_lst:
+          items = loadNomItems()
+          if len(items)>0:
+            ins_no=0
+            for item in items:
+              try:
+                self.ns.connect.updateData(nom, values=item, validate=False, insert_row=True)
+                ins_no+=1
+              except Exception, err:
+                rs.append(DIV(SPAN(nom+": ",_style="color:blue;font-weight: bold;"),SPAN(str(err),_style="color:red;font-weight: bold;"),BR()))
+                err_no+=1
+            if ins_no>0:
+              rs.append(DIV(SPAN(nom+": ",_style="color:blue;font-weight: bold;"),SPAN(str(ins_no)+" rows restored",_style="color:green;font-weight: bold;"),BR()))
+      
+        if self.ns.store.upgradeData()==False:
+          rs.append(DIV(SPAN("Error: "+str(self.ns.error_message),_style="color:red;font-weight: bold;"),BR()))
           err_no+=1
-      for nom in self.ns.store.backup_ui_table_lst:
-        items = loadNomItems()
-        if len(items)>0:
-          ins_no=0
-          for item in items:
-            try:
-              self.ns.connect.updateData(nom, values=item, validate=False, insert_row=True)
-              ins_no+=1
-            except Exception, err:
-              rs.append(DIV(SPAN(nom+": ",_style="color:blue;font-weight: bold;"),SPAN(str(err),_style="color:red;font-weight: bold;"),BR()))
-              err_no+=1
-          if ins_no>0:
-            rs.append(DIV(SPAN(nom+": ",_style="color:blue;font-weight: bold;"),SPAN(str(ins_no)+" rows restored",_style="color:green;font-weight: bold;"),BR()))
-    
-      if self.ns.store.upgradeData()==False:
-        rs.append(DIV(SPAN("Error: "+str(self.ns.error_message),_style="color:red;font-weight: bold;"),BR()))
-        err_no+=1
-      else:
-        rs.append(DIV(SPAN("OK ",_style="color:green;font-weight: bold;"),
-                      SPAN("Upgrade database...",_style="font-weight: bold;"),BR()))
+        else:
+          rs.append(DIV(SPAN("OK ",_style="color:green;font-weight: bold;"),
+                        SPAN("Upgrade database...",_style="font-weight: bold;"),BR()))
         
     except Exception, err:
       rs.append(P("Error: "+str(err),_style="color:red;font-weight: bold;"))
@@ -1237,6 +1244,7 @@ class DatabaseTools(object):
                 self.ns.db._adapter.execute(sql)
             else:
               self.ns.db._adapter.execute(sql)
+      self.ns.db.commit()
       return "OK"
     except Exception, err:
       return "Error|"+str(err)

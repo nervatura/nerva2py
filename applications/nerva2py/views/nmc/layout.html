@@ -85,7 +85,7 @@ $(document).bind("mobileinit", function(){
      </script>
   
     <style>
-      .error { color: red; }
+      
     </style>
   </head>
   
@@ -96,7 +96,7 @@ $(document).bind("mobileinit", function(){
   <!--[if IE 9 ]>    <body class="ie9"> <![endif]-->
   <!--[if (gt IE 9)|!(IE)]><!--> 
   <body> <!--<![endif]-->
-    <div id="appl_url" class="{{=response.appl_url}}"></div>
+    <div id="appl_url" class="{{=request.application+'/'+request.controller}}"></div>
     <div id="main-page" data-role="page"> 
       <div data-role="header" data-fullscreen="false" data-position="fixed">
 	      {{block header}}

@@ -57,8 +57,9 @@ table {
         <table width="100%" cellpadding="0px;" cellspacing="0px;">
           <tr>
             <td style="padding-right: 5px;"><div class="label">{{=form.custom.label.description}}</div></td>
-            <td class="label" style="width: 100px;">{{=form.custom.label.readonly}}</td>
-            <td class="td_checkbox">{{=form.custom.widget.readonly}}</td>
+            <td style="width: 200px;padding-left: 5px;">
+              <label style="margin: 0px;">{{=form.custom.widget.readonly}}{{=form.custom.label.readonly}}</label>
+            </td>
           </tr>
           <tr>
             <td colspan="3">{{=form.custom.widget.description}}</td>
@@ -84,10 +85,12 @@ table {
       <td colspan="2">
         <table width="100%" cellpadding="0px;" cellspacing="0px;">
           <tr>
-            <td><div class="label">{{=form.custom.label.addnew}}</div></td>
-            <td class="td_checkbox">{{=form.custom.widget.addnew}}</td>
-            <td><div class="label">{{=form.custom.label.visible}}</div></td>
-            <td class="td_checkbox">{{=form.custom.widget.visible}}</td>
+            <td>
+              <label style="margin: 0px;">{{=form.custom.widget.addnew}}{{=form.custom.label.addnew}}</label>
+            </td>
+            <td style="padding-left: 10px;">
+              <label style="margin: 0px;">{{=form.custom.widget.visible}}{{=form.custom.label.visible}}</label>
+            </td>
           </tr>
         </table>
       </td>

@@ -82,7 +82,13 @@ $(document).bind("mobileinit", function(){
      </script>
   
     <style>
-      .error { color: red; }
+      .error { 
+        background: linear-gradient(#FFFADF, #FFF3A5) repeat scroll 0 0 #FFF9DF;
+        border: 1px solid #F7C942;
+        text-shadow: 0 1px 0 #FFFFFF;
+        color: red; font-weight: bold; 
+        padding: 3px;
+        }
     </style>
   </head>
   
@@ -93,6 +99,7 @@ $(document).bind("mobileinit", function(){
   <!--[if IE 9 ]>    <body class="ie9"> <![endif]-->
   <!--[if (gt IE 9)|!(IE)]><!--> 
   <body> <!--<![endif]-->
+    <div id="appl_url" class="{{=request.application+'/'+request.controller}}"></div>
     <div id="main-page" data-role="page"> 
       <div data-role="header" data-fullscreen="false" data-position="fixed">
 	      {{block header}}

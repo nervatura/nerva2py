@@ -33,8 +33,8 @@ password = request.vars.password if request.vars.password else ""
 validator = ndi.getLogin({"database":database,"username":username,"password":password})
 
 def index():
-  response.title=T('NDI Demo')
-  response.subtitle=T('Data Interface Demo')
+  response.title=T('NDI Wizard')
+  response.subtitle=T('Data Interface Wizard')
   lst_nom = ["address","barcode","contact","currency","customer","deffield","employee","event","fieldvalue","groups","item","link",
          "log","movement","numberdef","pattern","payment","place","price","product","project","rate","tax","tool","trans","sql"]
   response.lst_nom = SELECT(*[OPTION(str(nom).upper(), _value=nom) for nom in lst_nom], _id="lst_nom", 

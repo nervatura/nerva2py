@@ -20,7 +20,7 @@ function changeItem(){
   document.getElementById("no_deffield").disabled = false;
   
   url = window.location.protocol+'//'+window.location.host
-  +'/nerva2py/ndi_demo/get_nom_data?nom=@nom&database=@database&username=@username&password=@password';
+  +'/nerva2py/wizard/get_nom_data?nom=@nom&database=@database&username=@username&password=@password';
   url = url.replace("@nom", nom);
   url = url.replace("@database", document.getElementById("database").value);
   url = url.replace("@username", document.getElementById("username").value);

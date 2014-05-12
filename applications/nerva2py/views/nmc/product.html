@@ -57,10 +57,12 @@
           <tr>
             <td style="padding-right: 5px;"><div class="label">{{=form.custom.label.tax_id}}</div></td>
             <td style="padding-right: 5px;">{{=form.custom.widget.tax_id}}</td>
-            <td><div class="label">{{=form.custom.label.webitem}}</div></td>
-            <td class="td_checkbox">{{=form.custom.widget.webitem}}</td>
-            <td><div class="label">{{=form.custom.label.inactive}}</div></td>
-            <td class="td_checkbox">{{=form.custom.widget.inactive}}</td>
+            <td style="width: 200px;padding-left: 5px;">
+              <label style="margin: 0px;">{{=form.custom.widget.webitem}}{{=form.custom.label.webitem}}</label>
+            </td>
+            <td style="width: 200px;padding-left: 5px;">
+              <label style="margin: 0px;">{{=form.custom.widget.inactive}}{{=form.custom.label.inactive}}</label>
+            </td>
           </tr>
         </table>
       </td>
@@ -117,8 +119,10 @@
       <td>
         <div id="fieldvalue_value_controls" style="min-height: 30px;vertical-align: middle;">
           <input id="fieldvalue_value" type="hidden" name="value" value="">
-          <input id="fieldvalue_value_bool" 
-           type="checkbox" name="value_bool" class="boolean" value="true" checked="checked" style="display: none;width: 100%;">
+          <label id="fieldvalue_value_bool_label" style="margin: 0px;display: none;width: 100%;">
+            <input id="fieldvalue_value_bool" type="checkbox" name="value_bool" class="boolean" value="true">
+            <span id="fieldvalue_value_bool_text"></span>
+          </label>
           <input id="fieldvalue_value_integer" 
            type="text" name="value_integer" class="integer" value="" style="display: none;width: 100%;text-align: right;" >
           <input id="fieldvalue_value_float" 
@@ -187,8 +191,9 @@
           <tr>
             <td style="padding-right: 5px;"><div class="label">{{=response.barcode_form.custom.label.barcodetype}}</div></td>
             <td style="padding-right: 5px;">{{=response.barcode_form.custom.widget.barcodetype}}</td>
-            <td><div class="label">{{=response.barcode_form.custom.label.defcode}}</div></td>
-            <td class="td_checkbox">{{=response.barcode_form.custom.widget.defcode}}</td>
+            <td style="width: 200px;padding-left: 5px;">
+              <label style="margin: 0px;">{{=response.barcode_form.custom.widget.defcode}}{{=response.barcode_form.custom.label.defcode}}</label>
+            </td>
           </tr>
         </table>
       </td>
