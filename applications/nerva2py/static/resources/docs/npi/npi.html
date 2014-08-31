@@ -54,7 +54,9 @@ th,td {
     Nervatura Programming Interface 
   </h1>
   <p align="center"><b><i><a href="http://www.pyamf.org/architecture/typemap.html"
-          target="_blank">AMF</a> encoded version<br> Ver.No: {{=response.verNo}}</i></b></p>
+          target="_blank">AMF</a> and
+          <a href="http://en.wikipedia.org/wiki/JSON-RPC"
+          target="_blank">JSON</a> encoded version<br> Ver.No: {{=response.verNo}}</i></b></p>
   
   <p>
     <b>Function Overview</b>
@@ -70,57 +72,57 @@ th,td {
         <th width="100%">Parameters</th>
       </tr>
       <tr>
-        <td><a href="#getLogin_amf">getLogin_amf</a></td>
+        <td><a href="#getLogin">getLogin</a></td>
         <td>Object / dict</td>
         <td>database, username, password, validdata</td>
       </tr>
       <tr>
-        <td><a href="#callFunction_amf">callFunction_amf</a></td>
+        <td><a href="#callFunction">callFunction</a></td>
         <td>Any type</td>
         <td>login, functionName, paramList</td>
       </tr>
       <tr>
-        <td><a href="#executeSql_amf">executeSql_amf</a></td>
+        <td><a href="#executeSql">executeSql</a></td>
         <td>Boolean / bool</td>
         <td>login, sqlKey, sqlStr, paramList</td>
       </tr>
       <tr>
-        <td><a href="#loadView_amf">loadView_amf</a></td>
+        <td><a href="#loadView">loadView</a></td>
         <td>Array</td>
         <td>login, sqlKey, sqlStr, whereStr, havingStr, paramList, simpleList, orderStr</td>
       </tr>
       <tr>
-        <td><a href="#loadTable_amf">loadTable_amf</a></td>
+        <td><a href="#loadTable">loadTable</a></td>
         <td>Array</td>
         <td>login, classAlias, filterStr, orderStr</td>
       </tr>
       <tr>
-        <td><a href="#loadDataSet_amf">loadDataSet_amf</a></td>
+        <td><a href="#loadDataSet">loadDataSet</a></td>
         <td>Array</td>
         <td>login, dataSetInfo</td>
       </tr>
       <tr>
-        <td><a href="#saveRecord_amf">saveRecord_amf</a></td>
+        <td><a href="#saveRecord">saveRecord</a></td>
         <td>Typed Object / class instance</td>
         <td>login, record, validate</td>
       </tr>
       <tr>
-        <td><a href="#saveRecordSet_amf">saveRecordSet_amf</a></td>
+        <td><a href="#saveRecordSet">saveRecordSet</a></td>
         <td>Array</td>
         <td>login, recordSet, validate</td>
       </tr>
       <tr>
-        <td><a href="#deleteRecord_amf">deleteRecord_amf</a></td>
+        <td><a href="#deleteRecord">deleteRecord</a></td>
         <td>Boolean / bool</td>
         <td>login, record</td>
       </tr>
       <tr>
-        <td><a href="#deleteRecordSet_amf">deleteRecordSet_amf</a></td>
+        <td><a href="#deleteRecordSet">deleteRecordSet</a></td>
         <td>Boolean / bool</td>
         <td>login, recordSet</td>
       </tr>
       <tr>
-        <td><a href="#saveDataSet_amf">saveDataSet_amf</a></td>
+        <td><a href="#saveDataSet">saveDataSet</a></td>
         <td>Array</td>
         <td>login, dataSet, validate</td>
       </tr>
@@ -129,8 +131,8 @@ th,td {
   
   <p class="exblock">
     <b>More Examples: </b><a href={{=URL( 'ndr', 'getResource')+'?file_name=download/nwx&content=application/zip&file_type=zip'}} 
-    target="_blank"><b><i>Nervatura wxPython Client</i></b></a> and <a href={{=URL( 'ndr', 'getResource')+'?file_name=download/terminal_demo&content=application/zip&file_type=zip'}} 
-    target="_blank"><b><i>Nervatura Terminal Client</i></b></a>
+    target="_blank"><b><i>Nervatura wxPython Client</i></b></a> and <a href={{=URL( 'ndr', 'getResource')+'?file_name=download/npijson&content=application/zip&file_type=zip'}} 
+    target="_blank"><b><i>Javascript RPC functions</i></b></a>
   </p>
   
   <p>
@@ -142,7 +144,7 @@ th,td {
 		border="1" cellpadding="2" cellspacing="0" width="100%">
 		<tbody>
 			<tr class="fhead">
-				<td><a name="getLogin_amf" class="fname">getLogin_amf</a>(database<span
+				<td><a name="getLogin" class="fname">getLogin</a>(database<span
 					class="ftype">::String</span>, username<span class="ftype">::String</span>,
 					password<span class="ftype">::String</span>, validdata<span
 					class="ftype">::Boolean</span><span class="defvalue">=False</span>)<span
@@ -150,7 +152,8 @@ th,td {
 			</tr>
 			<tr>
 				<td>
-					<p class="fdesc">Login rights control. Successful login
+					<p class="fdesc"><u>Functions:</u> <b>getLogin_amf</b>, <b>getLogin_json</b><br>
+					  Login rights control. Successful login
 						additional information is available.<br>
 						<span class="retpar">database</span>: <span class="fdesc">
               an <b>NAS</b> alias set for a database</span><br>
@@ -181,20 +184,40 @@ th,td {
 					  service = RemotingService("http://127.0.0.1:8000/nerva2py/npi/call/amfrpc3").getService("default")<br>
             login = service.getLogin_amf("demo", "admin", None, True)<br>
             if login["valid"]==True:<br>
-            &nbsp;&nbsp;pass<br>					  
+            &nbsp;&nbsp;pass<br>
+            
+            <br>
+            <b><i>Javascript and <a href="http://en.wikipedia.org/wiki/JSON-RPC">JSON-RPC</a>:</i></b><br>
+            data = {"id":1, "method":"getLogin_json", "jsonrpc":"2.0", <br>
+            &nbsp;&nbsp;"params":{"database":"demo","username":"demo","password":""}}<br>
+            $.ajax({<br>
+            &nbsp;&nbsp;type: "post",<br>
+            &nbsp;&nbsp;url: "http://127.0.0.1:8000/npi/call/jsonrpc2/",<br>
+            &nbsp;&nbsp;data: JSON.stringify(data),<br>
+            &nbsp;&nbsp;contentType: "application/json",<br>
+            &nbsp;&nbsp;success: function(response){<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;response = JSON.parse(response);<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;if ("error" in response) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alert(response.error.message);<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;} else {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;console.log(response.result);}}<br>
+            &nbsp;&nbsp;error: function(jqXHR, textStatus, errorThrown ) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;alert("POST ERROR");}<br>
+            });<br>					  
 					</p>
 					
 				</td>
 				
 			<tr class="fhead">
-        <td><a name="callFunction_amf" class="fname">callFunction_amf</a>(<a href="#login">login</a><span
+        <td><a name="callFunction" class="fname">callFunction</a>(<a href="#login">login</a><span
           class="ftype">::Object</span>, functionName<span class="ftype">::String</span>,
           paramList<span class="ftype">::Any type</span>)<span
           class="ftype">::Any type</span></td>
       </tr>
       <tr>
 				<td>
-					<p class="fdesc">It calls for the <span class="retpar">functionName</span> server-side function. The
+					<p class="fdesc"><u>Functions:</u> <b>callFunction_amf</b>, <b>callFunction_json</b><br>
+					  It calls for the <span class="retpar">functionName</span> server-side function. The
 						<span class="retpar">paramList</span> parameters are passed.
 					</p>
 					<p>The result for the called function result.</p>
@@ -207,24 +230,35 @@ th,td {
             var op:AbstractOperation = ro.getOperation('callFunction_amf');<br>
             op.addEventListener(ResultEvent.RESULT, getCustnumber); op.addEventListener(FaultEvent.FAULT, connectFault);<br>
             op.send({database: "demo", username: "admin", password: null}, "nextNumber", {id:"custnumber", step:true});<br>
+            
             <br>
             <b><i>Python and <a href="http://www.pyamf.org/index.html">PyAMF</a>:</i></b><br>
             service = RemotingService("http://127.0.0.1:8000/nerva2py/npi/call/amfrpc3").getService("default")<br>
             result = service.callFunction_amf({"database": "demo", "username": "admin", "password": None}, 
               "nextNumber", {"id":"customer_number", "step":False})<br>
+            
+            <br>
+            <b><i>Javascript and <a href="http://en.wikipedia.org/wiki/JSON-RPC">JSON-RPC</a>:</i></b><br>
+            data = {"id":11, "method":"callFunction_json", "jsonrpc":"2.0",<br> 
+            &nbsp;&nbsp;"params":{<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"login":{"database":"demo", "username":"admin", "password":""},<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"functionName":"nextNumber",<br> 
+            &nbsp;&nbsp;&nbsp;&nbsp;"paramList":{"id":"customer_number", "step":False}}};<br>
+            $.ajax({...});<br>
           </p>   
 				</td>
 			</tr>
 			
 			<tr class="fhead">
-        <td><a name="executeSql_amf" class="fname">executeSql_amf</a>(<a href="#login">login</a><span
+        <td><a name="executeSql" class="fname">executeSql</a>(<a href="#login">login</a><span
           class="ftype">::Object</span>, sqlKey<span class="ftype">::String</span>, sqlStr<span class="ftype">::String</span>,
           paramList<span class="ftype">::Array</span>)<span
           class="ftype">::Boolean</span></td>
       </tr>
       <tr>
         <td>
-          <p class="fdesc">Execute the <span class="retpar">sqlStr</span> statement on the database. If <span class="retpar">sqlKey</span> 
+          <p class="fdesc"><u>Functions:</u> <b>executeSql_amf</b>, <b>executeSql_json</b><br>
+            Execute the <span class="retpar">sqlStr</span> statement on the database. If <span class="retpar">sqlKey</span> 
             value is not null, the statement is replaced with stored in the <b>NAS</b> <span class="retpar">login.appl</span> table.<br>
             <span class="retpar">paramList</span>: <span class="fdesc">
               the list of <a href="#param">param</a> objects</span>
@@ -260,12 +294,24 @@ th,td {
             
             result = service.executeSql_amf({"database": "demo", "username": "admin", "password": None}, 
               null, sqlStr, paramList)<br>
+            
+            <br>
+            <b><i>Javascript and <a href="http://en.wikipedia.org/wiki/JSON-RPC">JSON-RPC</a>:</i></b><br>
+            data = {"id":5, "method":"executeSql_json", "jsonrpc":"2.0",<br>
+            &nbsp;&nbsp;"params":{<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"login":{"database":"demo", "username":"admin", "password":""},<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"sqlKey":"", "sqlStr":sqlStr,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"paramList":[<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{"name":"@curr", "value":"EUR", "wheretype":"in", "type":"string"},<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{"name":"@from_date", "value":"2011-01-01", "wheretype":"in", "type":"date"},<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{"name":"@to_date", "value":"2011-02-01", "wheretype":"in", "type":"date"}]};<br>
+            $.ajax({...});<br>
           </p>
         </td>
       </tr>
       
       <tr class="fhead">
-        <td><a name="loadView_amf" class="fname">loadView_amf</a>(<a href="#login">login</a><span
+        <td><a name="loadView" class="fname">loadView</a>(<a href="#login">login</a><span
           class="ftype">::Object</span>, sqlKey<span class="ftype">::String</span>, sqlStr<span class="ftype">::String</span>,
           whereStr<span class="ftype">::String</span>, havingStr<span class="ftype">::String</span>, 
           paramList<span class="ftype">::Array</span>, 
@@ -275,7 +321,8 @@ th,td {
       </tr>
       <tr>
         <td>
-          <p class="fdesc">Loads the <span class="retpar">sqlStr</span> query from the database. If <span class="retpar">sqlKey</span> 
+          <p class="fdesc"><u>Functions:</u> <b>loadView_amf</b>, <b>loadView_json</b><br>
+            Loads the <span class="retpar">sqlStr</span> query from the database. If <span class="retpar">sqlKey</span> 
             value is not null, the query is replaced with stored in the <b>NAS</b> <span class="retpar">login.appl</span> table.<br>
             <span class="retpar">whereStr</span>: <span class="fdesc">
               the valid sql where filter string</span><br>
@@ -300,7 +347,7 @@ th,td {
             &nbsp;&nbsp;where t.deleted=0 @where_str <br>
             &nbsp;&nbsp;&nbsp;&nbsp;and t.id in(select trans_id from item where deleted=0 group by trans_id having @having_str)<br>
             &nbsp;&nbsp;order by @orderby_str"<br><br>
-            whereStr="t.curr=@curr and t.transdate>@from_date"<br>
+            whereStr="and t.curr=@curr and t.transdate>@from_date"<br>
             havingStr="sum(amount)>=@from_amount and sum(amount)<=@to_amount"<br>
             orderStr="duedate"<br><br>
             
@@ -329,19 +376,33 @@ th,td {
             
             result = service.loadView_amf({"database": "demo", "username": "admin", "password": None}, 
               null, sqlStr, whereStr, havingStr, paramList, False, orderStr)<br>
+            
+            <br>
+            <b><i>Javascript and <a href="http://en.wikipedia.org/wiki/JSON-RPC">JSON-RPC</a>:</i></b><br>
+            data = {"id":2, "method":"loadView_json", "jsonrpc":"2.0",<br>
+            &nbsp;&nbsp;"params":{<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"login":{"database":"demo", "username":"admin", "password":""},<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"sqlKey":"", "sqlStr":sqlStr, "whereStr":whereStr, "havingStr":havingStr, "orderStr":orderStr, simpleList:false,<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"paramList":[<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{"name":"@curr", "value":"EUR", "wheretype":"where", "type":"string"},<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{"name":"@from_date", "value":"2011-01-01", "wheretype":"where", "type":"date"},<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{"name":"@from_amount", "value":0, "wheretype":"having", "type":"number"},<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{"name":"@to_amount", "value":1000000, "wheretype":"having", "type":"number"}]};<br>
+            $.ajax({...});<br>
           </p>
         </td>
       </tr>
       
       <tr class="fhead">
-        <td><a name="loadTable_amf" class="fname">loadTable_amf</a>(<a href="#login">login</a><span
+        <td><a name="loadTable" class="fname">loadTable</a>(<a href="#login">login</a><span
           class="ftype">::Object</span>, classAlias<span class="ftype">::String</span>, filterStr<span class="ftype">::String</span>,
           orderStr<span class="ftype">::String</span>)<span
           class="ftype">::Array</span></td>
       </tr>
       <tr>
         <td>
-          <p class="fdesc">Loads data from a database table.<br>
+          <p class="fdesc"><u>Functions:</u> <b>loadTable_amf</b>, <b>loadTable_json</b><br>
+            Loads data from a database table.<br>
             <span class="retpar">classAlias</span>: <span class="fdesc">
               a registered class name</span><br>
             <span class="retpar">filterStr</span>: <span class="fdesc">
@@ -364,22 +425,31 @@ th,td {
             service = RemotingService("http://127.0.0.1:8000/nerva2py/npi/call/amfrpc3").getService("default")<br>
             result = service.loadTable_amf({"database": "demo", "username": "admin", "password": None}, 
               "models.customer", "id=1", None)<br>
+              
+            <br>
+            <b><i>Javascript and <a href="http://en.wikipedia.org/wiki/JSON-RPC">JSON-RPC</a>:</i></b><br>
+            data = {"id":3, "method":"loadTable_json", "jsonrpc":"2.0",<br>
+            &nbsp;&nbsp;"params":{<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"login":{"database":"demo", "username":"admin", "password":""},<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"classAlias":"customer", "filterStr":"id=1", "orderStr":""};<br>
+            $.ajax({...});<br>
           </p>
         </td>
       </tr>
       
       <tr class="fhead">
-        <td><a name="loadDataSet_amf" class="fname">loadDataSet_amf</a>(<a href="#login">login</a><span
+        <td><a name="loadDataSet" class="fname">loadDataSet</a>(<a href="#login">login</a><span
           class="ftype">::Object</span>, dataSetInfo<span class="ftype">::Array</span>)<span
           class="ftype">::Array</span></td>
       </tr>
       <tr>
         <td>
-          <p class="fdesc">In a group, any number can be sent loadTable_amf, loadView_amf, executeSql_amf and callFunction_amf requests.<br>
+          <p class="fdesc">In a group, any number can be sent loadTable, loadView, executeSql and callFunction requests.<br>
             <span class="retpar">dataSetInfo</span>: <span class="fdesc">
               the list of <a href="#recordSetInfo">recordSetInfo</a> objects</span>
           </p>
-          <p>The result value a list of <a href="#infoSet">infoSet</a> objects.</p>
+          <p><u>Functions:</u> <b>loadDataSet_amf</b>, <b>loadDataSet_json</b><br>
+            The result value a list of <a href="#infoSet">infoSet</a> objects.</p>
           
           <p class="exblock"><b><u><i>Examples:</i></u></b><br><br>
             <b><i>ActionScript and 
@@ -425,35 +495,57 @@ th,td {
             &nbsp;&nbsp;"paramList":{id:"custnumber", step:false}})<br>
             <br>
             result = service.loadDataSet_amf({"database": "demo", "username": "admin", "password": None}, dataSetInfo)<br>
+            
+            <br>
+            <b><i>Javascript and <a href="http://en.wikipedia.org/wiki/JSON-RPC">JSON-RPC</a>:</i></b><br>
+            data = {"id":2, "method":"loadDataSet_json", "jsonrpc":"2.0",<br>
+            &nbsp;&nbsp;"params":{<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"login":{"database":"demo", "username":"admin", "password":""},<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"dataSetInfo":[<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{"infoName":"groups", "infoType":"table", "classAlias":"models.groups",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"filterStr":"deleted=0 and groupname in ('customer', 'nervatype', 'fieldtype', 'logstate', 'custtype')",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"orderStr":"groupname, groupvalue"},<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{"infoName":"deffield", "infoType":"table", "classAlias":"models.deffield",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"filterStr":"deleted=0 and nervatype = (select id from groups where groupname = 'nervatype' and groupvalue = 'customer')",<br> 
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"orderStr":"description"},<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{"infoName":"calendar_view", "infoType":"view", "sqlKey":"fCustomer_getCalendarView",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"sqlStr":null, "whereStr":"", "havingStr":"",<br> 
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"paramList":[{"name":"@customer_id", "value":1, "wheretype":"in", "type":"integer"}]},<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{"infoName":"custnumber", "infoType":"function", "functionName":"nextNumber",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"paramList":{id:"custnumber", step:false}}<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;]}};<br>
+            $.ajax({...});<br>
           </p>
         </td>
       </tr>
       
       <tr class="fhead">
-        <td><a name="saveRecord_amf" class="fname">saveRecord_amf</a>(<a href="#login">login</a>
+        <td><a name="saveRecord" class="fname">saveRecord</a>(<a href="#login">login</a>
           <span class="ftype">::Object</span>, record<span class="ftype">::Typed Object</span>,
           validate<span class="ftype">::Boolean</span><span class="defvalue">=False</span>)<span
           class="ftype">::Typed Object</span></td>
       </tr>
       <tr>
         <td>
-          <p class="fdesc">Insert or update a data row. A new <span class="retpar">record</span>, set the returned <b>id</b>.<br>
-          <span class="retpar">validate:</span> if True, it calls the DAL validators for the fields before performing the update or insert
+          <p class="fdesc"><u>Functions:</u> <b>saveRecord_amf</b>, <b>saveRecord_json</b><br>
+            Insert or update a data row. A new <span class="retpar">record</span>, set the returned <b>id</b>.<br>
+            <span class="retpar">validate:</span> if True, it calls the DAL validators for the fields before performing the update or insert
           </p>
           <p>The result value of the input <span class="retpar">record</span> object.</p>
         </td>
       </tr>
       
       <tr class="fhead">
-        <td><a name="saveRecordSet_amf" class="fname">saveRecordSet_amf</a>(<a href="#login">login</a>
+        <td><a name="saveRecordSet" class="fname">saveRecordSet</a>(<a href="#login">login</a>
           <span class="ftype">::Object</span>, recordSet<span class="ftype">::Array</span>,
           validate<span class="ftype">::Boolean</span><span class="defvalue">=False</span>)<span
           class="ftype">::Array</span></td>
       </tr>
       <tr>
         <td>
-          <p class="fdesc">Insert or update multiple rows of data.<br>
-          <span class="retpar">recordSet</span>: <span class="fdesc">
+          <p class="fdesc"><u>Functions:</u> <b>saveRecordSet_amf</b>, <b>saveRecordSet_json</b><br>
+            Insert or update multiple rows of data.<br>
+            <span class="retpar">recordSet</span>: <span class="fdesc">
               the list of <span class="retpar">record</span> objects.
               A new <span class="retpar">record</span>, set the returned <b>id</b>.</span><br>
           <span class="retpar">validate:</span> if True, it calls the DAL validators for the fields before performing the update or insert
@@ -463,27 +555,29 @@ th,td {
       </tr>
       
       <tr class="fhead">
-        <td><a name="deleteRecord_amf" class="fname">deleteRecord_amf</a>(<a href="#login">login</a>
+        <td><a name="deleteRecord" class="fname">deleteRecord</a>(<a href="#login">login</a>
           <span class="ftype">::Object</span>, record<span class="ftype">::Typed Object</span>)<span
           class="ftype">::Boolean</span></td>
       </tr>
       <tr>
         <td>
-          <p class="fdesc">Delete a data row.
+          <p class="fdesc"><u>Functions:</u> <b>deleteRecord_amf</b>, <b>deleteRecord_json</b><br>
+            Delete a data row.
           </p>
           <p>True value if the deletion is successful.</p>
         </td>
       </tr>
       
       <tr class="fhead">
-        <td><a name="deleteRecordSet_amf" class="fname">deleteRecordSet_amf</a>(<a href="#login">login</a>
+        <td><a name="deleteRecordSet" class="fname">deleteRecordSet</a>(<a href="#login">login</a>
           <span class="ftype">::Object</span>, recordSet<span class="ftype">::Array</span>)<span
           class="ftype">::Boolean</span></td>
       </tr>
       <tr>
         <td>
-          <p class="fdesc">Delete multiple rows of data.<br>
-          <span class="retpar">recordSet</span>: <span class="fdesc">
+          <p class="fdesc"><u>Functions:</u> <b>deleteRecordSet_amf</b>, <b>deleteRecordSet_json</b><br>
+            Delete multiple rows of data.<br>
+            <span class="retpar">recordSet</span>: <span class="fdesc">
               the list of <span class="retpar">record</span> objects.</span>
           </p>
           <p>True value if the all deletion is successful.</p>
@@ -491,13 +585,14 @@ th,td {
       </tr>
       
       <tr class="fhead">
-        <td><a name="saveDataSet_amf" class="fname">saveDataSet_amf</a>(<a href="#login">login</a><span
+        <td><a name="saveDataSet" class="fname">saveDataSet</a>(<a href="#login">login</a><span
           class="ftype">::Object</span>, dataSetInfo<span class="ftype">::Array</span>)<span
           class="ftype">::Array</span></td>
       </tr>
       <tr>
         <td>
-          <p class="fdesc">In a group, any number can be sent saveRecordSet_amf, deleteRecordSet_amf and callFunction_amf requests.<br>
+          <p class="fdesc"><u>Functions:</u> <b>saveDataSet_amf</b>, <b>saveDataSet_json</b><br>
+            In a group, any number can be sent saveRecordSet, deleteRecordSet and callFunction requests.<br>
             <span class="retpar">dataSetInfo</span>: <span class="fdesc">
               the list of <a href="#updateSetInfo">updateSetInfo</a> objects</span>
           </p>

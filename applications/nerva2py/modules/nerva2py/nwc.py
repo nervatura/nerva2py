@@ -1133,7 +1133,7 @@ class WebUiSelector(object):
               _onclick="jQuery('#w2p_query_fields').change();jQuery('#w2p_query_panel').slideDown();"),
         _method="GET", _action=url), search_menu)
   
-  def dlg_create_trans(self, trans_id):
+  def dlg_create_trans(self, trans_id, idx=""):
     directions = ["in","out"]
     def_transtype = base_transtype = self.ui.ns.valid.get_nervatype_name(self.ui.ns.db.trans(id=trans_id).transtype)
     #disabled create fom delivery
@@ -1178,31 +1178,31 @@ class WebUiSelector(object):
     
     def_direction = self.ui.ns.valid.get_nervatype_name(self.ui.ns.db.trans(id=trans_id).direction)
     cmb_doctypes = SELECT(*[OPTION(self.ui.ns.T(doctype), _value=doctype, _selected=(doctype==def_transtype)) for doctype in doctypes], 
-                          _id="cmb_doctypes",_style="width: 100%;",
-                          _onChange = "create_newtype_change();")
+                          _id="cmb_doctypes"+idx,_style="width: 100%;",
+                          _onChange = "create_newtype_change("+idx+");")
     cmb_directions = SELECT(*[OPTION(self.ui.ns.T(direc), _value=direc, _selected=(direc==def_direction)) for direc in directions], 
-                            _id="cmb_directions",_style="width: 100%;")
+                            _id="cmb_directions"+idx,_style="width: 100%;")
     
     if self.ui.ns.session.mobile:
       rtable = TABLE(_style="width: 100%;",_cellpadding="0px;", _cellspacing="0px;")
-      rtable.append(TR(TD(INPUT(_type="hidden", _value=base_transtype, _id="base_transtype"),
-                          INPUT(_type="hidden", _value=element_count, _id="element_count"),
+      rtable.append(TR(TD(INPUT(_type="hidden", _value=base_transtype, _id="base_transtype"+idx),
+                          INPUT(_type="hidden", _value=element_count, _id="element_count"+idx),
                           self.ui.ns.db.trans(id=trans_id).transnumber,
                           _style="background-color: #DBDBDB;font-weight: bold;text-align: center;padding: 8px;")))
       
       cmb_doctypes = SELECT(*[OPTION(self.ui.ns.T(doctype), _value=doctype, _selected=(doctype==def_transtype)) for doctype in doctypes], 
-                            _id="cmb_doctypes",_style="width: 100%;height: 25px;",
-                            _onChange = "create_newtype_change();")
+                            _id="cmb_doctypes"+idx,_style="width: 100%;height: 25px;",
+                            _onChange = "create_newtype_change("+idx+");")
       cmb_directions = SELECT(*[OPTION(self.ui.ns.T(direc), _value=direc, _selected=(direc==def_direction)) for direc in directions], 
-                              _id="cmb_directions",_style="width: 100%;height: 25px;")
+                              _id="cmb_directions"+idx,_style="width: 100%;height: 25px;")
     
       rtable.append(TABLE(TR(TD(cmb_doctypes, _style="padding-right: 5px;"),
                        TD(cmb_directions)),
                        _style="width: 100%;",_cellpadding="0px;", _cellspacing="0px;"))
-      rtable.append(TABLE(TR(TD(LABEL(INPUT(_type='checkbox', _id='cb_netto', value='on', _disabled=(netto_color=="#C5C5C5"),_class="boolean"),
+      rtable.append(TABLE(TR(TD(LABEL(INPUT(_type='checkbox', _id='cb_netto'+idx, value='on', _disabled=(netto_color=="#C5C5C5"),_class="boolean"),
                                 self.ui.ns.T("Invoiced amount deduction"), _style="margin-bottom:0px;"))),
                     _style="width: 100%;",_cellpadding="0px;", _cellspacing="0px;"))
-      rtable.append(TABLE(TR(TD(LABEL(INPUT(_type='checkbox', _id='cb_from', value='', _disabled=(from_color=="#C5C5C5"),_class="boolean", _onChange = "from_delivery_change();"),
+      rtable.append(TABLE(TR(TD(LABEL(INPUT(_type='checkbox', _id='cb_from'+idx, value='', _disabled=(from_color=="#C5C5C5"),_class="boolean", _onChange = "from_delivery_change();"),
                                 self.ui.ns.T("Create by delivery"), _style=""))),
                     _style="width: 100%;",_cellpadding="0px;", _cellspacing="0px;"))
       rtable_cmd = DIV(_style="background-color: #393939;padding: 10px;") 
@@ -1214,8 +1214,8 @@ class WebUiSelector(object):
       rtable.append(TR(TD(rtable_cmd)))
     else:                        
       rtable = TABLE(_style="width: 100%;")
-      rtable.append(TR(TD(INPUT(_type="hidden", _value=base_transtype, _id="base_transtype"),
-                          INPUT(_type="hidden", _value=element_count, _id="element_count"),
+      rtable.append(TR(TD(INPUT(_type="hidden", _value=base_transtype, _id="base_transtype"+idx),
+                          INPUT(_type="hidden", _value=element_count, _id="element_count"+idx),
                           self.ui.ns.db.trans(id=trans_id).transnumber,_colspan="3",
                           _style="background-color: #F1F1F1;font-weight: bold;text-align: center;border-bottom: solid;padding: 5px;")))
       rtable.append(TR(
@@ -1224,11 +1224,11 @@ class WebUiSelector(object):
                        TD(cmb_directions,_style="width: 100px;padding: 5px;padding-right: 0px;border-bottom: solid;")))
       rtable_check = TABLE(_style="width: 100%;")
       rtable_check.append(TR(
-                       TD(INPUT(_type='checkbox', _id='cb_netto', value='on', _disabled=(netto_color=="#C5C5C5")),_style="width: 10px;padding:0px;vertical-align: top;"),
-                       TD(self.ui.ns.T("Invoiced amount deduction"), _id='cb_netto_label',_style="padding-top:3px;color:"+netto_color),
-                       TD(INPUT(_type='checkbox', _id='cb_from', value='', _disabled=(from_color=="#C5C5C5"), _onChange = "from_delivery_change();"),
+                       TD(INPUT(_type='checkbox', _id='cb_netto'+idx, value='on', _disabled=(netto_color=="#C5C5C5")),_style="width: 10px;padding:0px;vertical-align: top;"),
+                       TD(self.ui.ns.T("Invoiced amount deduction"), _id='cb_netto_label'+idx,_style="padding-top:3px;color:"+netto_color),
+                       TD(INPUT(_type='checkbox', _id='cb_from'+idx, value='', _disabled=(from_color=="#C5C5C5"), _onChange = "from_delivery_change();"),
                           _style="width: 10px;padding:0px;vertical-align: top;"),
-                       TD(self.ui.ns.T("Create by delivery"), _id='cb_from_label',_style="padding-top:3px;color:"+from_color)))
+                       TD(self.ui.ns.T("Create by delivery"), _id='cb_from_label'+idx,_style="padding-top:3px;color:"+from_color)))
       rtable.append(TR(TD(rtable_check,_colspan="3", 
                           _style="background-color: #F1F1F1;font-weight: bold;text-align: left;padding: 5px;border-bottom: solid;")))
       cmd_ok = INPUT(_type="button", _value="Creating a document", _style="height: 40px !important;padding-top: 5px !important;",
@@ -2155,7 +2155,7 @@ class WebUiReport(object):
                      TD(cmd_pdf,_style="width: 50%;padding:0px;padding-top:5px;padding-left:2px;")))
       cmd_xml = INPUT(_type="button", _value="Create XML", _style="width: 100%;height: 50px !important;padding-top: 5px !important;",
                         _onclick="create_report('xml','"+self.ui.ns.T("Missing Output Template!")+"');")
-      cmd_group = INPUT(_type="button", _value="Printer queue", _style="width: 100%;height: 50px !important;padding-top: 5px !important;",
+      cmd_group = INPUT(_type="button", _value="Printer Queue", _style="width: 100%;height: 50px !important;padding-top: 5px !important;",
                         _onclick="if(document.getElementById('cmb_templates').value==''){alert('"+self.ui.ns.T("Missing Output Template!")+"');} else {ajax('"+URL("cmd_add_queue")+"?nervatype="+str(nervatype)+"&ref_id="+str(ref_id)
                         +"&qty='+document.getElementById('page_copy').value+'&template='+document.getElementById('cmb_templates').value);alert('"+self.ui.ns.T("The document has been added to the Printing List")+"')}; return false;")
       rtable_cmd.append(TR(
@@ -2709,7 +2709,6 @@ class WebUi(object):
   controller = "nwc"
   dir_view = ""
   dir_images = ""
-  dir_help = ""
   response = None
   jqload_hack = ""
   tool = NervaTools(None)
@@ -2753,7 +2752,6 @@ class WebUi(object):
     if self.ns.session.mobile:
       self.dir_view = "nmc"
       self.dir_images = "static/resources/application/nmc/images"
-      self.dir_help = "static/resources/application/nmc/help"
       self.response.title=self.ns.T('Nervatura Mobile Client')
       self.response.cmd_menu = self.control.get_mobil_button(label=self.ns.T("MENU"), href="#main-menu",
                                                  icon="bars", cformat="ui-btn-left", ajax="true", iconpos="left")
@@ -2773,7 +2771,6 @@ class WebUi(object):
     else:
       self.dir_view = "nwc"
       self.dir_images = "static/resources/application/nwc/images"
-      self.dir_help = "static/resources/application/nwc/help"
       self.response.title=self.ns.T('Nervatura Web Client')
       self.response.icon_help = IMG(_src=URL(self.dir_images,'icon16_help.png'))
       self.response.icon_user = IMG(_src=URL(self.dir_images,'icon16_user.png'),

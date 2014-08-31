@@ -849,12 +849,13 @@ function copy_trans(copy_url,redir_url){
 //--------------------------------------------------
 //create new document type from base trans: trans_item
 //--------------------------------------------------
-function create_newtype_change(){
-	var seltype = document.getElementById('cmb_doctypes').value;
-	var cb_netto = document.getElementById('cb_netto'); var cb_netto_label = document.getElementById('cb_netto_label');
-	var base_transtype = document.getElementById('base_transtype').value;
-	var element_count = document.getElementById('element_count').value;
-	var cb_from = document.getElementById('cb_from'); var cb_from_label = document.getElementById('cb_from_label');
+function create_newtype_change(index){
+	var idx=""; if(index!=null) {idx=index;};
+	var seltype = document.getElementById('cmb_doctypes'+idx).value;
+	var cb_netto = document.getElementById('cb_netto'+idx); var cb_netto_label = document.getElementById('cb_netto_label'+idx);
+	var base_transtype = document.getElementById('base_transtype'+idx).value;
+	var element_count = document.getElementById('element_count'+idx).value;
+	var cb_from = document.getElementById('cb_from'+idx); var cb_from_label = document.getElementById('cb_from_label'+idx);
 	if(seltype=='invoice' || seltype=='receipt'){
 		cb_netto.disabled=false; cb_netto_label.style.color='#444444';
 	} else {

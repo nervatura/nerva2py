@@ -475,7 +475,7 @@ def create_demo():
     
     movement=[{"transnumber":"DMMOVE/00001","rownumber":1,"movetype":"tool","shippingdate":str(trans_year-1)+"-12-05 00:00:00", "serial":"DEF-456"},
               {"transnumber":"DMMOVE/00001","rownumber":2,"movetype":"tool","shippingdate":str(trans_year-1)+"-12-05 00:00:00", "serial":"IMEI-023456789",
-               "notes":"mobil phone"}]
+               "notes":"mobile phone"}]
     retvalue = ndi.update_movement(param,movement)
     if retvalue.startswith("Error"):
       return rs.append(DIV(SPAN("movement"+": ",_style="color:blue;font-weight: bold;"),

@@ -1898,8 +1898,8 @@ class DataStore(object):
         Field('id', readable=False, writable=False),
         Field('secname', type='string', length=150, required=True, notnull=True),
         Field('fieldname', type='string', length=150, required=True, notnull=True),
-        Field('lang', type='string', length=2, required=True, notnull=True, 
-              requires = IS_IN_DB(self.ns.db(self.ns.db.ui_language), self.ns.db.ui_language.lang, '%(lang)s')),
+        Field('lang', type='string', length=2, 
+              requires = IS_EMPTY_OR(IS_IN_DB(self.ns.db(self.ns.db.ui_language), self.ns.db.ui_language.lang, '%(lang)s'))),
         Field('msg', type='text', required=True, notnull=True))
       if self.ns.engine in("mssql"):
         table.msg.type = 'string'

@@ -1,9 +1,9 @@
-*.pyc
-*.pyo
-*.log
-*.pid
-*.table
-*.w2p
+**.pyc
+**.pyo
+**.log
+**.pid
+**.table
+**.w2p
 
 .project
 .pydevproject
@@ -23,6 +23,11 @@ README.markdown
 datastore
 gae
 gae.py
+ntsup
+**/images/help/
+**/help/nwc/
+**/help/nmc/
+**/help/nflex/
 
 examples
 nerva2py-gae

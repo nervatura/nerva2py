@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html><!--HTML5 doctype-->
+
+<head>
+<title>Nervatura NPI Sample</title>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+
+<script src="js/knockout.min.js"></script>
+<script src="js/adapter.js"></script>
+<script src="js/app.js"></script>
+
+<link href="app.css" rel="stylesheet" type="text/css">
+
+</head>
+<body>
+  
+<div id="main" style="max-width: 800px;">
+  <div class="cmd">
+    <div style="display: table-row;">
+      <div style="display: table-cell;padding:2px;">
+        <button data-bind="click: ds.loadRecordSet" style="color:#4169E1;">Load table</button>
+        <button data-bind="click: ds.loadRecord" style="color:#4169E1;">Load record</button>
+        <button data-bind="click: ds.saveRecord" style="color:#228B22;">Save record</button>
+        <button data-bind="click: ds.saveRecordSet" style="color:#228B22;">Save all</button>
+        <button data-bind="click: ds.newRecord" style="color:#B22222;">New record</button>
+        <button data-bind="click: ds.deleteRecord" style="color:#B22222;">Delete record</button>
+      </div>
+    </div>
+    <div style="display: table-row;">
+      <div style="display: table-cell;padding:2px;">
+        <button data-bind="click: ds.firstRecord">&#60;&#60; First</button>
+        <button data-bind="click: ds.prevRecord">&#60; Previous</button>
+        Total: <span data-bind="text: ds.items().length" style="color:#228B22;"></span>  
+        Current: <span data-bind="text: ds.index()+1" style="color:#228B22;"></span>
+        <button data-bind="click: ds.nextRecord">&#62; Next</button>
+        <button data-bind="click: ds.lastRecord">&#62;&#62; Last</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cmd">
+    <div style="display: table-row;">
+      <div class="cmd_cell">
+        <label for="" style="width: 100px;">Server URL</label>
+        <input type="text" data-bind="value:ds.database.server">
+      </div>
+      <div class="cmd_cell">
+        <label for="" style="width: 100px;">Database</label>
+        <input type="text" data-bind="value:ds.database.database">
+      </div>
+    </div>
+    <div style="display: table-row;">
+      <div class="cmd_cell">
+        <label for="" style="width: 100px;">Username</label>
+        <input type="text" data-bind="value:ds.database.username">
+      </div>
+      <div class="cmd_cell">
+        <label for="" style="width: 100px;">Password</label>
+        <input type="text" data-bind="value:ds.database.password">
+      </div>
+    </div>
+  </div>
+
+  <div id="flash" data-bind="visible: get_msg, css: error_msg() ? 'error_msg' : 'info_msg'">
+    <span data-bind="text: get_msg"></span></div>
+
+  <div class="box">
+    <div style="display: table-row;">
+      <div class="cmd_cell">
+        <label for="">ID</label>
+        <input type="number" disabled="disabled" data-bind="value:ds.current.id">
+      </div>
+      <div class="cmd_cell">
+        <label for="">Code</label>
+        <input type="text" data-bind="value:ds.current.numberkey">
+      </div>
+      <div class="cmd_cell">
+        <label for="">Value</label>
+        <input type="number" data-bind="value:ds.current.curvalue">
+      </div>
+    </div>
+    <div style="display: table-row;">
+      <div class="cmd_cell">
+        <label for="">Description</label>
+        <input type="text" data-bind="value:ds.current.description" style="width: 300px;">
+      </div>
+      <div class="cmd_cell">
+        <label for="">Prefix</label>
+        <input type="text" data-bind="value:ds.current.prefix" style="width: 150px;">
+      </div>
+    </div>
+    <div style="display: table-row;">
+      <div class="cmd_cell">
+        <label for="">Year</label>
+        <input type="checkbox" data-bind="checked:ds.current.isyear" style="">
+      </div>
+      <div class="cmd_cell">
+        <label for="">Separator</label>
+        <input type="text" data-bind="value:ds.current.sep" style="width: 30px;text-align: center;">
+      </div>
+      <div class="cmd_cell">
+        <label for="">Length</label>
+        <input type="number" data-bind="value:ds.current.len" style="width: 45px;">
+      </div>
+      <div class="cmd_cell">
+        <label for="">Visible</label>
+        <input type="checkbox" data-bind="checked:ds.current.visible" style="">
+      </div>
+      <div class="cmd_cell">
+        <label for="">Read-only</label>
+        <input type="checkbox" data-bind="checked:ds.current.readonly" style="">
+      </div>
+      <div class="cmd_cell">
+        <label for="">Order</label>
+        <input type="number" data-bind="value:ds.current.orderby" style="width: 45px;">
+      </div>
+    </div>
+  </div>
+</div>
+  
+<script>
+  //data bindings
+  ko.applyBindings(cont,document.getElementById("main"));
+</script>
+</body>
+</html>

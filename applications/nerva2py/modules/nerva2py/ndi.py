@@ -74,7 +74,7 @@ class Ndi(object):
     if row[key]=="": 
       row[key]=None
     elif self.ns.db[table].has_key(key):
-      if self.ns.db[table][key].type=="date": 
+      if self.ns.db[table][key].type=="date" and str(row[key]).find(" 00:00:00")>-1: 
         row[key] = str(row[key]).strip(" 00:00:00")
       
   def delete_transitem(self, params, data, nervatype):

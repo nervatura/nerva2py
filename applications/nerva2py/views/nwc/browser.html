@@ -67,17 +67,21 @@ var ms_err_missing_curr = "{{=T('Missing currency value!')}}";
             </td>
             
             <td style="width: auto;padding-left:30px;padding-right: 0px;">
-              <a style="height: 15px;" class="w2p_trap buttontext button" href="{{=URL('cmd_go_help?page=browser')}}" 
-	            target="_blank" title="{{=T('Help')}}">
-	              {{=response.icon_help}}</a>
+              {{if response.cmd_help:}}
+                {{=response.cmd_help}}
+              {{else:}}
+                <a style="height: 15px;" class="w2p_trap buttontext button" href="{{=URL('cmd_go_help?page=browser')}}" 
+	                target="_blank" title="{{=T('Help')}}">
+	                {{=response.icon_help}}</a>
+	            {{pass}}
             </td>
             <td style="padding-left:0px;padding-right: 0px;">
               {{if response.cmd_back:}}
-	            {{=response.cmd_back}}
-	          {{else:}}
-	            <a style="height: 15px; padding-top: 2px; padding-bottom: 6px;" class="w2p_trap buttontext button" href="{{=URL('index')}}" title="{{=T('Back')}}">
+	              {{=response.cmd_back}}
+	            {{else:}}
+	              <a style="height: 15px; padding-top: 2px; padding-bottom: 6px;" class="w2p_trap buttontext button" href="{{=URL('index')}}" title="{{=T('Back')}}">
                   <span class="icon home"></span></a>
-	          {{pass}}
+	            {{pass}}
             </td>
             {{if response.cmd_edit_new:}}
             <td>

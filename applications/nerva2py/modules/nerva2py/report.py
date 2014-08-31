@@ -14,7 +14,7 @@ from nerva2py.fpdf_html import HTMLMixin
 
 class Report(FPDF, HTMLMixin):
   
-  CLASS_VERSION='0.8'
+  CLASS_VERSION='0.9'
   favicon = "/nerva2py/static/favicon.ico"
   report_style={}
   header_elements = None
@@ -177,16 +177,20 @@ class Report(FPDF, HTMLMixin):
       if self.databind.has_key(dbv[0]):
         if type(self.databind[dbv[0]]).__name__=="list":
           try:
-            return value.replace("={{"+_value+"}}", str(self.databind[dbv[0]][int(dbv[1])][dbv[2]]))
+            value = value.replace("={{"+_value+"}}", str(self.databind[dbv[0]][int(dbv[1])][dbv[2]]))
           except Exception:
             return value
         elif type(self.databind[dbv[0]]).__name__=="dict":
           try:
-            return value.replace("={{"+_value+"}}", str(self.databind[dbv[0]][dbv[1]]))
+            value = value.replace("={{"+_value+"}}", str(self.databind[dbv[0]][dbv[1]]))
           except Exception:
             return value
         elif self.databind[dbv[0]]!=None:
-          return value.replace("={{"+_value+"}}", str(self.databind[dbv[0]]))
+          value = value.replace("={{"+_value+"}}", str(self.databind[dbv[0]]))
+        else:
+          return value
+        if str(value).find("={{")>-1 and str(value).find("}}")>-1:
+          return self.setValue(value)
         else:
           return value
       else:
@@ -254,10 +258,12 @@ class Report(FPDF, HTMLMixin):
     dgrid = '<table '+style+' border="'+border+'" width="'+dgwidth+'" cellpadding="0" cellspacing="0">'
     if header!=None:
       bgcolor = header.get("background-color","")
+      merge = header.get("merge","0")
       if bgcolor!="":
         bgcolor=' bgcolor="'+hex(int(bgcolor)).replace("0x","#").upper()+'"'
     else:
       bgcolor=""
+      merge="0"
     dfoot='<tfoot><tr '+bgcolor+'>'
     dgrid+='<thead><tr '+bgcolor+'>'
     self.details_xml += "\n    <"+str(xname)+"_footer"+">"
@@ -279,27 +285,40 @@ class Report(FPDF, HTMLMixin):
     dgrid+="<tbody>"    
     if self.databind.has_key(databind) and columns!=None:
       rows = self.databind[databind]
-      for rn in range(len(rows)):
-        rheight = self.get_row_height(rows[rn], columns)
-        row="<tr>"
-        self.details_xml += "\n    <"+str(xname)+">"
-        for col in columns:
-          fieldname = col.get("fieldname","")
-          if fieldname=="counter":
-            value=str(rn+1)
-          elif rows[rn].has_key(fieldname):
-            if rows[rn][fieldname]!=None and rows[rn][fieldname]!="":
-              value=str(rows[rn][fieldname])
+      if len(rows)>0:
+        for rn in range(len(rows)):
+          rheight = self.get_row_height(rows[rn], columns)
+          row="<tr>"
+          self.details_xml += "\n    <"+str(xname)+">"
+          svalue=""
+          for col in columns:
+            fieldname = col.get("fieldname","")
+            if fieldname=="counter":
+              value=str(rn+1)
+            elif rows[rn].has_key(fieldname):
+              if rows[rn][fieldname]!=None and rows[rn][fieldname]!="":
+                value=str(rows[rn][fieldname])
+              else:
+                value="&nbsp; "
             else:
               value="&nbsp; "
-          else:
-            value="&nbsp; "
-          value = self.set_datagrid_col_number_format(col,value)
-          row+='<td height="'+str(int(rheight["mrh"]))+'" multiline="'+rheight["rh"][fieldname]+'" '+style+' align="'+self.get_datagrid_col_align(col)+'">'+value+'</td>'
-          self.details_xml += "\n      <"+str(fieldname)+"><![CDATA["+str(value)+"]]></"+str(fieldname)+">"
-        dgrid+=row+"</tr>"
-        self.details_xml += "\n    </"+str(xname)+">"
-    dgrid+="</tbody>"+dfoot+'</table>'
+            value = self.set_datagrid_col_number_format(col,value)
+            if svalue!="": 
+              svalue+=" "
+            svalue += value
+            if merge!="1":
+              row+='<td height="'+str(int(rheight["mrh"]))+'" multiline="'+rheight["rh"][fieldname]+'" '+style+' align="'+self.get_datagrid_col_align(col)+'">'+value+'</td>'
+            self.details_xml += "\n      <"+str(fieldname)+"><![CDATA["+str(value)+"]]></"+str(fieldname)+">"
+          if merge=="1":
+            row+='<td width="100%" height="'+str(int(rheight["mrh"]))+'" multiline="'+rheight["rh"][fieldname]+'" '+style+'>'+svalue+'</td>'
+          dgrid+=row+"</tr>"
+          self.details_xml += "\n    </"+str(xname)+">"
+      else:
+        dgrid="<table></table>"
+    else:
+      dgrid="<table></table>"
+    if dgrid!="<table></table>": 
+      dgrid+="</tbody>"+dfoot+'</table>'
     return dgrid
   
   def get_row_height(self, row,columns):
@@ -331,6 +350,13 @@ class Report(FPDF, HTMLMixin):
     pass
   
   def create_row(self,section,row_element):
+    existing = row_element.get("visible",None)
+    if existing:
+      if self.databind.has_key(existing):
+        if len(self.databind[existing])==0:
+          return ""
+      else:
+        return ""
     hrow = '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: separate !important;"><tr>'
     hgap = float(row_element.get("hgap",0))
     height = float(row_element.get("height",self.def_row_height))
@@ -385,7 +411,7 @@ class Report(FPDF, HTMLMixin):
           fill=1
         else:
           fill=0 
-        link = row_element[ei].get("link","")
+        link = self.setValue(row_element[ei].get("link",""))
         multiline = row_element[ei].get("multiline","false")
         if multiline=="true":
           self.multi_cell(w=width, h=height, txt=str(value).decode(self.decode).encode(self.encode,'replace'), border=border, align=align, fill=fill)
@@ -395,7 +421,7 @@ class Report(FPDF, HTMLMixin):
           else:
             ln=0
           self.cell(w=width, h=height, txt=str(value).decode(self.decode).encode(self.encode,'replace'), border=border, ln=ln, align=align, fill=fill, link=link)
-        style+="padding:2px;"
+        style+="padding:2px 4px 2px 4px;"
         if value=="":
           value="&nbsp;"
         if link!="":
@@ -412,12 +438,18 @@ class Report(FPDF, HTMLMixin):
         if width>0:
           style+="width:"+str(width)+self.unit+";"
         name = self.setValue(row_element[ei].get("file",""))
-        if name.find("/")==-1 and self.images_folder:
+        if name.find("/")==-1 and self.images_folder and name!="":
           name = self.images_folder+'/'+name
-        link = row_element[ei].get("link","")
+        link = self.setValue(row_element[ei].get("link",""))
         if name!="":
           import os
-          if os.path.isfile(name):
+          if not os.path.isfile(name):
+            import urllib2
+            try:
+              urllib2.urlopen(urllib2.Request(name))
+            except:
+              name = ""
+          if name!="":  
             self.image(name=name, x=self.get_x()+0.5, y=self.get_y()+0.5, w=width, link=link)
             self.set_x(self.get_x()+(self.images[name]['w']/self.k)+0.5)
           if link!="":

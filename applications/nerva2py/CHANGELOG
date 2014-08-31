@@ -1,3 +1,13 @@
+1.0.0-beta2
+- NPI JSON-RPC support
+- New sample program: Javascript, Knockout, JSON-RPC and NPI.
+- Nervatura Report, Excel Report: dynamic template labels support (ui_messages)
+- Nervatura Report: datagrid/header merge (columns) attribute
+- Nervatura Report: row visible attribute
+- NWC worksheet/order/rental docs bug in postgresql
+- New help template and structure
+- many bug fixes
+
 1.0.0-beta1
 - update web2py to 2.9.5
 - NAS: source code optimization, a new class structure
@@ -20,7 +30,7 @@
 0.9.8
 - update web2py to 2.7.4
 - new base look and feel
-- Mobil Client: new ui
+- Mobile Client: new ui
 - Web Client: rewritten and optimized code and style
 - many bug fixes
 

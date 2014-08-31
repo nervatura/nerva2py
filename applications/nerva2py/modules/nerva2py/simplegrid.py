@@ -597,7 +597,10 @@ class SimpleGrid():
                       value = truncate_string(value,maxlength)
                   elif not isinstance(value,DIV):
                       value = field.formatter(value)
-                  tr.append(TD(value))
+                  if not include_buttons_column:
+                      tr.append(TD(value,_style="padding:10px;"))
+                  else:
+                      tr.append(TD(value))
               row_buttons = TD(_class='row_buttons')
               if links and links_in_grid:
                   for link in links:

@@ -709,6 +709,10 @@ class DataOutput(object):
     datarows = {}
     trows = 0
     for rs in reportsources:
+      labels = self.ns.db((self.ns.db.ui_message.secname==report["reportkey"]+"_"+str(rs["dataset"]))
+                                &(self.ns.db.ui_message.lang==None)).select()
+      for label in labels:
+        rs["sqlstr"] = rs["sqlstr"].replace("={{"+label["fieldname"]+"}}", str(label["msg"]))
       if str(rs["sqlstr"]).startswith("function"):
         fu_str = str(rs["sqlstr"]).split("|")
         func = fu_str[1]
@@ -732,6 +736,12 @@ class DataOutput(object):
         rs["sqlstr"] = rs["sqlstr"].replace("@where_str", "")
         datarows[str(rs["dataset"])] = self.ns.db.executesql(rs["sqlstr"], as_dict=True)
         trows = trows+len(datarows[str(rs["dataset"])])
+    labels={}
+    labels_ = self.ns.db((self.ns.db.ui_message.secname==report["reportkey"]+"_report")
+                                &(self.ns.db.ui_message.lang==None)).select()
+    for label in labels_:
+      labels[label["fieldname"]]=label["msg"]
+    datarows["labels"]=labels
     datarows["title"]=report["repname"]
     datarows["crtime"]=datetime.date.strftime(datetime.datetime.now(),"%Y.%m.%d %H:%M")
     if trows==0:
@@ -776,6 +786,10 @@ class DataOutput(object):
             else:
               for colname in datarows[skey][0].keys():
                 columns.append({"name":colname,"label":colname,"type":"string"})
+            if labels:
+              for col in columns:
+                if labels.has_key(col["name"]):
+                  col["label"] = labels[col["name"]]
             sheet = {"sheetName":sheetName,"columns":columns}
             book = self.exportToExcel(sheet, datarows[skey], book)
       output = StringIO()
@@ -1239,8 +1253,8 @@ class DatabaseTools(object):
             self.ns.connect.updateData("ui_report", values=values, validate=False, insert_row=True)
           else:
             if str(sql).lower().find("engine")>-1:
-              if str(sql).lower().find(self.ns.engine)>-1:
-                sql = str(sql).replace("[engine "+self.ns.engine+"]", "")
+              if str(sql).lower().find(self.ns.local.getAppEngine(self.ns.engine))>-1:
+                sql = str(sql).replace("[engine "+self.ns.local.getAppEngine(self.ns.engine)+"]", "")
                 self.ns.db._adapter.execute(sql)
             else:
               self.ns.db._adapter.execute(sql)

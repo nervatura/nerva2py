@@ -148,7 +148,11 @@ def frm_login():
         response.cookies['last_username']['path'] = '/'
         ns.connect.insertLog("login")
         ui.nwc_ini()
-        redirect(URL('index'))
+        snext = ns_auth.get_vars_next()
+        if snext:
+          redirect(snext)
+        else:
+          redirect(URL('index'))
       else:
         response.flash = str(ns.error_message)
         
@@ -269,16 +273,29 @@ def cmd_go_help():
     redirect("http://www.nervatura.com")
   elif request.vars.page:
     lang = session._language if session._language else "en"
-    file_name = os.path.join(request.folder, ui.dir_help, lang, str(request.vars.page)+'.html')
+    dir_help = os.path.join("help",ui.dir_view)
+    response.contents_file = os.path.join(dir_help,"contents.html")
+    file_name = os.path.join(request.folder, "views", dir_help, lang, str(request.vars.page)+'.html')
     if not os.path.isfile(file_name):
-      file_name = os.path.join(request.folder, ui.dir_help, lang, 'index.html')
+      file_name = os.path.join(request.folder, "views", dir_help, lang, 'index.html')
       if not os.path.isfile(file_name):
-        file_name = os.path.join(request.folder, ui.dir_help, 'en', 'index.html')
+        file_name = os.path.join(request.folder, "views", dir_help, 'index.html')
         if not os.path.isfile(file_name):
-          return "Missing index file!"
+          file_name = os.path.join(request.folder, os.path.join("views","help"), 'index.html')
+          if not os.path.isfile(file_name):
+            return "Missing index file!"
+          elif os.path.isfile(os.path.join(request.folder,"views","help","contents.html")):
+            response.contents_file = os.path.join("help","contents.html")
+        elif os.path.isfile(os.path.join(request.folder,"views",dir_help,"contents.html")):
+          response.contents_file = os.path.join(dir_help,"contents.html")
+    elif os.path.isfile(os.path.join(request.folder,"views",dir_help,lang,"contents.html")):
+      response.contents_file = os.path.join(dir_help,lang,"contents.html")
     response.view=file_name
-    response.title = T("Nervatura Web Client")
-    response.subtitle = "Ver.No: "+response.verNo
+    if session.mobile:
+      response.title = T("Nervatura")
+    else:
+      response.title = T("Nervatura Web Client")
+    response.subtitle = T("Online Help")
     return dict()
   else:
     return "Missing page parameter!"
@@ -2684,6 +2701,7 @@ def find_product_discount():
     response.titleicon = URL(ui.dir_images,'icon16_money.png')
     response.export_excel = ruri.replace("find_product_discount","find_product_discount/excel")
     response.export_csv = ruri.replace("find_product_discount","find_product_discount/csv")
+    response.cmd_help = ui.control.get_help_button("discount")
   response.view=ui.dir_view+'/browser.html'
   
   custlink = ns.db.link.with_alias('custlink')
@@ -3323,6 +3341,7 @@ def find_product_price():
     response.titleicon = URL(ui.dir_images,'icon16_money.png')
     response.export_excel = ruri.replace("find_product_price","find_product_price/excel")
     response.export_csv = ruri.replace("find_product_price","find_product_price/csv")
+    response.cmd_help = ui.control.get_help_button("price")
   response.view=ui.dir_view+'/browser.html'
   
   custlink = ns.db.link.with_alias('custlink')
@@ -4084,9 +4103,6 @@ def find_rate():
                             cformat=None, style="text-align: left;", theme="b", target="true")
     response.cmd_csv = ui.control.get_mobil_button(T('Export to csv file'), href=ruri.replace("find_rate","find_rate/csv"), 
                             cformat=None, style="text-align: left;", theme="b", target="true")
-    response.cmd_help = ui.control.get_mobil_button(label=T("HELP"), href=URL('cmd_go_help?page=rate'),
-                                               cformat=None, icon="info", iconpos="left", target="blank",
-                                               style="margin:5px;")
     response.cmd_edit_close = ui.control.get_mobil_button(label=T("BACK"), href="#",
         icon="back", ajax="true", theme="a",  
         onclick= "show_page('view_page');", rel="close")
@@ -4184,6 +4200,9 @@ def find_rate():
   response.edit_title = T("RATE")
   response.edit_id = INPUT(_name="id", _type="hidden", _value="", _id="edit_id")
   if session.mobile:
+    response.cmd_help = ui.control.get_mobil_button(label=T("HELP"), href=URL('cmd_go_help?page=rate'),
+                                               cformat=None, icon="info", iconpos="left", target="blank",
+                                               style="margin:5px;")
     response.edit_items = DIV(
                             TABLE(
                                   TR(TD(DIV(response.edit_form.custom.label.ratetype, _class="label")),
@@ -4203,6 +4222,7 @@ def find_rate():
                               _style="padding: 0px;margin: 0px;width: 100%;")
                             )
   else:
+    response.cmd_help = ui.control.get_help_button("rate")
     response.edit_items = DIV(
                             TABLE(TR(
                                  TD(DIV(response.edit_form.custom.label.ratetype, _class="label"),
@@ -5735,6 +5755,7 @@ def frm_customer():
     response.address_form.process()
     if not session.mobile:
       response.address_icon = URL(ui.dir_images,'icon16_address.png')
+      response.cmd_address_help = ui.control.get_help_button("address")
       response.cmd_address_cancel = A(SPAN(_class="icon cross"), _id="cmd_address_cancel", 
         _style="height: 15px;",
         _class="w2p_trap buttontext button", _href="#", _title=T('Cancel update'), 
@@ -5826,6 +5847,7 @@ def frm_customer():
     response.contact_form.process()
     if not session.mobile:
       response.contact_icon = URL(ui.dir_images,'icon16_contact.png')
+      response.cmd_contact_help = ui.control.get_help_button("contact")
       response.cmd_contact_cancel = A(SPAN(_class="icon cross"), _id="cmd_contact_cancel", 
         _style="height: 15px;",
         _class="w2p_trap buttontext button", _href="#", _title=T('Cancel update'), 
@@ -6680,10 +6702,8 @@ def frm_groups(groupname, cmd_lnk=None, audit_filter=None):
     audit_filter = ui.connect.get_audit_filter("setting", None)[0]
   
   if session.mobile:
-    response.cmd_help = ui.control.get_mobil_button(label=T("HELP"), href=URL('cmd_go_help?page=groups'),
+    response.cmd_help = ui.control.get_mobil_button(label=T("HELP"), href=URL('cmd_go_help?page=index'),
                                          cformat="ui-btn-left", icon="info", iconpos="left", target="blank")
-  else:
-    response.cmd_help = ui.control.get_help_button("groups")
   
   if (audit_filter=="all"):
     if session.mobile:
@@ -7746,6 +7766,10 @@ def frm_printqueue():
                  buttons_placement = 'left', links_placement = 'left')
   if type(view_printqueue[1][0][0]).__name__!="TABLE":
     view_printqueue[1][0][0] = ""
+    counter = view_printqueue.elements("div.web2py_counter")
+    if len(counter)>0:
+      if counter[0][0]==None:
+        counter[0][0] = ""
   else:
     if session.mobile:
       htable = view_printqueue.elements("div.web2py_htmltable")
@@ -8147,6 +8171,7 @@ def frm_product():
     response.barcode_form.process()
     if not session.mobile:
       response.barcode_icon = URL(ui.dir_images,'icon16_barcode.png')
+      response.cmd_barcode_help = ui.control.get_help_button("barcode")
       response.cmd_barcode_cancel = A(SPAN(_class="icon cross"), _id="cmd_barcode_cancel", 
         _style="height: 15px;",
         _class="w2p_trap buttontext button", _href="#", _title=T('Cancel update'), 
@@ -8497,6 +8522,7 @@ def frm_project():
     response.address_form.process()
     if not session.mobile:
       response.address_icon = URL(ui.dir_images,'icon16_address.png')
+      response.cmd_address_help = ui.control.get_help_button("address")
       response.cmd_address_cancel = A(SPAN(_class="icon cross"), _id="cmd_address_cancel", 
         _style="height: 15px;",
         _class="w2p_trap buttontext button", _href="#", _title=T('Cancel update'), 
@@ -8586,6 +8612,7 @@ def frm_project():
     response.contact_form.process()
     if not session.mobile:
       response.contact_icon = URL(ui.dir_images,'icon16_contact.png')
+      response.cmd_contact_help = ui.control.get_help_button("contact")
       response.cmd_contact_cancel = A(SPAN(_class="icon cross"), _id="cmd_contact_cancel", 
         _style="height: 15px;",
         _class="w2p_trap buttontext button", _href="#", _title=T('Cancel update'), 
@@ -9438,12 +9465,11 @@ def frm_setting():
   
   links = ui.select.set_view_fields("setting", nervatype_setting, 0, (audit_filter!="readonly"), setting_fields, None, "", "",False)
   if session.mobile:
-    response.cmd_help = ui.control.get_mobil_button(label=T("HELP"), href=URL('cmd_go_help?page=setting'),
+    response.cmd_help = ui.control.get_mobil_button(label=T("HELP"), href=URL('cmd_go_help?page=index'),
                                              cformat="ui-btn-left", icon="info", iconpos="left", target="blank")
     links = None
   else:
     response.titleicon = URL(ui.dir_images,'icon16_numberdef.png')
-    response.cmd_help = ui.control.get_help_button("setting")
     response.cmd_back = ui.control.get_home_button()
     response.margin_top = "20px"
     
@@ -10881,7 +10907,11 @@ def frm_trans():
         response.cmd_back = ui.control.get_mobil_button(label=T("HOME"), href=URL('index'),
                                                icon="home", cformat="ui-btn-left", ajax="false", iconpos="left")
   
-    response.cmd_help = ui.control.get_mobil_button(label=T("HELP"), href=URL('cmd_go_help?page='+transtype),
+    if transtype=="receipt":
+      response.cmd_help = ui.control.get_mobil_button(label=T("HELP"), href=URL('cmd_go_help?page=invoice'),
+                                               cformat="ui-btn-left", icon="info", iconpos="left", target="blank")
+    else:
+      response.cmd_help = ui.control.get_mobil_button(label=T("HELP"), href=URL('cmd_go_help?page='+transtype),
                                                cformat="ui-btn-left", icon="info", iconpos="left", target="blank")
     
     response.cmd_next = ui.control.get_mobil_button(label=T("NEXT"), 
@@ -10907,7 +10937,10 @@ def frm_trans():
       else:
         response.cmd_back = ui.control.get_home_button()
   
-    response.cmd_help = ui.control.get_help_button(transtype)
+    if transtype=="receipt":
+      response.cmd_help = ui.control.get_help_button("invoice")
+    else:
+      response.cmd_help = ui.control.get_help_button(transtype)
     
     next_url = ui.connect.get_next_lnk(transtype,trans_id,direction)
     prev_url = ui.connect.get_prev_lnk(transtype,trans_id,direction)
@@ -12011,6 +12044,7 @@ def frm_trans():
                              +str(ns.db.item(id=row["id"]).ownstock)
                              +")", theme="d")
     else:
+      response.cmd_item_help = ui.control.get_help_button("item")
       ns.db.item.id.label = T("No.")
       ns.db.item.id.represent = lambda value,row: ui.control.format_value("integer",row["id"])
       response.item_icon = URL(ui.dir_images,'icon16_corrected.png')
@@ -12067,7 +12101,10 @@ def frm_trans():
       response.cmd_item_update = ""
       response.cmd_item_delete = ""
       
-    ns.db.item.deposit.label = T("Dep.")
+    if transtype=="offer":
+      ns.db.item.deposit.label = T("Opt.")
+    else:
+      ns.db.item.deposit.label = T("Dep.")
     response.view_item = ui.select.get_tab_grid(item, ns.db.item.id, _fields=fields, _deletable=False, links=links, _editable=False,
                             multi_page="item_page", rpl_1="/frm_trans", rpl_2="/frm_trans/view/trans/"+str(trans_id),_priority="0,3,4")
     
@@ -12487,7 +12524,7 @@ def frm_trans():
       
       if not session.mobile:
         if editable:
-          response.cmd_invoice_new = DIV(DIV(ui.select.dlg_create_trans(trans_id), _id="popup_create_trans2", _title=T("Create a new document type"), 
+          response.cmd_invoice_new = DIV(DIV(ui.select.dlg_create_trans(trans_id,"2"), _id="popup_create_trans2", _title=T("Create a new document type"), 
                                       _style="display: none;"),
                                          ui.control.get_tabnew_button(inv_count,T('New Invoice'),cmd_id="cmd_invoice",
                                       cmd='$("#popup_create_trans2").dialog({dialogClass: "n2py-dialog", modal: true, minWidth: 440, resizable: false});'),
@@ -12525,7 +12562,7 @@ def frm_trans():
       request.vars.page = request.vars["inventory_page"]          
       response.view_inventory = SimpleGrid.grid(query=query, field_id=ns.db.movement.product_id, 
                  fields=fields, groupfields=groupfields, groupby=groupby, args=["view/trans/"+str(trans_id)],
-                 orderby=ns.db.item.id, sortable=False, paginate=25, pagename="inventory_page", maxtextlength=25,
+                 orderby=ns.db.item.product_id, sortable=False, paginate=25, pagename="inventory_page", maxtextlength=25,
                  showbuttontext=False, editable=False, links=None)
       table = response.view_inventory.elements("div.web2py_table")
       if len(table)==0:
@@ -12666,7 +12703,11 @@ def frm_trans():
     #additional fields data
     query = ((ns.db.fieldvalue.deleted==0)&(ns.db.fieldvalue.fieldname==ns.db.deffield.fieldname)&(ns.db.deffield.deleted==0)
              &(ns.db.deffield.visible==1)&(ns.db.deffield.nervatype==nervatype_trans)&(ns.db.fieldvalue.ref_id==trans_id))
-    ui.select.set_view_fields("trans", nervatype_trans, 1, editable, query, trans_id, "/frm_trans", "/frm_trans/view/trans/"+str(trans_id))
+    if transtype in("cash"):
+      tab_index=0
+    else:
+      tab_index=1
+    ui.select.set_view_fields("trans", nervatype_trans, tab_index, editable, query, trans_id, "/frm_trans", "/frm_trans/view/trans/"+str(trans_id))
   else:
     response.view_trans_groups=None
     response.view_fields=None

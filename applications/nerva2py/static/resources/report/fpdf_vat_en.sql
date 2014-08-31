@@ -26,7 +26,48 @@ VALUES((select id from ui_report where reportkey='fpdf_vat_en'), 'total_bycur', 
 INSERT INTO ui_reportsources(report_id, dataset, sqlstr)
 VALUES((select id from ui_report where reportkey='fpdf_vat_en'), 'company', '');--
 
-update ui_reportsources set sqlstr = 'select t.curr as curr, case when t.notax=1 then ''AAM'' else tx.taxcode end as taxcode
+INSERT INTO ui_message(secname, fieldname, msg) 
+VALUES ('fpdf_vat_en_total', 'lb_notax', 'AAM');--
+INSERT INTO ui_message(secname, fieldname, msg) 
+VALUES ('fpdf_vat_en_ds', 'lb_notax', 'AAM');--
+
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_vat_en_report', 'web_page', 'www.nervatura.com');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_vat_en_report', 'web_link', 'http://nervatura.com');--
+
+INSERT INTO ui_message(secname, fieldname, msg) 
+VALUES ('fpdf_vat_en_report', 'lb_vat_summary', 'VAT summary');--
+INSERT INTO ui_message(secname, fieldname, msg) 
+VALUES ('fpdf_vat_en_report', 'lb_report_date', 'Report date:');--
+INSERT INTO ui_message(secname, fieldname, msg) 
+VALUES ('fpdf_vat_en_report', 'lb_create_date', 'Create date:');--
+INSERT INTO ui_message(secname, fieldname, msg) 
+VALUES ('fpdf_vat_en_report', 'lb_no', 'No.');--
+INSERT INTO ui_message(secname, fieldname, msg) 
+VALUES ('fpdf_vat_en_report', 'lb_curr', 'Curr');--
+INSERT INTO ui_message(secname, fieldname, msg) 
+VALUES ('fpdf_vat_en_report', 'lb_invoice_no', 'Invoice No.');--
+INSERT INTO ui_message(secname, fieldname, msg) 
+VALUES ('fpdf_vat_en_report', 'lb_due_date', 'Due Date');--
+INSERT INTO ui_message(secname, fieldname, msg) 
+VALUES ('fpdf_vat_en_report', 'lb_customer', 'Customer');--
+INSERT INTO ui_message(secname, fieldname, msg) 
+VALUES ('fpdf_vat_en_report', 'lb_vat', 'VAT');--
+INSERT INTO ui_message(secname, fieldname, msg) 
+VALUES ('fpdf_vat_en_report', 'lb_total', 'Total');--
+INSERT INTO ui_message(secname, fieldname, msg) 
+VALUES ('fpdf_vat_en_report', 'lb_net', 'Net');--
+INSERT INTO ui_message(secname, fieldname, msg) 
+VALUES ('fpdf_vat_en_report', 'lb_gross', 'Gross');--
+INSERT INTO ui_message(secname, fieldname, msg) 
+VALUES ('fpdf_vat_en_report', 'lb_net_income', 'Net income');--
+INSERT INTO ui_message(secname, fieldname, msg) 
+VALUES ('fpdf_vat_en_report', 'lb_net_payment', 'Net payment');--
+INSERT INTO ui_message(secname, fieldname, msg) 
+VALUES ('fpdf_vat_en_report', 'lb_vat_diff', 'VAT Diff.');--
+
+update ui_reportsources set sqlstr = 'select t.curr as curr, case when t.notax=1 then ''={{lb_notax}}'' else tx.taxcode end as taxcode
 , sum(case when dg.groupvalue=''out'' then netamount else 0 end) as netamount_out
 , sum(case when dg.groupvalue=''in'' then netamount else 0 end) as netamount_in
 , sum(case when dg.groupvalue=''out'' then vatamount else 0 end) as vatamount_out
@@ -40,12 +81,12 @@ inner join groups dg on t.direction = dg.id
 inner join item ti on t.id=ti.trans_id and ti.deleted=0 
 inner join tax tx on ti.tax_id=tx.id 
 where t.deleted=0 and t.transdate >= @date_from and t.transdate <= @date_to @where_str 
-group by t.curr, case when t.notax=1 then ''AAM'' else tx.taxcode end, tx.rate 
+group by t.curr, case when t.notax=1 then ''={{lb_notax}}'' else tx.taxcode end, tx.rate 
 order by t.curr, tx.rate'
 where report_id = (select id from ui_report where reportkey='fpdf_vat_en') and dataset='total';--
 
 update ui_reportsources set sqlstr = 'select @date_from as date_from, @date_to as date_to, t.transnumber as transnumber, t.crdate as crdate, t.transdate as transdate, substr(cast(t.duedate as char(10)), 1, 10) as  duedate, c.custname as custname, t.curr as curr, dg.groupvalue as direction
-, case when t.notax=1 then ''AAM'' else tx.taxcode end as taxcode
+, case when t.notax=1 then ''={{lb_notax}}'' else tx.taxcode end as taxcode
 , case when dg.groupvalue=''in'' then 0-sum(netamount) else sum(netamount) end as netamount
 , case when dg.groupvalue=''in'' then 0-sum(vatamount) else sum(vatamount) end as vatamount
 , case when dg.groupvalue=''in'' then 0-sum(amount) else sum(amount) end as amount 
@@ -56,12 +97,12 @@ inner join item ti on t.id=ti.trans_id and ti.deleted=0
 inner join customer c on t.customer_id = c.id 
 inner join tax tx on ti.tax_id=tx.id 
 where t.deleted=0 and t.transdate >= @date_from and t.transdate <= @date_to @where_str 
-group by t.transnumber, t.crdate, t.transdate, substr(cast(t.duedate as char(10)), 1, 10), c.custname, t.curr, dg.groupvalue, case when t.notax=1 then ''AAM'' else tx.taxcode end 
+group by t.transnumber, t.crdate, t.transdate, substr(cast(t.duedate as char(10)), 1, 10), c.custname, t.curr, dg.groupvalue, case when t.notax=1 then ''={{lb_notax}}'' else tx.taxcode end 
 order by t.curr, t.transdate, c.custname'
 where report_id = (select id from ui_report where reportkey='fpdf_vat_en') and dataset='ds';--
 
 [engine mssql]update ui_reportsources set sqlstr = 'select @date_from as date_from, @date_to as date_to, t.transnumber as transnumber, t.crdate as crdate, t.transdate as transdate, CONVERT(VARCHAR(10), t.duedate, 120) as duedate, c.custname as custname, t.curr as curr, dg.groupvalue as direction
-, case when t.notax=1 then ''AAM'' else tx.taxcode end as taxcode
+, case when t.notax=1 then ''={{lb_notax}}'' else tx.taxcode end as taxcode
 , case when dg.groupvalue=''in'' then 0-sum(netamount) else sum(netamount) end as netamount
 , case when dg.groupvalue=''in'' then 0-sum(vatamount) else sum(vatamount) end as vatamount
 , case when dg.groupvalue=''in'' then 0-sum(amount) else sum(amount) end as amount 
@@ -72,7 +113,7 @@ inner join item ti on t.id=ti.trans_id and ti.deleted=0
 inner join customer c on t.customer_id = c.id 
 inner join tax tx on ti.tax_id=tx.id 
 where t.deleted=0 and t.transdate >= @date_from and t.transdate <= @date_to @where_str 
-group by t.transnumber, t.crdate, t.transdate, CONVERT(VARCHAR(10), t.duedate, 120), c.custname, t.curr, dg.groupvalue, case when t.notax=1 then ''AAM'' else tx.taxcode end 
+group by t.transnumber, t.crdate, t.transdate, CONVERT(VARCHAR(10), t.duedate, 120), c.custname, t.curr, dg.groupvalue, case when t.notax=1 then ''={{lb_notax}}'' else tx.taxcode end 
 order by t.curr, t.transdate, c.custname'
 where report_id = (select id from ui_report where reportkey='fpdf_vat_en') and dataset='ds';--
 
@@ -104,17 +145,17 @@ update ui_report set report='
   <header>
     <row height="10">
       <cell name="custname" value="={{company.0.custname}}" align="L" font-style="B" font-size="12" width="100"/>
-      <cell name="label" value="VAT summary" font-style="BI" font-size="26" align="R" color="14212058"/>
+      <cell name="label" value="={{labels.lb_vat_summary}}" font-style="BI" font-size="26" align="R" color="14212058"/>
     </row>
     <vgap height="2"/>
     <hline border-color="14212058" gap="1"/>
     <vgap height="3"/>
     <row hgap="2" height="1">
-      <cell name="label" value="Report date:" font-style="B" font-size="10" align="L" />
+      <cell name="label" value="={{labels.lb_report_date}}" font-style="B" font-size="10" align="L" />
       <cell name="date_from" value="={{ds.0.date_from}}" align="L" font-style="B" font-size="10" />
       <cell name="label" value="-" font-style="B" font-size="10" align="L" width="5"/>
       <cell name="date_to" value="={{ds.0.date_to}}" align="L" font-style="B" font-size="10"/>
-      <cell name="crdate" value="Create date: ={{crtime}}" align="R" font-style="I" font-size="9"/>
+      <cell name="crdate" value="={{labels.lb_create_date}} ={{crtime}}" align="R" font-style="I" font-size="9"/>
     </row>
   </header>
   <details>
@@ -122,28 +163,28 @@ update ui_report set report='
     <datagrid name="items" databind="ds" border="1" border-color="14212058" font-size="8">
       <header background-color="16119285" />
       <columns>
-        <column width="4%" fieldname="counter" align="R" label="No." footer=" "/>
-        <column width="6%" fieldname="curr" label="Curr" footer=" "/>
-        <column width="20%" fieldname="transnumber" label="Invoice No." footer="Total"/>
-        <column width="11%" fieldname="duedate" align="C" label="Due Date" footer=" "/>
-        <column width="20%" fieldname="custname" label="Customer" footer=" "/>
-        <column width="5%" fieldname="taxcode" align="R" label="VAT%" footer=" " />
-        <column width="12%" fieldname="netamount" align="R" thousands=" " digit="2" label="Net" footer="={{total_bycur.0.netamount}}"/>
-        <column width="11%" fieldname="vatamount" align="R" thousands=" " digit="2" label="VAT" footer="={{total_bycur.0.vatamount}}"/>
-        <column width="12%" fieldname="amount" align="R" thousands=" " digit="2" label="Gross" footer="={{total_bycur.0.amount}}"/>
+        <column width="4%" fieldname="counter" align="R" label="={{labels.lb_no}}" footer=" "/>
+        <column width="6%" fieldname="curr" label="={{labels.lb_curr}}" footer=" "/>
+        <column width="20%" fieldname="transnumber" label="={{labels.lb_invoice_no}}" footer="={{labels.lb_total}}"/>
+        <column width="11%" fieldname="duedate" align="C" label="={{labels.lb_due_date}}" footer=" "/>
+        <column width="20%" fieldname="custname" label="={{labels.lb_customer}}" footer=" "/>
+        <column width="5%" fieldname="taxcode" align="R" label="={{labels.lb_vat}}%" footer=" " />
+        <column width="12%" fieldname="netamount" align="R" thousands=" " digit="2" label="={{labels.lb_net}}" footer="={{total_bycur.0.netamount}}"/>
+        <column width="11%" fieldname="vatamount" align="R" thousands=" " digit="2" label="={{labels.lb_vat}}" footer="={{total_bycur.0.vatamount}}"/>
+        <column width="12%" fieldname="amount" align="R" thousands=" " digit="2" label="={{labels.lb_gross}}" footer="={{total_bycur.0.amount}}"/>
       </columns>  
     </datagrid>
     <vgap height="3"/>
     <datagrid name="total" databind="total" border="1" border-color="14212058" font-size="8">
       <header background-color="16119285" />
       <columns>
-        <column width="10%" fieldname="curr" label="Curr" />
-        <column width="8%" fieldname="taxcode" align="R" label="VAT%" />
-        <column width="17%" fieldname="netamount_out" label="Net income" align="R" thousands=" " digit="2" />
-        <column width="16%" fieldname="vatamount_out" label="VAT(+)" align="R" thousands=" " digit="2" />
-        <column width="17%" fieldname="netamount_in" align="R" thousands=" " digit="2" label="Net payment" />
-        <column width="16%" fieldname="vatamount_in" align="R" thousands=" " digit="2" label="VAT(-)" />
-        <column width="17%" fieldname="vatamount_diff" align="R" thousands=" " digit="2" label="VAT Diff." />
+        <column width="10%" fieldname="curr" label="={{labels.lb_curr}}" />
+        <column width="8%" fieldname="taxcode" align="R" label="={{labels.lb_vat}}%" />
+        <column width="17%" fieldname="netamount_out" label="={{labels.lb_net_income}}" align="R" thousands=" " digit="2" />
+        <column width="16%" fieldname="vatamount_out" label="={{labels.lb_vat}}(+)" align="R" thousands=" " digit="2" />
+        <column width="17%" fieldname="netamount_in" align="R" thousands=" " digit="2" label="={{labels.lb_net_payment}}" />
+        <column width="16%" fieldname="vatamount_in" align="R" thousands=" " digit="2" label="={{labels.lb_vat}}(-)" />
+        <column width="17%" fieldname="vatamount_diff" align="R" thousands=" " digit="2" label="={{labels.lb_vat_diff}}" />
       </columns>  
     </datagrid>
   </details>
@@ -151,7 +192,7 @@ update ui_report set report='
     <vgap height="2"/>
     <hline border-color="14212058"/>
     <row height="10">
-      <cell value="www.nervatura.com" link="http://nervatura.com" font-style="BI" color="2162943"/>
+      <cell value="={{labels.web_page}}" link="={{labels.web_link}}" font-style="BI" color="2162943"/>
       <cell value="{{pages}}/{{page}}" align="R" font-style="B"/>
     </row>
   </footer>

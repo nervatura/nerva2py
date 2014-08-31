@@ -19,7 +19,7 @@ import os
 def index():
   response.view="report2py/index.html"
   response.title = "Nervatura Report Help & Demo"
-  response.subtitle = "CLASS VERSION: "+Report().CLASS_VERSION
+  response.subtitle = " Ver.No: "+response.verNo
   return dict()
   
 def report_test():

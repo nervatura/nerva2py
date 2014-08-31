@@ -15,20 +15,106 @@ INSERT INTO ui_reportsources(report_id, dataset, sqlstr)
 INSERT INTO ui_reportsources(report_id, dataset, sqlstr)
     VALUES ((select id from ui_report where reportkey='fpdf_customer_sheet_en'), 'event', '');--
 
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_head', 'lb_yes', 'YES');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_head', 'lb_no', 'NO');--
+
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_fieldvalue', 'lb_yes', 'YES');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_fieldvalue', 'lb_no', 'NO');--
+
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'logo_file', 'icon24_ntura_white.png');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'logo_link', 'http://www.nervatura.com');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'web_page', 'www.nervatura.com');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'web_link', 'http://nervatura.com');--
+
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_customer_datasheet', 'CUSTOMER DATASHEET');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_customer_no', 'Customer No.');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_name', 'Name');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_customer_type', 'Customer type');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_taxnumber', 'Taxnumber');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_tax_free', 'Tax free');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_inactive', 'Inactive');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_account', 'Account');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_due_date', 'Due Date (day)');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_discount', 'Discount');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_credit_limit', 'Credit limit');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_additional_data', 'Additional data');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_no', 'No.');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_description', 'Description');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_value', 'Value');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_comment', 'Comment');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_address_details', 'Address details');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_zipcode', 'Zipcode');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_city', 'City');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_street', 'Street');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_firstname', 'Firstname');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_surname', 'Surname');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_status', 'Status');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_phone', 'Phone');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_mobil', 'Mobil');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_email', 'Email');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_events', 'Events');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_event_no', 'Event No.');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_group', 'Group');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_fromdate', 'Date From');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_todate', 'Date To');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_subject', 'Subject');--
+INSERT INTO ui_message(secname, fieldname,  msg) 
+VALUES ('fpdf_customer_sheet_en_report', 'lb_place', 'Place');--
+
 update ui_reportsources set sqlstr='select c.id as id, c.custnumber as custnumber, c.custname as custname, ctype.groupvalue as custtype, c.taxnumber as taxnumber, c.account as account, 
-  case when c.notax =1 then ''YES'' else ''NO'' end as notax, c.terms as terms, c.creditlimit as creditlimit,
-  c.discount as discount, c.notes as notes,  case when c.inactive=1 then ''YES'' else ''NO'' end as inactive 
+  case when c.notax =1 then ''={{lb_yes}}'' else ''={{lb_no}}'' end as notax, c.terms as terms, c.creditlimit as creditlimit,
+  c.discount as discount, c.notes as notes,  case when c.inactive=1 then ''={{lb_yes}}'' else ''={{lb_no}}'' end as inactive 
 from customer c 
 inner join groups as ctype on c.custtype=ctype.id 
 where c.deleted=0 and c.id = @id '
 where report_id = (select id from ui_report where reportkey='fpdf_customer_sheet_en') and dataset = 'head';--
 
 update ui_reportsources set sqlstr='select df.description as fielddef,
-case when fg.groupvalue in (''bool'') and fv.value = ''true'' then ''YES''
-        when fg.groupvalue in (''bool'') and fv.value = ''false'' then ''NO''
+case when fg.groupvalue in (''bool'') and fv.value = ''true'' then ''={{lb_yes}}''
+        when fg.groupvalue in (''bool'') and fv.value = ''false'' then ''={{lb_no}}''
         when fg.groupvalue in (''customer'') then rf_customer.custnumber
         when fg.groupvalue in (''tool'') then rf_tool.serial
-        when fg.groupvalue in (''trans'') then rf_trans.transnumber
+        when fg.groupvalue in (''transitem'',''transmovement'',''transpayment'') then rf_trans.transnumber
         when fg.groupvalue in (''product'') then rf_product.partnumber
         when fg.groupvalue in (''project'') then rf_project.pronumber
         when fg.groupvalue in (''employee'') then rf_employee.empnumber
@@ -87,9 +173,9 @@ update ui_report set report = '<template>
   <report title="CUSTOMER DATASHEET" left-margin="15" top-margin="15" right-margin="15" decode="utf-8" encode="latin_1" />
   <header>
     <row height="10">
-      <image file="icon24_ntura_white.png" link="http://www.nervatura.com"/>
-      <cell value="CUSTOMER DATASHEET" font-style="BI" font-size="26" color="14212058"/>
-      <cell value="={{head.0.custnumber}}" align="R" font-style="B" />
+      <image file="={{labels.logo_file}}" link="={{labels.logo_link}}"/>
+      <cell value="={{labels.lb_customer_datasheet}}" font-style="BI" font-size="26" color="14212058"/>
+      <cell value="={{head.0.custnumber}}" align="R" font-style="B" font-size="20" />
     </row>
     <hline border-color="14212058"/>
     <vgap height="2"/>
@@ -97,101 +183,101 @@ update ui_report set report = '<template>
   <details>
     <vgap height="2"/>
     <row hgap="2">
-      <cell name="label" value="Customer No." font-style="B" background-color="14212058"/>
+      <cell name="label" value="={{labels.lb_customer_no}}" font-style="B" background-color="14212058"/>
       <cell name="custnumber" value="={{head.0.custnumber}}" border="1" border-color="14212058"/>
-      <cell name="label" value="Name" font-style="B" background-color="14212058"/>
+      <cell name="label" value="={{labels.lb_name}}" font-style="B" background-color="14212058"/>
       <cell name="custname" value="={{head.0.custname}}" border="1" border-color="14212058"/>
     </row>
     <vgap height="2"/>
     <row hgap="2">
-      <cell name="label" value="Customer type" font-style="B" background-color="14212058"/>
+      <cell name="label" value="={{labels.lb_customer_type}}" font-style="B" background-color="14212058"/>
       <cell name="custtype" value="={{head.0.custtype}}" border="1" border-color="14212058"/>
-      <cell name="label" value="Taxnumber" font-style="B" background-color="14212058"/>
+      <cell name="label" value="={{labels.lb_taxnumber}}" font-style="B" background-color="14212058"/>
       <cell name="taxnumber" value="={{head.0.taxnumber}}" border="1" border-color="14212058"/>
     </row>
     <vgap height="2"/>
     <row hgap="2">
-      <cell name="label" value="Tax free" font-style="B" background-color="14212058"/>
+      <cell name="label" value="={{labels.lb_tax_free}}" font-style="B" background-color="14212058"/>
       <cell name="notax" value="={{head.0.notax}}" border="1" border-color="14212058"/>
-      <cell name="label" value="Inactive" font-style="B" background-color="14212058"/>
+      <cell name="label" value="={{labels.lb_inactive}}" font-style="B" background-color="14212058"/>
       <cell name="inactive" value="={{head.0.inactive}}" border="1" border-color="14212058"/>
-      <cell name="label" value="Account" font-style="B" background-color="14212058"/>
+      <cell name="label" value="={{labels.lb_account}}" font-style="B" background-color="14212058"/>
       <cell name="account" value="={{head.0.account}}" border="1" border-color="14212058"/>
     </row>
     <vgap height="2"/>
     <row hgap="2">
-      <cell name="label" value="Due Date (day)" font-style="B" background-color="14212058"/>
+      <cell name="label" value="={{labels.lb_due_date}}" font-style="B" background-color="14212058"/>
       <cell name="terms" align="R" value="={{head.0.terms}}" border="1" border-color="14212058"/>
-      <cell name="label" value="Discount(%)" font-style="B" background-color="14212058"/>
+      <cell name="label" value="={{labels.lb_discount}}(%)" font-style="B" background-color="14212058"/>
       <cell name="discount" align="R" value="={{head.0.discount}}" border="1" border-color="14212058"/>
-      <cell name="label" value="Credit limit" font-style="B" background-color="14212058"/>
+      <cell name="label" value="={{labels.lb_credit_limit}}" font-style="B" background-color="14212058"/>
       <cell name="creditlimit" align="R" value="={{head.0.creditlimit}}" border="1" border-color="14212058"/>
     </row>
     <vgap height="2"/>
     <row hgap="2">
-      <cell name="label" value="Notes" font-style="B" background-color="14212058"/>
+      <cell name="label" value="={{labels.lb_comment}}" font-style="B" background-color="14212058"/>
       <cell name="notes" multiline="true" value="={{head.0.notes}}" border="1" border-color="14212058"/>
     </row>
     <vgap height="2"/>
     <hline border-color="14212058"/>
     <vgap height="2"/>
-    <row>
-      <cell name="label" value="Additional data" align="C" font-style="B" background-color="14212058"/>
+    <row visible="fieldvalue">
+      <cell name="label" value="={{labels.lb_additional_data}}" align="C" font-style="B" background-color="14212058"/>
     </row>
     <datagrid name="fieldvalue" databind="fieldvalue" border="1" border-color="14212058">
       <header background-color="14212058"/>
       <columns>
-        <column width="4%" fieldname="counter" align="R" label="No."/>
-        <column width="25%" fieldname="fielddef" label="Description"/>
-        <column width="32%" fieldname="value" label="Value"/>
-        <column width="40%" fieldname="notes" label="Comment"/>
+        <column width="4%" fieldname="counter" align="R" label="={{labels.lb_no}}"/>
+        <column width="25%" fieldname="fielddef" label="={{labels.lb_description}}"/>
+        <column width="32%" fieldname="value" label="={{labels.lb_value}}"/>
+        <column width="40%" fieldname="notes" label="={{labels.lb_comment}}"/>
       </columns>  
     </datagrid>
     <vgap height="5"/>
-    <row>
-      <cell name="label" value="Address details" align="C" font-style="B" background-color="14212058"/>
+    <row visible="address">
+      <cell name="label" value="={{labels.lb_address_details}}" align="C" font-style="B" background-color="14212058"/>
     </row>
     <datagrid name="address" databind="address" border="1" border-color="14212058">
       <header background-color="14212058"/>
       <columns>
-        <column width="4%" fieldname="counter" align="R" label="No."/>
-        <column width="10%" fieldname="zipcode" label="Zipcode"/>
-        <column width="20%" fieldname="city" label="City"/>
-        <column width="27%" fieldname="street" label="Street"/>
-        <column width="40%" fieldname="notes" label="Notes"/>
+        <column width="4%" fieldname="counter" align="R" label="={{labels.lb_no}}"/>
+        <column width="10%" fieldname="zipcode" label="={{labels.lb_zipcode}}"/>
+        <column width="20%" fieldname="city" label="={{labels.lb_city}}"/>
+        <column width="27%" fieldname="street" label="={{labels.lb_street}}"/>
+        <column width="40%" fieldname="notes" label="={{labels.lb_comment}}"/>
       </columns>  
     </datagrid>
     <vgap height="5"/>
-    <row>
+    <row visible="contact">
       <cell name="label" value="Contact details" align="C" font-style="B" background-color="14212058"/>
     </row>
     <datagrid name="contact" databind="contact" border="1" border-color="14212058">
       <header background-color="14212058"/>
       <columns>
-        <column width="4%" fieldname="counter" align="R" label="No."/>
-        <column width="12%" fieldname="firstname" label="Firstname"/>
-        <column width="13%" fieldname="surname" label="Surname"/>
-        <column width="11%" fieldname="status" label="Status"/>
-        <column width="11%" fieldname="phone" label="Phone"/>
-        <column width="11%" fieldname="mobil" label="Mobil"/>
-        <column width="25%" fieldname="email" label="Email"/>
-        <column width="14%" fieldname="cont_notes" label="Notes"/>
+        <column width="4%" fieldname="counter" align="R" label="={{labels.lb_no}}"/>
+        <column width="12%" fieldname="firstname" label="={{labels.lb_firstname}}"/>
+        <column width="13%" fieldname="surname" label="={{labels.lb_surname}}"/>
+        <column width="11%" fieldname="status" label="={{labels.lb_status}}"/>
+        <column width="11%" fieldname="phone" label="={{labels.lb_phone}}"/>
+        <column width="11%" fieldname="mobil" label="={{labels.lb_mobil}}"/>
+        <column width="25%" fieldname="email" label="={{labels.lb_email}}"/>
+        <column width="14%" fieldname="cont_notes" label="={{labels.lb_comment}}"/>
       </columns>  
     </datagrid>
     <vgap height="5"/>
-    <row>
-      <cell name="label" value="Events" align="C" font-style="B" background-color="14212058"/>
+    <row visible="event">
+      <cell name="label" value="={{labels.lb_events}}" align="C" font-style="B" background-color="14212058"/>
     </row>
     <datagrid name="event" databind="event" border="1" border-color="14212058">
       <header background-color="14212058"/>
       <columns>
-        <column width="4%" fieldname="counter" align="R" label="No."/>
-        <column width="20%" fieldname="calnumber" label="Event No."/>
-        <column width="13%" fieldname="eventgroup" label="Group"/>
-        <column width="13%" align="C" fieldname="fromdate" label="Date From"/>
-        <column width="13%" align="C" fieldname="todate" label="Date To"/>
-        <column width="19%" fieldname="subject" label="Subject"/>
-        <column width="19%" fieldname="place" label="Place"/>
+        <column width="4%" fieldname="counter" align="R" label="={{labels.lb_no}}"/>
+        <column width="20%" fieldname="calnumber" label="={{labels.lb_event_no}}"/>
+        <column width="13%" fieldname="eventgroup" label="={{labels.lb_group}}"/>
+        <column width="13%" align="C" fieldname="fromdate" label="={{labels.lb_fromdate}}"/>
+        <column width="13%" align="C" fieldname="todate" label="={{labels.lb_todate}}"/>
+        <column width="19%" fieldname="subject" label="={{labels.lb_subject}}"/>
+        <column width="19%" fieldname="place" label="={{labels.lb_place}}"/>
       </columns>  
     </datagrid>
   </details>
@@ -199,7 +285,7 @@ update ui_report set report = '<template>
     <vgap height="2"/>
     <hline border-color="14212058"/>
     <row height="10">
-      <cell value="www.nervatura.com" link="http://nervatura.com" font-style="BI" color="2162943"/>
+      <cell value="={{labels.web_page}}" link="={{labels.web_link}}" font-style="BI" color="2162943"/>
       <cell value="{{pages}}/{{page}}" align="R" font-style="B"/>
     </row>
   </footer>

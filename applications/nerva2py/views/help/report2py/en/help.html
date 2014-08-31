@@ -1,11 +1,5 @@
-{{left_sidebar_enabled,right_sidebar_enabled=False,False}}
-{{extend 'layout.html'}}
-
-<style>
-.main {
-  padding: 0px;
-}
-</style>
+{{contents_enabled=False}}
+{{extend 'help/layout.html'}}
 
 <h4><u>Class description</u></h4>
 
@@ -81,7 +75,8 @@
     Horizontal logical group. The last element width extends up to the right margin.<br>
     <u>Attributes</u>:<br>
     - height<br>
-    - hgap: default gap between these two elements
+    - hgap: default gap between these two elements<br>
+    - visible: table data source name - only if there is data
     <ul>
       <li>
         <i>cell</i><br>
@@ -145,7 +140,8 @@
         <i>header</i><br>
         Opens each page<br>
         <u>Attributes</u>:<br>
-        - background-color
+        - background-color<br>
+        - merge: 1(all fields will be displayed in a single column) or 0(default)
       </li>
       <li>
         <i>footer</i><br>

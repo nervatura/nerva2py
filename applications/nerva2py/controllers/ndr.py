@@ -72,29 +72,29 @@ def getHelp():
   if not request.vars.appl:
     return "Missing appl parameter!"
   if request.vars.page:
-    bfolder = 'static/resources/application/'+str(request.vars.appl)
-    if request.vars.lang:
-      lang = str(request.vars.lang).lower()
-    else:
-      lang = "en"
-    if request.vars.folder:
-      bfolder+="/"+str(request.vars.folder)
-    else:
-      bfolder+='/help'
+    lang = str(request.vars.lang).lower() if request.vars.lang else "en"
+    dir_help = os.path.join("help",str(request.vars.appl))
+    response.contents_file = os.path.join(dir_help,"contents.html")
+    file_name = os.path.join(request.folder, "views", dir_help, lang, str(request.vars.page)+'.html')
+    if not os.path.isfile(file_name):
+      file_name = os.path.join(request.folder, "views", dir_help, lang, 'index.html')
+      if not os.path.isfile(file_name):
+        file_name = os.path.join(request.folder, "views", dir_help, 'index.html')
+        if not os.path.isfile(file_name):
+          file_name = os.path.join(request.folder, os.path.join("views","help"), 'index.html')
+          if not os.path.isfile(file_name):
+            return "Missing index file!"
+          elif os.path.isfile(os.path.join(request.folder,"views","help","contents.html")):
+            response.contents_file = os.path.join("help","contents.html")
+        elif os.path.isfile(os.path.join(request.folder,"views",dir_help,"contents.html")):
+          response.contents_file = os.path.join(dir_help,"contents.html")
+    elif os.path.isfile(os.path.join(request.folder,"views",dir_help,lang,"contents.html")):
+      response.contents_file = os.path.join(dir_help,lang,"contents.html")
+    response.view=file_name
     if request.vars.title:
       response.title = request.vars.title
     if request.vars.subtitle:
-      response.subtitle = request.vars.subtitle  
-    file_name = os.path.join(request.folder, bfolder+"/"+lang, str(request.vars.page)+'.html')
-    if not os.path.isfile(file_name):
-      file_name = os.path.join(request.folder, bfolder, str(request.vars.page)+'.html')
-      if not os.path.isfile(file_name):
-        file_name = os.path.join(request.folder, bfolder+"/"+lang, 'index.html')
-        if not os.path.isfile(file_name):
-          file_name = os.path.join(request.folder, bfolder+'/en', 'index.html')
-          if not os.path.isfile(file_name):
-            return "Missing index file!"
-    response.view=file_name
+      response.subtitle = request.vars.subtitle
     return dict()
   else:
     return "Missing page parameter!"

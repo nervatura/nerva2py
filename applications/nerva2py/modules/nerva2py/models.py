@@ -417,7 +417,7 @@ class numberdef(object):
     self.prefix = None
     self.curvalue = 0
     self.isyear = 1
-    self.separator = "/"
+    self.sep = "/"
     self.len = 5
     self.description = None
     self.visible = 0
@@ -425,7 +425,7 @@ class numberdef(object):
     self.orderby = 0
   def __repr__(self):
     return "<numberdef('%s','%s','%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')>" % \
-      (self.id, self.numberkey, self.prefix, self.curvalue, self.isyear, self.separator, self.len, 
+      (self.id, self.numberkey, self.prefix, self.curvalue, self.isyear, self.sep, self.len, 
        self.description, self.visible, self.readonly, self.orderby)  
       
 class pattern(object):
@@ -547,7 +547,7 @@ class tax(object):
   __tablename__ = 'tax'
   def __init__(self):
     self.id = None
-    self.taxkey
+    self.taxkey = None
     self.description = None
     self.rate = 0
     self.taxcode = None

@@ -142,10 +142,19 @@ class Npi(object):
       validator = self.getLogin(login["database"], login["username"], login["password"])
       if validator["valid"]==False:
         raise NameError(validator["message"])
-    values = clearValues(record.__tablename__, record.__dict__)
-    row_id = self.ns.connect.updateData(record.__tablename__, values=values, validate=validate, insert_row=True)
+    if type(record) is dict:
+      tablename = record["__tablename__"]
+      values = clearValues(tablename, record)
+    else:
+      tablename = record.__tablename__
+      values = clearValues(tablename, record.__dict__)
+    row_id = self.ns.connect.updateData(tablename, values=values, validate=validate, insert_row=True)
     if not row_id:
-      raise str(self.ns.error_message)
+      raise NameError(str(self.ns.error_message))
+    elif type(record) is dict:
+      record["id"] = row_id
+    else:
+      record.id = row_id
     return record
   
   def saveRecordSet(self, login, recordSet, validate=False):
@@ -155,7 +164,7 @@ class Npi(object):
     login["safe"] = True
     try:
       for record in recordSet:
-        self.saveRecord(login, record, validate)
+        record = self.saveRecord(login, record, validate)
     except Exception, err:
       self.ns.db.rollback()
       raise RuntimeError(err)
@@ -190,8 +199,12 @@ class Npi(object):
       validator = self.getLogin(login["database"], login["username"], login["password"])
       if validator["valid"]==False:
         raise NameError(validator["message"])
-    if not self.ns.connect.deleteData(nervatype=record.__tablename__, ref_id=record.id):
-      raise str(self.ns.error_message)
+    if type(record) is dict:
+      if not self.ns.connect.deleteData(nervatype=record["__tablename__"], ref_id=record["id"]):
+        raise NameError(str(self.ns.error_message))
+    else:
+      if not self.ns.connect.deleteData(nervatype=record.__tablename__, ref_id=record.id):
+        raise NameError(str(self.ns.error_message))
     return True
   
   def deleteRecordSet(self, login, recordSet):
