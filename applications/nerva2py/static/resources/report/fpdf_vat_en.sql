@@ -144,56 +144,60 @@ update ui_report set report='
   <report title="VAT summary" font-family="helvetica" font-size="11" left-margin="15" top-margin="15" right-margin="15" decode="utf-8" encode="latin_1" />
   <header>
     <row height="10">
-      <cell name="custname" value="={{company.0.custname}}" align="L" font-style="B" font-size="12" width="100"/>
-      <cell name="label" value="={{labels.lb_vat_summary}}" font-style="BI" font-size="26" align="R" color="14212058"/>
+      <columns>
+        <cell name="custname" value="company.0.custname" align="left" font-style="bold" font-size="12" width="100"/>
+        <cell name="label" value="labels.lb_vat_summary" font-style="bolditalic" font-size="26" align="right" color="#D8DBDA"/>
+      </columns>
     </row>
     <vgap height="2"/>
-    <hline border-color="14212058" gap="1"/>
+    <hline border-color="218" gap="1"/>
     <vgap height="3"/>
     <row hgap="2" height="1">
-      <cell name="label" value="={{labels.lb_report_date}}" font-style="B" font-size="10" align="L" />
-      <cell name="date_from" value="={{ds.0.date_from}}" align="L" font-style="B" font-size="10" />
-      <cell name="label" value="-" font-style="B" font-size="10" align="L" width="5"/>
-      <cell name="date_to" value="={{ds.0.date_to}}" align="L" font-style="B" font-size="10"/>
-      <cell name="crdate" value="={{labels.lb_create_date}} ={{crtime}}" align="R" font-style="I" font-size="9"/>
+      <columns>
+        <cell name="label" value="labels.lb_report_date" font-style="bold" font-size="10" align="left" />
+        <cell name="date_from" value="ds.0.date_from" align="left" font-style="bold" font-size="10" />
+        <cell name="label" value="-" font-style="bold" font-size="10" align="left" width="5"/>
+        <cell name="date_to" value="ds.0.date_to" align="left" font-style="bold" font-size="10"/>
+        <cell name="crdate" value="={{labels.lb_create_date}} ={{crtime}}" align="right" font-style="italic" font-size="9"/>
+      </columns>
     </row>
   </header>
   <details>
     <vgap height="3"/>
-    <datagrid name="items" databind="ds" border="1" border-color="14212058" font-size="8">
-      <header background-color="16119285" />
+    <datagrid name="items" databind="ds" border="1" border-color="218" font-size="8" header-background="245">
       <columns>
-        <column width="4%" fieldname="counter" align="R" label="={{labels.lb_no}}" footer=" "/>
-        <column width="6%" fieldname="curr" label="={{labels.lb_curr}}" footer=" "/>
-        <column width="20%" fieldname="transnumber" label="={{labels.lb_invoice_no}}" footer="={{labels.lb_total}}"/>
-        <column width="11%" fieldname="duedate" align="C" label="={{labels.lb_due_date}}" footer=" "/>
-        <column width="20%" fieldname="custname" label="={{labels.lb_customer}}" footer=" "/>
-        <column width="5%" fieldname="taxcode" align="R" label="={{labels.lb_vat}}%" footer=" " />
-        <column width="12%" fieldname="netamount" align="R" thousands=" " digit="2" label="={{labels.lb_net}}" footer="={{total_bycur.0.netamount}}"/>
-        <column width="11%" fieldname="vatamount" align="R" thousands=" " digit="2" label="={{labels.lb_vat}}" footer="={{total_bycur.0.vatamount}}"/>
-        <column width="12%" fieldname="amount" align="R" thousands=" " digit="2" label="={{labels.lb_gross}}" footer="={{total_bycur.0.amount}}"/>
+        <column width="4%" fieldname="counter" align="right" label="labels.lb_no"/>
+        <column width="6%" fieldname="curr" label="labels.lb_curr"/>
+        <column width="20%" fieldname="transnumber" label="labels.lb_invoice_no" footer="labels.lb_total"/>
+        <column width="11%" fieldname="duedate" align="center" label="labels.lb_due_date" header-align="center"/>
+        <column width="20%" fieldname="custname" label="labels.lb_customer"/>
+        <column width="5%" fieldname="taxcode" align="right" label="={{labels.lb_vat}}%" />
+        <column width="12%" fieldname="netamount" align="right" thousands=" " digit="2" label="labels.lb_net" footer="total_bycur.0.netamount" header-align="right" footer-align="right"/>
+        <column width="11%" fieldname="vatamount" align="right" thousands=" " digit="2" label="labels.lb_vat" footer="total_bycur.0.vatamount" header-align="right" footer-align="right"/>
+        <column fieldname="amount" align="right" thousands=" " digit="2" label="labels.lb_gross" footer="total_bycur.0.amount" header-align="right" footer-align="right"/>
       </columns>  
     </datagrid>
     <vgap height="3"/>
-    <datagrid name="total" databind="total" border="1" border-color="14212058" font-size="8">
-      <header background-color="16119285" />
+    <datagrid name="total" databind="total" border="1" border-color="218" font-size="8" header-background="245">
       <columns>
-        <column width="10%" fieldname="curr" label="={{labels.lb_curr}}" />
-        <column width="8%" fieldname="taxcode" align="R" label="={{labels.lb_vat}}%" />
-        <column width="17%" fieldname="netamount_out" label="={{labels.lb_net_income}}" align="R" thousands=" " digit="2" />
-        <column width="16%" fieldname="vatamount_out" label="={{labels.lb_vat}}(+)" align="R" thousands=" " digit="2" />
-        <column width="17%" fieldname="netamount_in" align="R" thousands=" " digit="2" label="={{labels.lb_net_payment}}" />
-        <column width="16%" fieldname="vatamount_in" align="R" thousands=" " digit="2" label="={{labels.lb_vat}}(-)" />
-        <column width="17%" fieldname="vatamount_diff" align="R" thousands=" " digit="2" label="={{labels.lb_vat_diff}}" />
+        <column width="10%" fieldname="curr" label="labels.lb_curr" />
+        <column width="8%" fieldname="taxcode" align="right" label="={{labels.lb_vat}}%" header-align="right"/>
+        <column width="17%" fieldname="netamount_out" label="labels.lb_net_income" align="right" thousands=" " digit="2" header-align="right"/>
+        <column width="16%" fieldname="vatamount_out" label="={{labels.lb_vat}}(+)" align="right" thousands=" " digit="2" header-align="right"/>
+        <column width="17%" fieldname="netamount_in" align="right" thousands=" " digit="2" label="labels.lb_net_payment" header-align="right"/>
+        <column width="16%" fieldname="vatamount_in" align="right" thousands=" " digit="2" label="={{labels.lb_vat}}(-)" header-align="right"/>
+        <column width="17%" fieldname="vatamount_diff" align="right" thousands=" " digit="2" label="labels.lb_vat_diff" header-align="right"/>
       </columns>  
     </datagrid>
   </details>
   <footer>
     <vgap height="2"/>
-    <hline border-color="14212058"/>
+    <hline border-color="218"/>
     <row height="10">
-      <cell value="={{labels.web_page}}" link="={{labels.web_link}}" font-style="BI" color="2162943"/>
-      <cell value="{{pages}}/{{page}}" align="R" font-style="B"/>
+      <columns>
+        <cell value="labels.web_page" link="labels.web_link" font-style="bolditalic" color="#2100FF"/>
+        <cell value="{{page}}" align="right" font-style="bold"/>
+      </columns>
     </row>
   </footer>
 </template>

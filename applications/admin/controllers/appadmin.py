@@ -32,7 +32,7 @@ try:
 except:
     hosts = (http_host, )
 
-if request.env.http_x_forwarded_for or request.is_https:
+if request.is_https:
     session.secure()
 elif (remote_addr not in hosts) and (remote_addr != "127.0.0.1") and \
     (request.function != 'manage'):
@@ -89,9 +89,7 @@ def get_databases(request):
             dbs[key] = value
     return dbs
 
-
 databases = get_databases(None)
-
 
 def eval_in_global_env(text):
     exec ('_ret=%s' % text, {}, global_env)
@@ -104,7 +102,6 @@ def get_database(request):
     else:
         session.flash = T('invalid request')
         redirect(URL('index'))
-
 
 def get_table(request):
     db = get_database(request)
@@ -585,7 +582,7 @@ def bg_graph_model():
         if hasattr(db[tablename],'_meta_graphmodel'):
             meta_graphmodel = db[tablename]._meta_graphmodel
         else:
-            meta_graphmodel = dict(group='Undefined', color='#ECECEC')
+            meta_graphmodel = dict(group=request.application, color='#ECECEC')
 
         group = meta_graphmodel['group'].replace(' ', '')
         if not subgraphs.has_key(group):

@@ -38,6 +38,7 @@ import marshal
 import shutil
 import imp
 import logging
+import types
 logger = logging.getLogger("web2py")
 from gluon import rewrite
 from custom_import import custom_import_install
@@ -211,6 +212,7 @@ def LOAD(c=None, f='index', args=None, vars=None,
             request.env.path_info
         other_request.cid = target
         other_request.env.http_web2py_component_element = target
+        other_request.restful = types.MethodType(request.restful.im_func, other_request) # A bit nasty but needed to use LOAD on action decorates with @request.restful()
         other_response.view = '%s/%s.%s' % (c, f, other_request.extension)
 
         other_environment = copy.copy(current.globalenv)  # NASTY
@@ -531,7 +533,7 @@ def run_models_in(environment):
 
     folder = environment['request'].folder
     c = environment['request'].controller
-    f = environment['request'].function
+    #f = environment['request'].function
     response = environment['response']
 
     path = pjoin(folder, 'models')
@@ -652,8 +654,8 @@ def run_view_in(environment):
     folder = request.folder
     path = pjoin(folder, 'compiled')
     badv = 'invalid view (%s)' % view
-    if response.generic_patterns:
-        patterns = response.generic_patterns
+    patterns = response.get('generic_patterns')
+    if patterns:
         regex = re_compile('|'.join(map(fnmatch.translate, patterns)))
         short_action = '%(controller)s/%(function)s.%(extension)s' % request
         allow_generic = regex.search(short_action)

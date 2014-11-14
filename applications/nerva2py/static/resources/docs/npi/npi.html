@@ -129,6 +129,45 @@ th,td {
     </tbody>
   </table>
   
+  <p>
+    <b>Object Overview</b>
+  </p>
+  
+  <table
+    style="border-width: 1px; border-style: solid; border-collapse: collapse;"
+    border="1" cellpadding="2" cellspacing="0" width="100%">
+    <tbody>
+      <tr bgcolor="#E5E5E5">
+        <th>Name</th>
+        <th width="100%">Properties</th>
+      </tr>
+      <tr>
+        <td><a href="#validator">validator</a></td>
+        <td>valid, message, employee, audit, groupinput, transfilter, groups, menucmd, menufields, userlogin</td>
+      </tr>
+      <tr>
+        <td><a href="#login">login</a></td>
+        <td>database, username, password, appl</td>
+      </tr>
+      <tr>
+        <td><a href="#param">param</a></td>
+        <td>name, value, wheretype, type</td>
+      </tr>
+      <tr>
+        <td><a href="#recordSetInfo">recordSetInfo</a></td>
+        <td>infoName, infoType, classAlias, filterStr, orderStr, sqlKey, sqlStr, whereStr, havingStr, paramList, functionName</td>
+      </tr>
+      <tr>
+        <td><a href="#infoSet">infoSet</a></td>
+        <td>infoName, recordSet</td>
+      </tr>
+      <tr>
+        <td><a href="#updateSetInfo">updateSetInfo</a></td>
+        <td>updateType, tableName, recordSet, functionName, paramList, value</td>
+      </tr>
+    </tbody>
+  </table>
+  
   <p class="exblock">
     <b>More Examples: </b><a href={{=URL( 'ndr', 'getResource')+'?file_name=download/nwx&content=application/zip&file_type=zip'}} 
     target="_blank"><b><i>Nervatura wxPython Client</i></b></a> and <a href={{=URL( 'ndr', 'getResource')+'?file_name=download/npijson&content=application/zip&file_type=zip'}} 
@@ -207,7 +246,7 @@ th,td {
 					</p>
 					
 				</td>
-				
+			</tr>	
 			<tr class="fhead">
         <td><a name="callFunction" class="fname">callFunction</a>(<a href="#login">login</a><span
           class="ftype">::Object</span>, functionName<span class="ftype">::String</span>,

@@ -43,19 +43,19 @@
 	   HTML5 elements & feature detects -->
   <script src="{{=URL('static','js/modernizr.custom.js')}}"></script>  
   
-  <script src="{{=URL('static','js/nwc.js')}}"></script>
+  <script src="{{=URL('static','js/ntura/nwc.js')}}"></script>
   
   <!-- include stylesheets -->
   {{
-  response.files.append(URL('static','css/bootstrap.min.css'))
-  response.files.append(URL('static','css/bootstrap-responsive.min.css'))
+  response.files.append(URL('static','css/bootstrap.css'))
+  response.files.append(URL('static','css/bootstrap-responsive.css'))
   response.files.append(URL('static','css/web2py_bootstrap.css'))
   
   response.files.append(URL('static','css/base.css'))
   response.files.append(URL('static','css/skeleton.css'))
   response.files.append(URL('static','css/web2py.css'))
 
-  response.files.append(URL('static','css/nwc.css'))
+  response.files.append(URL('static','css/ntura/nwc.css'))
   }}
   
   {{include 'web2py_ajax.html'}}
@@ -159,7 +159,7 @@
 	<script> DD_belatedPNG.fix('img, .png_bg'); //fix any <img> or .png_bg background-images </script>
 	<![endif]-->
   
-  <script src="{{=URL('static','js/bootstrap.min.js')}}"></script>
+  <script src="{{=URL('static','js/bootstrap.js')}}"></script>
   <script src="{{=URL('static','js/web2py_bootstrap.js')}}"></script>
   
   {{if response.google_analytics_id:}}<script type="text/javascript"> var _gaq = _gaq || []; _gaq.push(['_setAccount', '{{=response.google_analytics_id}}']); _gaq.push(['_trackPageview']); (function() { var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s); })(); </script> {{pass}}

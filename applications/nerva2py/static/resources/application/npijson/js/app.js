@@ -147,7 +147,7 @@ var dataSource = function(data_model) {
   var loadTable = function(id) {
     var whereStr="";
     if (id!==null) {whereStr = "id="+id.toString();}
-    var da = new ndiAdapter(self.database.server());
+    var da = new npiAdapter(self.database.server());
     da.loadTable(self.database.login(), self.current.__tablename__, whereStr, "", function(state,data){
       if (state==="ok") {
         self.items.removeAll();
@@ -173,7 +173,7 @@ var dataSource = function(data_model) {
   }
   self.saveRecord = function() {
     if (!cont.error_msg() && cont.dirty()) {
-      var da = new ndiAdapter(self.database.server());
+      var da = new npiAdapter(self.database.server());
       da.saveRecord(self.database.login(), ko.toJS(self.current), function(state,data){
         if (state==="ok") {
           loadKoData(self.current,data);
@@ -185,7 +185,7 @@ var dataSource = function(data_model) {
   self.saveRecordSet = function() {
     if (!cont.error_msg() && cont.dirty()) {
       self.items()[self.index()] = ko.toJS(self.current);
-      var da = new ndiAdapter(self.database.server());
+      var da = new npiAdapter(self.database.server());
       da.saveRecordSet(self.database.login(), self.items(), function(state,data){
         if (state==="ok") {
           loadKoData(self.current,data);
@@ -206,7 +206,7 @@ var dataSource = function(data_model) {
     }};
   self.deleteRecord = function() {
     if (!cont.error_msg() && self.current.id()) {
-      var da = new ndiAdapter(self.database.server());
+      var da = new npiAdapter(self.database.server());
       da.deleteRecord(self.database.login(), ko.toJS(self.current), function(state,data){
         if (state==="ok") {
               self.loadRecordSet(null);

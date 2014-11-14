@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html><!--HTML5 doctype-->
+<head>
+<title>Nervatura Report Javascript DEMO </title>
+
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta http-equiv="Pragma" content="no-cache">
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+
+<script type="text/javascript" src="js/vendor/jspdf.min.js"></script>
+<script type="text/javascript" src="js/vendor/pdf.min.js"></script>
+<script type="text/javascript" src="js/report.debug.js"></script>
+
+<script type="text/javascript" src="templates/sample.xml"></script>
+<script type="text/javascript" src="templates/sample.js"></script>
+<script type="text/javascript" src="templates/sample.json"></script>
+
+<style>
+  button {
+    font-weight: bold;}
+</style>
+</head>
+<body>
+  <table style="width:100%;">
+    <tr>
+      <td style="background-color: #8B8989;padding:4px;">
+        <div style="float:left;padding:4px;font-weight: bold;">
+          <button id="set_xml_content" >XML template</button>
+          <button id="set_json_content">JSON template</button>
+          <button id="set_js_content">Javascript</button>
+        </div>
+        <div style="float:right;padding:4px;">
+          <button id="panel_state">Show/Hide</button>
+          <button id="save_xml_data">Save XML data</button>
+          <button id="save_json_temp">JSON template</button>
+          <button id="save_xml_temp">XML template</button>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align:top;min-width:500px;background-color: #F5F5F5;">
+        <div id="temp_panel" style="display:block;">
+          <textarea id="dv_xml_template" style="display:block;width:99%;height:300px;" /></textarea>
+          <textarea id="dv_json_template" style="display:none;width:99%;height:300px;" /></textarea>
+          <textarea id="dv_js_template" style="display:none;width:99%;height:300px;" readonly="true" /></textarea>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align:center;background-color: #8B8989;padding:4px;">
+        <div style="float:left;padding:4px;font-weight: bold;">
+          <button id="prev">Previous</button>
+          <button id="next">Next</button>
+          &nbsp; &nbsp;
+          <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
+        </div>
+        <div style="float:right;padding:4px;">
+          <select id="orientation">
+            <option value="p">Portrait</option>
+            <option value="l">Landscape</option>
+          </select> 
+          <button id="prev_report">Report Preview</button>
+          <button id="win_report">Report Window</button>
+          <button id="save_pdf_report">Save Report</button>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align:top;text-align:center;">
+        <canvas id="preview_box" style="border:1px solid black"></canvas>
+      </td>
+    </tr>
+  </table>
+<script type="text/javascript" src="js/report.demo.js"></script>
+</body>
+</html>

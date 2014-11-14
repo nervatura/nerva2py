@@ -1,0 +1,44 @@
+{{extend 'report/layout.html'}}
+
+<table width="100%" cellpadding="5px;" cellspacing="0" style="background-color: #F5F5DC;">
+  <tr>
+    <td style="width: 200px;">
+      <div style="float: left;">
+        <img style="vertical-align: bottom;" src="{{=URL('static','images/icon64_ntura_te.png')}}" />
+      </div>
+      <div style="float: left;">
+        <span style="width: 120px;color: #616161;vertical-align: middle;font-size: 13px;font-weight: bold;">
+          OPEN SOURCE<br>BUSINESS<br> MANAGEMENT
+        </span>
+      </div>
+    </td>
+    <td style="text-align: center;">
+      <h1 style="font-variant: small-caps;font-weight: bold;margin: 0px;">NERVATURA REPORT</h1>
+    </td>
+    <td style="width: 150px;text-align: right;padding: 15px;">
+      <span class="vernum" >Ver.No: {{=response.verNo}}</span>
+    </td>
+  </tr>
+</table>
+<hr>
+<h1>Client and server-side PDF Reporting</h1>
+<ul>
+  <li><span style="font-size: 24px;font-weight: bold;">Client/server side:</span> PDF printing in pure <b>JavaScript</b> (using 
+  the library <a href="https://github.com/MrRio/jsPDF" target="_blank">jsPDF</a>) and <b>Python</b> (using the library
+    <a href="http://code.google.com/p/pyfpdf/" target="_blank">Pypdf</a>) </li>
+  <li><span style="font-size: 24px;font-weight: bold;">Fully declarative:</span> can be easily modified and used for 
+  relative layout (no need to specify the x and y coordinates)</li>
+  <li><span style="font-size: 24px;font-weight: bold;">Powerful layout engine:</span> row, datagrid, column, cell, image, 
+  separator, html, barcode, hline, vgap elements </li>
+  <li><span style="font-size: 24px;font-weight: bold;">Many types of declaration:</span> XML, JSON, Javascript or Python languages </li>
+  <li><span style="font-size: 24px;font-weight: bold;">Several output options:</span> PDF, XML, HTML</li>
+  <li><span style="font-size: 24px;font-weight: bold;">Documentations:</span> <a 
+    href="{{=URL('ndr', 'getResource',vars={'file_name':'docs/report/report','content':'view','lang':'auto'})}}" 
+    target="_blank">Reference Manual</a>, <a href="{{=URL('python_demo')}}" data-ajax="false" >Python DEMO</a>, 
+    <a href="{{=URL('javascript_demo')}}" data-ajax="false" >Javascript DEMO</a></li>
+  <li><span style="font-size: 24px;font-weight: bold;">Can be used independently:</span> any (client or server-side) python and html5 (in-browser) programs</li>
+</ul>
+<div style="float: right;">
+  <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'download/report','content':'application/zip','file_type':'zip'})}}" 
+  data-role="button" data-icon="check" data-theme="d" target="_blank">Download</a> 
+</div>

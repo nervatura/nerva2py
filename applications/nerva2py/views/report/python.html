@@ -1,0 +1,133 @@
+{{extend 'report/layout.html'}}
+
+<div class="cheader">
+	<div style="float: left;">
+		<fieldset data-role="controlgroup" data-type="horizontal">
+		  <select id="template">
+		    <option value="xml">XML template</option>
+		    <option value="py">Python template</option>
+		  </select>
+		  <button id="open_template" >XML/Python template</button>
+		</fieldset>
+	</div>
+	<div style="float: right;">
+		<fieldset data-role="controlgroup" data-type="horizontal">
+		  <button id="pdf_report">Save PDF Report</button>
+		  <button id="html_report">HTML Preview</button>
+		  <button id="xml_data">Report XML data</button>
+		</fieldset>
+	</div>
+</div>
+
+<div class="cheader">
+	<div style="float: left;font-weight: bold;">
+	  <fieldset data-role="controlgroup" data-type="horizontal">
+	    <button id="prev">Previous</button>
+	    <button id="next">Next</button>
+	  </fieldset>
+	</div>
+	<div style="float: left;padding: 10px;font-weight: bold;">
+	  <fieldset data-role="controlgroup" data-type="horizontal">
+	    <label>Page: </label>
+	    <label id="page_num"></label>
+	    <label> / </label>
+	    <label id="page_count"></label>
+	  </fieldset>
+	</div>
+	<div style="float: right;">
+	  <fieldset data-role="controlgroup" data-type="horizontal">
+		  <select id="orientation">
+	      <option value="portrait">Portrait</option>
+	      <option value="landscape">Landscape</option>
+	    </select> 
+	    <button id="prev_report">Report Preview</button>
+    </fieldset>
+	</div>
+</div>
+<div style="vertical-align:top;text-align:center;">
+  <canvas id="preview_box" style="border:1px solid black;margin-top: 10px;"></canvas>
+</div>
+
+<script type="text/javascript">
+  PDFJS.disableWorker = true;
+  var pdfDoc = null,
+      pageNum = 1,
+      pageRendering = false,
+      pageNumPending = null,
+      scale = 1.3,
+      canvas = document.getElementById('preview_box'),
+      ctx = canvas.getContext('2d');
+
+  function renderPage(num) {
+    pageRendering = true;
+    pdfDoc.getPage(num).then(function(page) {
+      var viewport = page.getViewport(scale);
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+
+      var renderContext = {
+        canvasContext: ctx,
+        viewport: viewport};
+      var renderTask = page.render(renderContext);
+      
+      renderTask.promise.then(function () {
+        pageRendering = false;
+        if (pageNumPending !== null) {
+          renderPage(pageNumPending);
+          pageNumPending = null;}});});
+    document.getElementById('page_num').textContent = pageNum;}
+
+  function queueRenderPage(num) {
+    if (pageRendering) {
+      pageNumPending = num;
+    } else {
+      renderPage(num);}}
+
+  function onPrevPage() {
+    if (pageNum <= 1) {
+      return;}
+    pageNum--;
+    queueRenderPage(pageNum);}
+  document.getElementById('prev').addEventListener('click', onPrevPage);
+
+  function onNextPage() {
+    if (pageNum >= pdfDoc.numPages) {
+      return;}
+    pageNum++;
+    queueRenderPage(pageNum);}
+  document.getElementById('next').addEventListener('click', onNextPage);
+</script>
+
+<script type="text/javascript">
+  function get_base_url() {
+	  return window.location.protocol+'//'+window.location.host+"/"+document.getElementById('appl_url').className;
+	};
+  document.getElementById('prev_report').addEventListener('click', function() {
+    var url = get_base_url()+"/document?"+document.getElementById("orientation").value+"=true";
+    url += "&"+document.getElementById("template").value+"=true";
+    pageNum = 1;
+    PDFJS.getDocument(url).then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      document.getElementById('page_count').textContent = pdfDoc.numPages;
+      renderPage(pageNum);});
+  });
+  document.getElementById('html_report').addEventListener('click', function() {
+	  var url = get_base_url()+"/document?html=true&"+document.getElementById("orientation").value+"=true";
+    url += "&"+document.getElementById("template").value+"=true";
+    window.open(url, '_blank');
+  });
+  document.getElementById('xml_data').addEventListener('click', function() {
+	  var url = get_base_url()+"/document?data=true";
+    url += "&"+document.getElementById("template").value+"=true";
+    window.open(url, '_blank');
+  });
+  document.getElementById('open_template').addEventListener('click', function() {
+	  var url = get_base_url()+"/template?"+document.getElementById("template").value+"=true";
+    window.open(url, '_blank');
+  });
+  document.getElementById('pdf_report').addEventListener('click', function() {
+	  var url = get_base_url()+"/document?"+document.getElementById("orientation").value+"=true";
+    url += "&"+document.getElementById("template").value+"=true";
+    window.open(url, '_blank');
+  });
+</script>

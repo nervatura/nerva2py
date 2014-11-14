@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html><!--HTML5 doctype-->
+<head>
+<title>Nervatura Report Python DEMO </title>
+
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta http-equiv="Pragma" content="no-cache">
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+<script type="text/javascript" src="pdf/pdf.min.js"></script>
+
+<style>
+  button {
+    font-weight: bold;}
+</style>
+
+</head>
+<body>
+  <table style="width:100%;">
+    <tr>
+      <td style="background-color: #8B8989;padding:4px;">
+        <div style="float:left;padding:4px;font-weight: bold;">
+          <select id="template">
+            <option value="xml">XML template</option>
+            <option value="py">Python template</option>
+          </select>
+          <button id="open_template" >XML/Python template</button>
+        </div>
+        <div style="float:right;padding:4px;">
+          <button id="pdf_report">Save PDF Report</button>
+          <button id="html_report">HTML Preview</button>
+          <button id="xml_data">Report XML data</button>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align:center;background-color: #8B8989;padding:4px;">
+        <div style="float:left;padding:4px;font-weight: bold;">
+          <button id="prev">Previous</button>
+          <button id="next">Next</button>
+          &nbsp; &nbsp;
+          <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
+        </div>
+        <div style="float:right;padding:4px;">
+          <select id="orientation">
+            <option value="portrait">Portrait</option>
+            <option value="landscape">Landscape</option>
+          </select> 
+          <button id="prev_report">Report Preview</button>          
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align:top;text-align:center;">
+        <canvas id="preview_box" style="border:1px solid black"></canvas>
+      </td>
+    </tr>
+  </table>
+
+<script type="text/javascript">
+  PDFJS.disableWorker = true;
+  var pdfDoc = null,
+      pageNum = 1,
+      pageRendering = false,
+      pageNumPending = null,
+      scale = 1.3,
+      canvas = document.getElementById('preview_box'),
+      ctx = canvas.getContext('2d');
+
+  function renderPage(num) {
+    pageRendering = true;
+    pdfDoc.getPage(num).then(function(page) {
+      var viewport = page.getViewport(scale);
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+
+      var renderContext = {
+        canvasContext: ctx,
+        viewport: viewport};
+      var renderTask = page.render(renderContext);
+      
+      renderTask.promise.then(function () {
+        pageRendering = false;
+        if (pageNumPending !== null) {
+          renderPage(pageNumPending);
+          pageNumPending = null;}});});
+    document.getElementById('page_num').textContent = pageNum;}
+
+  function queueRenderPage(num) {
+    if (pageRendering) {
+      pageNumPending = num;
+    } else {
+      renderPage(num);}}
+
+  function onPrevPage() {
+    if (pageNum <= 1) {
+      return;}
+    pageNum--;
+    queueRenderPage(pageNum);}
+  document.getElementById('prev').addEventListener('click', onPrevPage);
+
+  function onNextPage() {
+    if (pageNum >= pdfDoc.numPages) {
+      return;}
+    pageNum++;
+    queueRenderPage(pageNum);}
+  document.getElementById('next').addEventListener('click', onNextPage);
+</script>
+
+<script type="text/javascript">
+  document.getElementById('prev_report').addEventListener('click', function() {
+    var url = "/document?"+document.getElementById("orientation").value;
+    url += "&"+document.getElementById("template").value;
+    pageNum = 1;
+    PDFJS.getDocument(url).then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      document.getElementById('page_count').textContent = pdfDoc.numPages;
+      renderPage(pageNum);});
+  });
+  document.getElementById('html_report').addEventListener('click', function() {
+    var url = "/document?html&"+document.getElementById("orientation").value;
+    url += "&"+document.getElementById("template").value;
+    window.open(url, '_blank');
+  });
+  document.getElementById('xml_data').addEventListener('click', function() {
+    var url = "/document?data";
+    url += "&"+document.getElementById("template").value;
+    window.open(url, '_blank');
+  });
+  document.getElementById('open_template').addEventListener('click', function() {
+    var url = "/template?"+document.getElementById("template").value;
+    window.open(url, '_blank');
+  });
+  document.getElementById('pdf_report').addEventListener('click', function() {
+    var url = "/document?"+document.getElementById("orientation").value;
+    url += "&"+document.getElementById("template").value;
+    window.open(url, '_blank');
+  });
+</script>
+</body>
+</html>

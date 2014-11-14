@@ -5,7 +5,8 @@ dirs=[{'name':'models', 'reg':'.*\.py$'},
       {'name':'controllers', 'reg':'.*\.py$'},
       {'name':'views', 'reg':'[\w/\-]+(\.\w+)+$'},
       {'name':'modules', 'reg':'.*\.py$'},
-      {'name':'static', 'reg': '[^\.#].*'}]
+      {'name':'static', 'reg': '[^\.#].*'},
+      {'name':'private', 'reg':'.*\.py$'}]
    
 def file_create_form(location, anchor=None, helptext=""):
     form=FORM(
@@ -198,11 +199,6 @@ $(document).on('click', 'a.font_button', function (e) {
     });
     current_font_incr = (new_incr !== 0) ? current_font_incr + new_incr : 0;
 });
-
-{{if len(request.args) > 1:}}
-    load_file('{{=URL(f='edit', args=request.args, vars=request.get_vars)}}', {{=request.vars.lineno or 1}});
-{{pass}}
-
 </script>
 
 {{block sectionclass}}edit{{end}}
@@ -213,6 +209,7 @@ $(document).on('click', 'a.font_button', function (e) {
 {{=LOAD('default', 'editor_sessions', ajax=True, _class='btn-group')}}
 
 <div class="btn-group">
+  <a class="button btn" onclick="$('#eheader').hide(); return false" href="#">Hide</a>
   <a class="button btn" onclick="$('#files').toggle(); return false" href="#">Files toggle</a>
 </div>
 <div class="btn-group">
@@ -304,6 +301,9 @@ $(document).ready(function() {
     $('#files').css('left', '-'+ow+'px');
     $.web2py.trap_form('url', 'form');
     $('#form form').addClass('no_trap'); // Let to reuse the same form
+    {{if len(request.args) > 1:}}
+    load_file('{{=URL(f='edit', args=request.args, vars=request.get_vars)}}', {{=request.vars.lineno or 1}});
+    {{pass}}
 });
 </script>
 <!-- Typeahead scripts here so the page load faster -->

@@ -35,10 +35,6 @@ INSERT INTO ui_message(secname, fieldname,  msg)
 VALUES ('fpdf_invoice_en_head', 'lb_account_no', 'Account No');--
 
 INSERT INTO ui_message(secname, fieldname,  msg) 
-VALUES ('fpdf_invoice_en_report', 'logo_file', 'icon24_ntura_white.png');--
-INSERT INTO ui_message(secname, fieldname,  msg) 
-VALUES ('fpdf_invoice_en_report', 'logo_link', 'http://www.nervatura.com');--
-INSERT INTO ui_message(secname, fieldname,  msg) 
 VALUES ('fpdf_invoice_en_report', 'web_page', 'www.nervatura.com');--
 INSERT INTO ui_message(secname, fieldname,  msg) 
 VALUES ('fpdf_invoice_en_report', 'web_link', 'http://nervatura.com');--
@@ -242,89 +238,109 @@ where t.id = @id'
 where report_id = (select id from ui_report where reportkey='fpdf_invoice_en') and dataset='head';--
 
 update ui_report set report = '<template>
-  <report title="INVOICE" font-family="helvetica" font-size="11" left-margin="15" top-margin="15" right-margin="15" decode="utf-8" encode="latin_1" />
+  <report title="INVOICE" font-family="times" font-size="11" left-margin="15" top-margin="15" right-margin="15" decode="utf-8" encode="latin_1" />
   <header>
     <row height="10">
-      <image file="={{labels.logo_file}}" link="={{labels.logo_link}}"/>
-      <cell name="label" value="={{labels.lb_invoice}}" font-style="BI" font-size="26" color="14212058"/>
-      <cell name="transnumber" value="={{head.0.transnumber}}" align="R" font-style="B" font-size="20"/>
+      <columns>
+        <image src="logo" />
+        <cell name="label" value="labels.lb_invoice" font-style="bolditalic" font-size="26" color="#D8DBDA"/>
+        <cell name="transnumber" value="head.0.transnumber" align="right" font-style="bold" font-size="20"/>
+      </columns>
     </row>
     <row hgap="2" height="1">
-      <hgap width="8" />
-      <cell name="status" value="={{head.0.status}}" align="L" font-style="B" color="16711680" font-size="10"/>
-      <cell name="state" value="={{head.0.state}}" align="R" font-style="B" font-size="10"/>
+      <columns>
+        <cell name="status" value="head.0.status" align="left" font-style="bold" color="#FF0000" font-size="10"/>
+        <cell name="state" value="head.0.state" align="right" font-style="bold" font-size="10"/>
+      </columns>
     </row>
     <row >
-      <cell name="transcast" value="={{head.0.transcast}}" align="L" font-style="B" font-size="10"/>
-      <cell name="ref_transnumber_1" value="={{head.0.ref_transnumber_1}}" align="R" font-style="B" font-size="10"/>
+      <columns>
+        <cell name="transcast" value="head.0.transcast" align="left" font-style="bold" font-size="10"/>
+        <cell name="ref_transnumber_1" value="head.0.ref_transnumber_1" align="right" font-style="bold" font-size="10"/>
+      </columns>
     </row>
-    <hline border-color="14212058"/>
+    <hline border-color="218"/>
     <vgap height="2"/>
   </header>
   <details>
     <row>
-      <cell name="label" width="50%" value="={{labels.lb_supplier}}" font-style="B" background-color="16119285" border="LT" border-color="14212058"/>
-      <cell name="label" value="={{labels.lb_customer}}" font-style="B" background-color="16119285"  border="LRT" border-color="14212058"/>
-    </row>
-    <row>
-      <cell name="company_name" width="50%" font-style="B" value="={{head.0.comp_name}}" border="L" border-color="14212058"/>
-      <cell name="customer_name" font-style="B" value="={{head.0.cust_name}}" border="LR" border-color="14212058"/>
-    </row>
-    <row>
-      <cell name="company_address" width="50%" value="={{head.0.comp_address}}" border="L" border-color="14212058"/>
-      <cell name="customer_address" value="={{head.0.cust_address}}" border="LR" border-color="14212058"/>
-    </row>
-    <row>
-      <cell name="company_taxnumber" width="50%" value="={{head.0.comp_taxnumber}}" border="L" border-color="14212058"/>
-      <cell name="customer_taxnumber" value="={{head.0.cust_taxnumber}}" border="LR" border-color="14212058"/>
-    </row>
-    <row>
-      <cell name="company_account" width="50%" value="={{head.0.compaccount}}" border="L" border-color="14212058"/>
-      <cell name="customer_account" value="={{head.0.custaccount}}" border="LR" border-color="14212058"/>
-    </row>
-    <row>
-      <cell name="label" align="C" width="30" font-style="B" value="={{labels.lb_delivery_date}}" background-color="16119285" border="LBT" border-color="14212058"/>
-      <cell name="label" align="C" width="30" font-style="B" value="={{labels.lb_due_date}}" background-color="16119285" border="LBT" border-color="14212058"/>
-      <cell name="label" align="C" width="30" font-style="B" value="={{labels.lb_creation_date}}" background-color="16119285" border="LBT" border-color="14212058"/>
-      <cell name="label" align="C" width="20" font-style="B" value="={{labels.lb_currency}}" background-color="16119285" border="LBT" border-color="14212058"/>
-      <cell name="label" align="C" width="30" font-style="B" value="={{labels.lb_payment}}" background-color="16119285" border="LBT" border-color="14212058"/>
-      <cell name="label" align="C" font-style="B" value="={{labels.lb_source_ref_no}}" background-color="16119285" border="LBTR" border-color="14212058"/>
-    </row>
-    <row>
-      <cell name="transdate" align="C" width="30" value="={{head.0.transdate}}" border="LB" border-color="14212058"/>
-      <cell name="duedate" align="C" width="30" value="={{head.0.duedate}}" border="LB" border-color="14212058"/>
-      <cell name="crdate" align="C" width="30" value="={{head.0.crdate}}" border="LB" border-color="14212058"/>
-      <cell name="curr" align="C" width="20" value="={{head.0.curr}}" border="LB" border-color="14212058"/>
-      <cell name="payment" align="C" width="30" value="={{head.0.paidtypedesc}}" border="LB" border-color="14212058"/>
-      <cell name="source_transnumber" align="C" value="={{head.0.ref_transnumber_2}}" border="LBR" border-color="14212058"/>
-    </row>
-    <row>
-      <cell name="label" width="30" font-style="B" value="={{labels.lb_comments}}" background-color="16119285" border="LB" border-color="14212058"/>
-      <cell name="comment" multiline="true" value="={{head.0.notes}}" border="LBR" border-color="14212058"/>
-    </row>
-    <datagrid name="items" databind="items" border="1" border-color="14212058" font-size="10">
-      <header background-color="16119285" />
       <columns>
-        <column width="4%" fieldname="counter" align="R" label="={{labels.lb_no}}"/>
-        <column width="25%" fieldname="description" label="={{labels.lb_description}}"/>
-        <column width="8%" fieldname="unit" label="={{labels.lb_unit}}"/>
-        <column width="7%" fieldname="qty" align="R" thousands=" " digit="2" label="={{labels.lb_qty}}"/>
-        <column width="10%" fieldname="fxprice" align="R" thousands=" " digit="2" label="={{labels.lb_price}}"/>
-        <column width="7%" fieldname="discount" align="R" thousands=" " digit="2" label="={{labels.lb_disc}}%"/>
-        <column width="8%" fieldname="taxcode" align="R" label="={{labels.lb_vat}}%"/>
-        <column width="11%" fieldname="netamount" align="R" thousands=" " digit="2" label="={{labels.lb_netamount}}"/>
-        <column width="9%" fieldname="vatamount" align="R" thousands=" " digit="2" label="={{labels.lb_vat}}"/>
-        <column width="12%" fieldname="amount" align="R" thousands=" " digit="2" label="={{labels.lb_amount}}"/>
+        <cell name="label" width="50%" value="labels.lb_supplier" font-style="bold" background-color="245" border="LT" border-color="218"/>
+        <cell name="label" value="labels.lb_customer" font-style="bold" background-color="245"  border="LRT" border-color="218"/>
+      </columns>
+    </row>
+    <row>
+      <columns>
+        <cell name="company_name" width="50%" font-style="bold" value="head.0.comp_name" border="L" border-color="218"/>
+        <cell name="customer_name" font-style="bold" value="head.0.cust_name" border="LR" border-color="218"/>
+      </columns>
+    </row>
+    <row>
+      <columns>
+        <cell name="company_address" width="50%" value="head.0.comp_address" border="L" border-color="218"/>
+        <cell name="customer_address" value="head.0.cust_address" border="LR" border-color="218"/>
+      </columns>
+    </row>
+    <row>
+      <columns>
+        <cell name="company_taxnumber" width="50%" value="head.0.comp_taxnumber" border="L" border-color="218"/>
+        <cell name="customer_taxnumber" value="head.0.cust_taxnumber" border="LR" border-color="218"/>
+      </columns>
+    </row>
+    <row>
+      <columns>
+        <cell name="company_account" width="50%" value="head.0.compaccount" border="L" border-color="218"/>
+        <cell name="customer_account" value="head.0.custaccount" border="LR" border-color="218"/>
+      </columns>
+    </row>
+    <row>
+      <columns>
+        <cell name="label" align="center" width="30" font-style="bold" value="labels.lb_delivery_date" background-color="245" border="LBT" border-color="218"/>
+        <cell name="label" align="center" width="30" font-style="bold" value="labels.lb_due_date" background-color="245" border="LBT" border-color="218"/>
+        <cell name="label" align="center" width="30" font-style="bold" value="labels.lb_creation_date" background-color="245" border="LBT" border-color="218"/>
+        <cell name="label" align="center" width="20" font-style="bold" value="labels.lb_currency" background-color="245" border="LBT" border-color="218"/>
+        <cell name="label" align="center" width="30" font-style="bold" value="labels.lb_payment" background-color="245" border="LBT" border-color="218"/>
+        <cell name="label" align="center" font-style="bold" value="labels.lb_source_ref_no" background-color="245" border="LBTR" border-color="218"/>
+      </columns>
+    </row>
+    <row>
+      <columns>
+        <cell name="transdate" align="center" width="30" value="head.0.transdate" border="LB" border-color="218"/>
+        <cell name="duedate" align="center" width="30" value="head.0.duedate" border="LB" border-color="218"/>
+        <cell name="crdate" align="center" width="30" value="head.0.crdate" border="LB" border-color="218"/>
+        <cell name="curr" align="center" width="20" value="head.0.curr" border="LB" border-color="218"/>
+        <cell name="payment" align="center" width="30" value="head.0.paidtypedesc" border="LB" border-color="218"/>
+        <cell name="source_transnumber" align="center" value="head.0.ref_transnumber_2" border="LBR" border-color="218"/>
+      </columns>
+    </row>
+    <row>
+      <columns>
+        <cell name="label" width="30" font-style="bold" value="labels.lb_comments" background-color="245" border="LB" border-color="218"/>
+        <cell name="comment" multiline="true" value="head.0.notes" border="LBR" border-color="218"/>
+      </columns>
+    </row>
+    <vgap height="2"/>
+    <datagrid name="items" databind="items" border="1" border-color="218" font-size="9" header-background="245">
+      <columns>
+        <column width="5%" fieldname="counter" align="right" label="labels.lb_no" header-align="center"/>
+        <column width="25%" fieldname="description" label="labels.lb_description" header-align="center"/>
+        <column width="8%" fieldname="unit" label="labels.lb_unit" header-align="center"/>
+        <column width="7%" fieldname="qty" align="right" thousands=" " digit="2" label="labels.lb_qty" header-align="right"/>
+        <column width="10%" fieldname="fxprice" align="right" thousands=" " digit="2" label="labels.lb_price" header-align="right"/>
+        <column width="8%" fieldname="discount" align="right" thousands=" " digit="2" label="={{labels.lb_disc}}%" header-align="right"/>
+        <column width="7%" fieldname="taxcode" align="right" label="={{labels.lb_vat}}%" header-align="right"/>
+        <column width="11%" fieldname="netamount" align="right" thousands=" " digit="2" label="labels.lb_netamount" header-align="right"/>
+        <column width="9%" fieldname="vatamount" align="right" thousands=" " digit="2" label="labels.lb_vat" header-align="right"/>
+        <column fieldname="amount" align="right" thousands=" " digit="2" label="labels.lb_amount" header-align="right"/>
       </columns>  
     </datagrid>
     <vgap height="2"/>
-    <datagrid width="50%" name="taxgroup" databind="taxgroup" border="1" border-color="14212058" font-size="10">
-      <header background-color="16119285"/>
+    <datagrid width="50%" name="taxgroup" databind="taxgroup" border="1" border-color="218" font-size="10" header-background="245">
       <columns>
-        <column width="19%" fieldname="taxcode" align="R" label="={{labels.lb_vat}} %" footer="={{labels.lb_total}}"/>
-        <column width="27%" fieldname="netamount" align="R" thousands=" " digit="2" label="={{labels.lb_netamount}}" footer="={{head.0.sum_netamount}}"/>
-        <column width="27%" fieldname="vatamount" align="R" thousands=" " digit="2" label="={{labels.lb_vat}}" footer="={{head.0.sum_vatamount}}"/>
-        <column width="27%" fieldname="amount" align="R" thousands=" " digit="2" label="={{labels.lb_amount}}" footer="={{head.0.sum_amount}}"/>
+        <column width="19%" fieldname="taxcode" align="right" label="={{labels.lb_vat}} %" footer="labels.lb_total" header-align="right"/>
+        <column width="27%" fieldname="netamount" align="right" thousands=" " digit="2" label="labels.lb_netamount" footer="head.0.sum_netamount" footer-align="right" header-align="right"/>
+        <column width="27%" fieldname="vatamount" align="right" thousands=" " digit="2" label="labels.lb_vat" footer="head.0.sum_vatamount" footer-align="right" header-align="right"/>
+        <column width="27%" fieldname="amount" align="right" thousands=" " digit="2" label="labels.lb_amount" footer="head.0.sum_amount" footer-align="right" header-align="right"/>
       </columns>  
     </datagrid>
     <vgap height="4"/>
@@ -332,11 +348,15 @@ update ui_report set report = '<template>
   </details>
   <footer>
     <vgap height="2"/>
-    <hline border-color="14212058"/>
+    <hline border-color="218"/>
     <row height="10">
-      <cell value="={{labels.web_page}}" link="={{labels.web_link}}" font-style="BI" color="2162943"/>
-      <cell value="{{pages}}/{{page}}" align="R" font-style="B"/>
+      <columns>
+        <cell value="labels.web_page" link="labels.web_link" font-style="bolditalic" color="#2100FF"/>
+        <cell value="{{page}}" align="right" font-style="bold"/>
+      </columns>
     </row>
   </footer>
+  <data>    <logo>data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wIExQZM+QLBuYAAAQ5SURBVEjHtZVJbJRlGMd/77fM0ul0ykynLQPtjEOZWjptSisuJRorF6ocjEaDoDGSYKLiFmIMxoPGg0viRY0cNB6IUQ+YYCJEBLXQWqZgK6GU2taWLrS0dDrdO0vn+14PlYSlQAH9357L+89/eZ9HHDp0iP8TyqXDCV9Iuivvkf8lgXbp8JjPxUfHfseXs1yGs52sd+VgpueJqQYdPRE8sxniZgnElRbF8p1yXW6AgWgbDeeOoJgCu8PJtFbAc2W1tEeaxC0rADDTKVZmO+kxKwjawmwO5pJIGhzpP8je7m5KbycDgKnEDEnDYEO+G10xeT3Sxu6eIYJuP5OJffT5ihbNKD/klzckWLWuSibjUSyahZn5NBtXerkj0059dy+rPaUs1wvoiH3GXjkgIy6nbPV65PEMQzaNN0qLu+j6GZTfX5P+NPKjuqXIj8sV4vR0gv7ZJP2zCUpsEEdhW7GfztFOBqf6cQmV5ByUFpfxyr6veHpZpbhuBk/91qw+lGrDwIfXbqfGbkVXVQCiyRQvNZ5hY0EeIW+IkDfEm83dvL82wHRqAkOz3TiDXdqUeGLDLg73xfj5r4PoqopkwVa3RefFkkKeaWgDYHfXENV5LhRFRVMsZFvl0kLuP/aLCM+p4tfeLs4MtyEQgEQRgrs8Th70OtkeaefE2BQPeF1ICQ6Lk9WOOKMrlssltQjAavdwdqQbACkXrHXoOllWnWgiiVNApq4g/nV9+/pXaWrfw3Dh1Q1blCAr3kO5v5K0hPHUPHt6hinZf4JILE6R005CUTBNSJkmFxIp4qbG25veY3LyKJ9Pj8iGDIf0lFfIRT9aVjBHBsaK8Wb4qBuJMTyTpNTtoP2RdQD8PTXHjuOdfNwxiFWBHKsFj1WjPEvDJjIJOBXuCxQzdqpFLLoqJjwTsrbkYSyKBVPTsF6qUUpSpqRuOMaT9e0cq11LiSsTgLd+eheLq4YXKqtpra8Ti1o06ByQwYLVHB05yoHz+2mM1jGWGAPJQqOEoGsmzmvNnXxZHaL2yEKrvjv9LarmY2t4/WWPX6bAnm+TZ40kAlB0GDfO08dJptNxnl+xnYrcClrHZ9g7MMqOkI8PTvejaBo5Np253k/I879MaLBDXDPk+HBC5I9KkTcqhXdIitBIvtiau5Nszc3Xnd8A8GdsmnfKAnhtVnYW2iE1y8GhcbQZlUeDBSy5phdxobVNhPVnUdU0J893scXvITYbpbGvgVh6iIlUgiqPixbWcqb+sFjSur4Sued6hc0WkJIoX/zRQyI1icvhJG0YhA2DmJJDoxqgZoVXrhnsFjel4CIy5Ep+ONXKpjXVlKXconBcF8Epmyidd4hlFpU37vTxYccIuVX3ylsiUDNWse3ux+k4fvU181t1Nvu9pE3J9+eiNz6Zi8FfWSX7WpqveSoHg2EpgHC2g1hLk7hpgtvBP6lBrRsE+ni7AAAAAElFTkSuQmCC</logo>
+  </data>
 </template>'
 where reportkey = 'fpdf_invoice_en';--

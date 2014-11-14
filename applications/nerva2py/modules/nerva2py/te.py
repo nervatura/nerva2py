@@ -31,7 +31,7 @@ class JqueryTeWidget(object):
     if not self.settings.files:
       _files = [
           URL('static', 'css/jquery-te.css'),
-          URL('static', 'js/jquery-te.min.js'),
+          URL('static', 'js/jquery-te.js'),
       ]
     else:
       _files = self.settings.files

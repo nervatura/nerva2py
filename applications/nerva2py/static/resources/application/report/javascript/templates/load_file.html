@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html><!--HTML5 doctype-->
+<head>
+<title>Load image DEMO </title>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<input id="inputFileToLoad" type="file" onchange="encodeImageFileAsURL();" />
+<div id="imgTest"></div>
+<div id="bsdata"></div>
+<script type='text/javascript'>
+  /*
+function init_report() {
+  var customer=[{"custnumber":"CUST/12345678","custname":"Customer Name","custtype":"Company","taxnumber":"12345678-1-12",
+    "account":"12345678-12345678-12345678","notax":"No","terms":0,"creditlimit":0,"discount":0,"inactive":"No",
+    "notes":"This is a long text to test the multi-line writing ...This is a long text to test the multi-line writing ... This is a long text to test the multi-line writing ...This is a long text to test the multi-line writing  ...OK."}];
+  var address=[]; var i=0;
+  for(i=0; i<30; i++) {
+    address.push({"zipcode":"1234","city":"City"+i.toString(),"street":"Street"+i.toString(),"notes":"Comment..."});}
+  var contact=[];
+  for(i=0; i<10; i++) {
+    contact.push({"firstname":"Firstname"+i.toString(), "surname":"Surname"+i.toString(), "status":" ", "phone":"1234567", "fax":"1234567", 
+      "mobil":"1234567", "email":"contact"+i.toString()+"@mail.com", "notes":"Comment..."});}
+  var labels={"title":"CUSTOMER DATASHEET","custnumber":"Customer No.","custname":"Name","custtype":"Customer type","taxnumber":"Taxnumber",
+    "notax":"Tax free","terms":"Due Date (day)","creditlimit":"Credit limit","discount":"Discount(%)",
+    "inactive":"Inactive","account":"Account","notes":"Notes","address":"Address details",
+    "zipcode":"Zipcode","city":"City","street":"Street","counter":"No.","address_count":"Number of addresses",
+    "contact":"Contact details", "firstname":"Firstname", "surname":"Surname", "status":"Status", "phone":"Phone",
+    "fax":"Fax", "mobil":"Mobil", "email":"Email", "contact_count":"Number of contacts"};
+  var expr={"addr_count":address.length, "cont_count":contact.length};
+  
+  var rpt = new report();
+  rpt.template.databind.labels=labels;
+  rpt.template.databind.customer=customer;
+  rpt.template.databind.address=address;
+  rpt.template.databind.contact=contact;
+  rpt.template.databind.expr=expr;
+  rpt.loadJsonDefinition(json_template);
+
+  return rpt;}
+
+*/
+function encodeImageFileAsURL(){
+
+    var filesSelected = document.getElementById("inputFileToLoad").files;
+    if (filesSelected.length > 0)
+    {
+        var fileToLoad = filesSelected[0];
+
+        var fileReader = new FileReader();
+
+        fileReader.onload = function(fileLoadedEvent) {
+            var srcData = fileLoadedEvent.target.result; // <--- data: base64
+
+            var newImage = document.createElement('img');
+            newImage.src = srcData;
+
+            document.getElementById("imgTest").innerHTML = newImage.outerHTML;
+            document.getElementById("bsdata").innerHTML = fileLoadedEvent.target.result;
+            //alert("Converted Base64 version is "+document.getElementById("imgTest").innerHTML);
+            //console.log("Converted Base64 version is "+document.getElementById("imgTest").innerHTML);
+        }
+        fileReader.readAsDataURL(fileToLoad);
+    }
+}
+</script>
+</body>
+</html>

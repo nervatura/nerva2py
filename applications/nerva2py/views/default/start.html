@@ -72,7 +72,8 @@
 			<hr style="margin-bottom: 3px;">
       <div class="info_div">  
         <p class="info_p"><b><i>For more information: </i></b>
-			    <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/nom/nom&content=view&lang=auto'}} target="_blank"><b><i>Nervatura Object Model</i></b></a></p>
+			    <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'docs/nom/nom','content':'view','lang':'auto'})}}" 
+			      target="_blank"><b><i>Nervatura Object Model</i></b></a></p>
 		  </div>
       <hr style="margin-top: 3px;">
 		  <div align="right" style="">
@@ -185,9 +186,10 @@
 			<hr style="margin-bottom: 3px;">
 			<div class="info_div"> 
         <p class="info_p"><b><i>For more information:</i></b> 
-          <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/ndi/ndi&content=view&lang=auto'}} target="_blank"><b><i>Nervatura Data Interface</i></b></a></p>
+          <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'docs/ndi/ndi','content':'view','lang':'auto'})}}" 
+            target="_blank"><b><i>Nervatura Data Interface</i></b></a></p>
         <p class="info_p"><b><i>Here you can try the preview:</i></b> 
-          <a href={{=URL( 'wizard', 'index')}} target="_blank"><b><i>Nervatura Data Interface Wizard</i></b></a></p>
+          <a href="{{=URL( 'wizard', 'index')}}" target="_blank"><b><i>Nervatura Data Interface Wizard</i></b></a></p>
       </div>
       <hr style="margin-top: 3px;">
       <div align="right" style="">
@@ -223,11 +225,12 @@
 				can use arbitrary-size data packages which may contain data query,
 				data entry or server-side function calls at the same time.</p>
 			<p>It uses <a href="http://en.wikipedia.org/wiki/Action_Message_Format"
-          target="_blank">AMF</a> coding which can be easily changed in case of need
+          target="_blank">AMF</a> or <a href="http://en.wikipedia.org/wiki/JSON-RPC" target="_blank">JSON</a> 
+          coding which can be easily changed in case of need
 				for other types. It has been destined to easily and quickly create –
 				primarily client-side, secondary server-side – applications in all
 				kinds of programming languages on any devices.</p>
-			<p>The <a href={{=URL('ndr', 'getAppl')+'?appl=nflex/nervex.html'}} 
+			<p>The <a href="{{=URL('ndr', 'getAppl', vars={'appl':'nflex/nervex.html'})}}" 
         target="_blank"><b><i>Nervatura Flash Client</i></b></a> is a general, client-side application. It was
 				created under Adobe Flash and was configured to take out and show
 				the most from advantages offered by <b>NPI</b> functions. It supports all
@@ -236,9 +239,10 @@
 			<hr style="margin-bottom: 3px;">
       <div class="info_div"> 
         <p class="info_p"><b><i>For more information:</i></b> 
-          <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/npi/npi&content=view&lang=auto'}} target="_blank"><b><i>Nervatura Programming Interface</i></b></a>
+          <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'docs/npi/npi','content':'view','lang':'auto'})}}" 
+            target="_blank"><b><i>Nervatura Programming Interface</i></b></a>
         <p class="info_p"><b><i>Nervatura Flash Client</i></b> can be tried here: 
-          <a href={{=URL('ndr', 'getAppl')+'?appl=nflex/nervex.html'}} target="_blank"><b><i>Nervatura Flash Client</i></b></a><br>
+          <a href="{{=URL('ndr', 'getAppl', vars={'appl':'nflex/nervex.html'})}}" target="_blank"><b><i>Nervatura Flash Client</i></b></a><br>
           Database: <b><i>demo</i></b>, Username: <b><i>demo</i></b>, Password: leave the field empty, not need<br>
           <i>Restricted DEMO MODE version! Restricted functions are: Database Settings, Access Rights and Change Password.</i>
         </p>
@@ -287,9 +291,9 @@
 			<hr style="margin-bottom: 3px;">
       <div class="info_div"> 
         <p class="info_p">The <b><i>Web Client</i></b> can be tried here: 
-          <a href={{=URL( 'nwc', 'index',vars={'desktop':'true'})}} target="_blank"><b><i>Nervatura Web Client</i></b></a><br>
+          <a href="{{=URL( 'nwc', 'index',vars={'desktop':'true'})}}" target="_blank"><b><i>Nervatura Web Client</i></b></a><br>
         <p class="info_p">The <b><i>Mobile Client</i></b> can be tried here: 
-          <a href={{=URL( 'nwc', 'index',vars={'mobile':'true'})}} target="_blank"><b><i>Nervatura Mobile Client</i></b></a><br>
+          <a href="{{=URL( 'nwc', 'index',vars={'mobile':'true'})}}" target="_blank"><b><i>Nervatura Mobile Client</i></b></a><br>
           Database: <b><i>demo</i></b>, Username: <b><i>demo</i></b>, Password: leave the field empty, not need<br>
           <i>Restricted DEMO MODE version! Restricted functions are: Database Settings, Access Rights and Change Password.</i>
         </p>
@@ -343,10 +347,10 @@
 			<hr style="margin-bottom: 3px;">
       <div class="info_div"> 
         <p class="info_p"><b><i>For more information:</i></b> 
-          <a href={{=URL( 'ndr', 'getResource')+'?file_name=docs/ndr/ndr&content=view&lang=auto'}} 
+          <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'docs/ndr/ndr','content':'view','lang':'auto'})}}" 
           target="_blank"><b><i>Nervatura Data Representation</i></b></a></p>
         <p class="info_p"><b><i>For further help: </i></b> 
-          <a href={{=URL( 'report2py', 'index')}} target="_blank"><b><i>Nervatura Report Help & Demo</i></b></a>
+          <a href="{{=URL('report', 'index')}}" target="_blank"><b><i>Nervatura Report Help & Demo</i></b></a>
         </p>
       </div>
       <hr style="margin-top: 3px;">

@@ -63,29 +63,29 @@ label, label.ui-input-text {
         <span style="font-weight: bold;font-size: 20px;padding-left: 10px;">Applications & Resources</span>
         <ul style="padding-bottom: 0px;margin: 5px;">
           <li style="padding-top: 0px;margin-bottom: 0px;">
-            <a target="_blank" href="/nerva2py/nwc/index?desktop" 
+            <a href="{{=URL( 'nwc', 'index',vars={'desktop':'true'})}}" target="_blank" 
               style="color: #3B7687;text-decoration: none;font-weight: bold;font-size: 16px;font-style: italic;">
               Nervatura Web Client</a>
           </li>
           <li style="padding-top: 0px;margin-bottom: 0px;">
-            <a target="_blank" href="/nerva2py/nwc/index?mobile" 
+            <a href="{{=URL( 'nwc', 'index',vars={'mobile':'true'})}}" target="_blank" 
               style="color: #3B7687;text-decoration: none;font-weight: bold;font-size: 16px;font-style: italic;">
               Nervatura Mobile Client</a>
           </li>
           <li style="padding-top: 0px;margin-bottom: 0px;">
-            <a target="_blank" href="/nerva2py/ndr/getAppl?appl=nflex/nervex.html" 
+            <a target="_blank" href="{{=URL('ndr', 'getAppl', vars={'appl':'nflex/nervex.html'})}}" 
               style="color: #3B7687;text-decoration: none;font-weight: bold;font-size: 16px;font-style: italic;">
               Nervatura Flash Client</a>
           </li>
           <li style="padding-top: 0px;margin-bottom: 0px;">
-            <a target="_blank" href="/nerva2py/wizard/index" 
+            <a href="{{=URL( 'wizard', 'index')}}" target="_blank" 
               style="color: #3B7687;text-decoration: none;font-weight: bold;font-size: 16px;font-style: italic;">
               Nervatura Data Interface Wizard</a>
           </li>
           <li style="padding-top: 0px;margin-bottom: 0px;">
-            <a target="_blank" href="/nerva2py/ndr/getResource?file_name=download/nguest&content=application/jar&file_type=jar" 
+            <a href="{{=URL( 'report', 'index')}}" target="_blank" 
               style="color: #3B7687;text-decoration: none;font-weight: bold;font-size: 16px;font-style: italic;">
-              Nervatura Client Additions</a>
+              Nervatura Report DEMO</a>
           </li>
         </ul>
       </div>
@@ -93,29 +93,29 @@ label, label.ui-input-text {
         <span style="font-weight: bold;font-size: 20px;padding-left: 10px;">Documentations</span>
         <ul style="padding-bottom: 0px;margin: 5px;">
           <li style="padding-top: 0px;margin-bottom: 0px;">
-            <a target="_blank" href="/nerva2py/ndr/getResource?file_name=docs/nom/nom&content=view&lang=auto" 
+            <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'docs/nom/nom','content':'view','lang':'auto'})}}" target="_blank"
               style="color: #3B7687;text-decoration: none;font-weight: bold;;font-size: 16px;font-style: italic;">
               Nervatura Object Model</a>
           </li>
           <li style="padding-top: 0px;margin-bottom: 0px;">
-            <a target="_blank" href="/nerva2py/ndr/getResource?file_name=docs/ndi/ndi&content=view&lang=auto" 
+            <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'docs/ndi/ndi','content':'view','lang':'auto'})}}" target="_blank"
               style="color: #3B7687;text-decoration: none;font-weight: bold;;font-size: 16px;font-style: italic;">
               Nervatura Data Interface</a>
           </li>
           <li style="padding-top: 0px;margin-bottom: 0px;">
-            <a target="_blank" href="/nerva2py/ndr/getResource?file_name=docs/npi/npi&content=view&lang=auto" 
+            <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'docs/npi/npi','content':'view','lang':'auto'})}}" target="_blank"
               style="color: #3B7687;text-decoration: none;font-weight: bold;;font-size: 16px;font-style: italic;">
               Nervatura Programming Interface</a>
           </li>
           <li style="padding-top: 0px;margin-bottom: 0px;">
-            <a target="_blank" href="/nerva2py/ndr/getResource?file_name=docs/ndr/ndr&content=view&lang=auto" 
+            <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'docs/ndr/ndr','content':'view','lang':'auto'})}}" target="_blank"
               style="color: #3B7687;text-decoration: none;font-weight: bold;;font-size: 16px;font-style: italic;">
               Nervatura Data Representation</a>
           </li>
           <li style="padding-top: 0px;margin-bottom: 0px;">
-            <a target="_blank" href="/nerva2py/report2py" 
+            <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'docs/report/report','content':'view','lang':'auto'})}}" target="_blank" 
               style="color: #3B7687;text-decoration: none;font-weight: bold;;font-size: 16px;font-style: italic;">
-              Nervatura Report Help & Demo</a>
+              Nervatura Report</a>
           </li>
         </ul>
       </div>

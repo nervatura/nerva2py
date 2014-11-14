@@ -77,7 +77,7 @@ def getLogin_json(database, username, password):
     else:
       validator["userlogin"] = "false"
   return validator
-  
+
 @service.amfrpc3("default")
 def getLogin_amf(database, username, password, validdata=False):
   validator = npi.getLogin(database, username, password)
@@ -266,5 +266,3 @@ def callFunction_json(login, functionName, paramList):
 @service.amfrpc3("default")
 def callFunction_amf(login, functionName, paramList):
   return ArrayCollection(npi.callFunction(login, functionName, paramList))
-                                                        
-  

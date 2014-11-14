@@ -1,3 +1,11 @@
+1.0.0-beta3
+- update web2py to 2.9.11
+- Nervatura Report: client-side (javascript) report support (XML, JSON and javascript templates)
+- Nervatura Report: many bug fixes, inlined image (encoded in base64) and barcode element
+- Nervatura Report: manual update, new sample templates
+- New sample program: client and server-side report samples
+- update jquery: jquery(1.11.1), jquery-ui(1.11.2)
+
 1.0.0-beta2
 - NPI JSON-RPC support
 - New sample program: Javascript, Knockout, JSON-RPC and NPI.

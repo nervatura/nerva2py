@@ -332,6 +332,31 @@ class NervaTools(object):
             price = prow[0]["mp"]
     return price
 
+  def getReportTemplate(self, params):
+    report_ = self.ns.db(self.ns.db.ui_report.reportkey==params["reportkey"]).select()
+    if len(report_)==0:
+      ref_id = self.ns.valid.get_id_from_refnumber(params["reportkey"],params["refnumber"])
+      if not ref_id:
+        return {"error_message":self.ns.T("Missing or unknown refnumber!")}
+      else:
+        nervatype = self.ns.valid.get_groups_id("nervatype",params["reportkey"])
+        if params["reportkey"]=="trans":
+          transtype = self.ns.db.trans(id=ref_id).transtype
+          direction = self.ns.db.trans(id=ref_id).direction
+          report_ = self.ns.db((self.ns.db.ui_report.nervatype==nervatype)
+                               &(self.ns.db.ui_report.transtype==transtype)
+                               &(self.ns.db.ui_report.direction==direction)).select()
+        else:
+          report_ = self.ns.db(self.ns.db.ui_report.nervatype==nervatype).select()
+        if len(report_)==0:
+          return {"error_message":self.ns.T("Missing report template!")}
+    else:
+      nervatype = self.ns.db.groups(id=report_[0].nervatype).groupvalue
+      ref_id = self.ns.valid.get_id_from_refnumber(nervatype,params["refnumber"])
+      if not ref_id:
+        return {"error_message":self.ns.T("Missing or unknown refnumber!")}
+    return DataOutput(self.ns).getReport({"report_id":report_[0].id, "output":"tmp"},{"@id":ref_id})
+  
   def nextNumber(self, params):
     return self.ns.connect.nextNumber(numberkey=params["id"],step=params["step"])
       
@@ -663,7 +688,7 @@ class DataOutput(object):
     if len(report_)>0:
       report = report_[0]
     else:
-      return str(self.ns.T("Error|Unknown reportcode: "))+str(params["reportcode"])
+      return str(self.ns.T("Error|Unknown reportcode"))
     reportsources = self.ns.db(self.ns.db.ui_reportsources.report_id==report["id"]).select().as_list()
     where_str = {}
     for fieldname in filters.keys():
@@ -751,9 +776,11 @@ class DataOutput(object):
         return str(self.ns.T("NODATA"))
     filetype = self.ns.db.groups(id=report["filetype"])["groupvalue"]
     if filetype=="fpdf":
+      if params["output"]=="tmp":
+        return {"filetype":filetype, "template":report["report"],"data":datarows}
       from nerva2py.report import Report
       try:
-        rpt = Report(orientation=params["orientation"],page=params["size"])
+        rpt = Report(orientation=params["orientation"],format=params["size"])
         rpt.databind = datarows
         if params["output"] in("html","xml"):
           rpt.images_folder = self.ns.request.env.wsgi_url_scheme+"://"+self.ns.request.env.http_host+"/"+self.ns.request.application+"/static/images"

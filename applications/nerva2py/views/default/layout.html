@@ -29,9 +29,6 @@
     <!-- Place favicon.ico and apple-touch-icon.png in the root of your domain and delete these references -->
     <link rel="shortcut icon" href="{{=URL('static','favicon.ico')}}" type="image/x-icon">
     <link rel="apple-touch-icon" href="{{=URL('static','favicon.png')}}">
-
-    <!-- For the less-enabled mobile browsers like Opera Mini -->
-    <link rel="stylesheet" media="handheld" href="{{=URL('static','css/handheld.css')}}">
     
     <!-- All JavaScript at the bottom, except for Modernizr which enables HTML5 elements & feature detects -->
     <script src="{{=URL('static','js/modernizr.custom.js')}}"></script>
@@ -61,10 +58,10 @@ $(document).bind("mobileinit", function(){
 });
     </script>
     
-    <link rel="stylesheet" href="{{=URL('static','css/jquery.mobile.min.css')}}" />
-    <script src="{{=URL('static','js/jquery.mobile.min.js')}}"></script>
+    <link rel="stylesheet" href="{{=URL('static','css/jquery.mobile.css')}}" />
+    <script src="{{=URL('static','js/jquery.mobile.js')}}"></script>
     
-    <link rel="stylesheet" href="{{=URL('static','css/nmc.css')}}" />
+    <link rel="stylesheet" href="{{=URL('static','css/ntura/nmc.css')}}" />
   
     <style>
        .ui-popup-container { 

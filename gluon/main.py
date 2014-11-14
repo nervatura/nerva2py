@@ -97,7 +97,7 @@ from gluon.dal import BaseAdapter
 from gluon.validators import CRYPT
 from gluon.html import URL, xmlescape
 from gluon.utils import is_valid_ip_address, getipaddrinfo
-from gluon.rewrite import load, url_in, THREAD_LOCAL as rwthread, \
+from gluon.rewrite import load as load_routes, url_in, THREAD_LOCAL as rwthread, \
     try_rewrite_on_error, fixup_missing_path_info
 from gluon import newcron
 
@@ -126,7 +126,7 @@ except:
     if not global_settings.web2py_runtime_gae:
         logger.warn('unable to import Rocket')
 
-load()
+load_routes()
 
 HTTPS_SCHEMES = set(('https', 'HTTPS'))
 
@@ -359,13 +359,17 @@ def wsgibase(environ, responder):
                     local_hosts = global_settings.local_hosts
                 client = get_client(env)
                 x_req_with = str(env.http_x_requested_with).lower()
+                cmd_opts = request.global_settings.cmd_options
 
                 request.update(
                     client = client,
                     folder = abspath('applications', app) + os.sep,
                     ajax = x_req_with == 'xmlhttprequest',
-                    cid = env.http_web2py_component_element,
-                    is_local = env.remote_addr in local_hosts,
+                    cid = env.http_web2py_component_element,                    
+                    is_local = (env.remote_addr in local_hosts and 
+                                client == env.remote_addr),
+                    is_shell = cmd_opts and cmd_opts.shell,
+                    is_sheduler = cmd_opts and cmd_opts.scheduler,
                     is_https = env.wsgi_url_scheme in HTTPS_SCHEMES or \
                         request.env.http_x_forwarded_proto in HTTPS_SCHEMES \
                         or env.https == 'on'
@@ -570,7 +574,7 @@ def save_password(password, port):
     if password == '<random>':
         # make up a new password
         chars = string.letters + string.digits
-        password = ''.join([random.choice(chars) for i in range(8)])
+        password = ''.join([random.choice(chars) for _ in range(8)])
         cpassword = CRYPT()(password)[0]
         print '******************* IMPORTANT!!! ************************'
         print 'your admin password is "%s"' % password
@@ -725,7 +729,9 @@ class HttpServer(object):
             web2py_path = path
             global_settings.applications_parent = path
             os.chdir(path)
-            [add_path_first(p) for p in (path, abspath('site-packages'), "")]
+            load_routes()
+            for p in (path, abspath('site-packages'), ""):
+                add_path_first(p)
             if exists("logging.conf"):
                 logging.config.fileConfig("logging.conf")
 

@@ -63,15 +63,14 @@ except:
   pass
 
 current_language = 'en'
-languages=[('en','English'),
-           ('hu','Magyar')]
+languages=[('en','English')]
 
 session._language = request.vars._language or session._language or current_language
 T.force(session._language)
 if T.accepted_language != session._language:
   import re
   lang = re.compile('\w{2}').findall(session._language)[0]
-  response.files.append(URL(r=request,c='static',f='js/jquery.translate.min.js'))
+  response.files.append(URL(r=request,c='static',f='js/jquery.translate.js'))
   response.files.append(URL(r=request,c='ndr',f='translate',args=lang+'.js'))
 
 def translate():

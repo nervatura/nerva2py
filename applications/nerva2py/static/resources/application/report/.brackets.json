@@ -1,0 +1,12 @@
+{
+    "jscodehints.detectedExclusions": [
+        "/home/kappel/drive/dev/html5/nt_report/browser/templates/sample.js",
+        "/home/kappel/drive/dev/html5/nt_report/browser_kit/templates/sample.js",
+        "/home/kappel/drive/dev/html5/nt_report/nodejs/index.js",
+        "/home/kappel/drive/dev/html5/nt_report/browser_kit/js/report.debug.js",
+        "/home/kappel/drive/dev/html5/nt_report/browser_kit/js/report.demo.js",
+        "/home/kappel/drive/dev/html5/nt_report/browser_kit/js/vendor/blob-stream-v0.1.2.js",
+        "/home/kappel/drive/dev/html5/nt_report/browser_kit/js/vendor/pdf.min.js",
+        "/home/kappel/drive/dev/html5/nt_report/browser_kit/js/vendor/pdf.min.worker.js"
+    ]
+}
