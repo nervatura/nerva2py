@@ -825,8 +825,12 @@ class Report(FPDF, HTMLMixin):
           color += data[pos]
           alpha += data[pos]
           line = substr(data, pos+1, length)
-          color += re.sub('(.).',lambda m: m.group(1),line, flags=re.DOTALL)
-          alpha += re.sub('.(.)',lambda m: m.group(1),line, flags=re.DOTALL)
+          try:
+            color += re.sub('(.).',lambda m: m.group(1),line, flags=re.DOTALL)
+            alpha += re.sub('.(.)',lambda m: m.group(1),line, flags=re.DOTALL)
+          except:
+            color += re.sub('(?s)(.).',lambda m: m.group(1),line) 
+            alpha += re.sub('(?s).(.)',lambda m: m.group(1),line)
       else:
         # RGB image
         length = 4*w
@@ -835,8 +839,12 @@ class Report(FPDF, HTMLMixin):
           color += data[pos]
           alpha += data[pos]
           line = substr(data, pos+1, length)
-          color += re.sub('(.{3}).',lambda m: m.group(1),line, flags=re.DOTALL)
-          alpha += re.sub('.{3}(.)',lambda m: m.group(1),line, flags=re.DOTALL)
+          try:
+            color += re.sub('(.{3}).',lambda m: m.group(1),line, flags=re.DOTALL)
+            alpha += re.sub('.{3}(.)',lambda m: m.group(1),line, flags=re.DOTALL)
+          except:
+            color += re.sub('(?s)(.{3}).',lambda m: m.group(1),line) 
+            alpha += re.sub('(?s).{3}(.)',lambda m: m.group(1),line)
       del data
       data = zlib.compress(color)
       info['smask'] = zlib.compress(alpha)
