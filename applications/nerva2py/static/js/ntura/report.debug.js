@@ -14,7 +14,7 @@ http://www.nervatura.com/nerva2py/default/licenses
 
 var report = function(orientation, unit, format) {
   var self = this;
-  var CLASS_VERSION = '1.150104';
+  var CLASS_VERSION = '1.150103';
   self.orientation = parse_value("orientation",orientation);
   self.unit = parse_value("unit",unit);
   self.format = parse_value("format",format);
