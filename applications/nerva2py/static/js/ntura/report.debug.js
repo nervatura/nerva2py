@@ -14,7 +14,7 @@ http://www.nervatura.com/nerva2py/default/licenses
 
 var report = function(orientation, unit, format) {
   var self = this;
-  var CLASS_VERSION = '1.141022';
+  var CLASS_VERSION = '1.150104';
   self.orientation = parse_value("orientation",orientation);
   self.unit = parse_value("unit",unit);
   self.format = parse_value("format",format);
@@ -340,7 +340,7 @@ var report = function(orientation, unit, format) {
         border:grid_options.border, "font-style":"bold", text:"", height:0};
     footer_options["background-color"] = get_value(grid_element["footer-background"],null);
     header_options.extend = grid_options.extend = footer_options.extend = (header_options.grid_width===nwidth);
-    
+
     var zcol = 0; var footers=[]; var footer_width = 0;
     if (grid_element.columns.length>0) {
       var columns_elements=grid_element.columns;
@@ -452,7 +452,7 @@ var report = function(orientation, unit, format) {
           +"]]></"+grid_options.xname.toString()+"_footer"+">";});}}
 
   function create_grid_header(header_options) {
-    header_options.height = 0; header_options.x=null;header_options.y=null;
+    header_options.height=0;header_options.x=null;header_options.y=null;
     header_options.columns.forEach(function(column){
       if (header_options.merge===0) {
         header_options.text = column.label;
@@ -676,7 +676,7 @@ var report = function(orientation, unit, format) {
     w = w || 1.5; h = h || 5; visible = visible || false;
     var narrow = w / 3.0; var wide = w; var gap = narrow;
     var code = txt.toUpperCase();
-    doc.setFontSize(10); doc.setTextColor(0);
+    doc.setFontSize(10);
     var start_x = self.template.page.cursor.x;
     var bar_char={'0': 'nnnwwnwnn', '1': 'wnnwnnnnw', '2': 'nnwwnnnnw', '3': 'wnwwnnnnn', '4': 'nnnwwnnnw', '5': 'wnnwwnnnn',
               '6': 'nnwwwnnnn', '7': 'nnnwnnwnw', '8': 'wnnwnnwnn', '9': 'nnwwnnwnn', 'A': 'wnnnnwnnw', 'B': 'nnwnnwnnw',
@@ -716,7 +716,7 @@ var report = function(orientation, unit, format) {
   function interleaved2of5(txt, w, h, visible) {
     w = w || 1; h = h || 10; visible = visible || false;
     var narrow = w / 3.0; var wide = w;
-    doc.setFontSize(10); doc.setTextColor(0);
+    doc.setFontSize(10);
     var start_x = self.template.page.cursor.x;
     var bar_char={
       '0': 'nnwwn', '1': 'wnnnw', '2': 'nwnnw', '3': 'wwnnn', '4': 'nnwnw', '5': 'wnwnn', '6': 'nwwnn', '7': 'nnnww',
@@ -801,12 +801,13 @@ var report = function(orientation, unit, format) {
       //integer
       case "font-size":
       case "digit":
+        value = value.toString().replace(/[^0-9\-]|\-(?=.)/g,'');
         value = parseInt(get_value(value,null));
         if (!isNaN(value)) {
           return parseInt(get_value(value,null));}
         return null;
       
-        //float
+      //float
       case "left-margin":
       case "right-margin":
       case "top-margin":
@@ -816,10 +817,24 @@ var report = function(orientation, unit, format) {
       case "hgap":
       case "wide":
       case "narrow":
+        value = value.toString().replace(/[^0-9\-\.,]|[\-](?=.)|[\.,](?=[0-9]*[\.,])/g,'');
         value = parseFloat(get_value(value,null));
         if (!isNaN(value)) {
           return parseFloat(get_value(value,null));}
         return null;
+      
+      //percent or float
+      case "width":
+        value = value.toString().replace(/[^0-9\-\.,%]|[\-](?=.)|[\.,%](?=[0-9]*[\.,%])/g,'');
+        if (value==="") {
+          value = null;}
+        else if (value.indexOf("%")>-1) {
+          var pv = parseInt(value.replace("%",""));
+          if (pv>100) {pv=100;}
+          value = pv.toString()+"%";}
+        else {
+          value = parseFloat(value);}
+        return value;
       
       //string
       case "src":
@@ -831,7 +846,6 @@ var report = function(orientation, unit, format) {
       case "thousands":
       case "footer":
       case "decpoint":
-      case "width":
       case "visible":
       case "border":
       case "html":
@@ -1186,7 +1200,8 @@ var report = function(orientation, unit, format) {
     return false;};
 
   self.setData = function(key, value) {
-    self.template.elements.data[key] = value;};
+    self.template.elements.data[key] = value;
+    return true;};
   
   self.getData = function(key) {
     return self.template.elements.data[key];};
