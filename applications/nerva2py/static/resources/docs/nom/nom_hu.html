@@ -246,14 +246,13 @@ a {
 			  <span class="nobj">UI_REPORT,
 				UI_REPORTSOURCES, UI_REPORTFIELDS</span></p>
 			<p>Felhasználói felületek beállításai: <br>
-			  <span class="nobj">UI_APPLVIEW,
-				UI_VIEWFIELDS, UI_MENU, UI_MENUFIELDS</span></p>
+			  <span class="nobj">
+				UI_MENU, UI_MENUFIELDS</span></p>
 			<p>Felhasználói jogosultságok, beállítások: <br>
-			  <span class="nobj">UI_AUDIT, UI_FILTER,
-				UI_GROUPINPUT, UI_USERCONFIG</span></p>
+			  <span class="nobj">UI_AUDIT,
+				UI_USERCONFIG</span></p>
 			<p>Lokalizáció: <br>
-			  <span class="nobj">UI_LOCALE, UI_LANGUAGE, UI_MESSAGE, UI_NUMTOTEXT,
-				UI_ZIPCATALOG</span></p>
+			  <span class="nobj">UI_LANGUAGE, UI_MESSAGE</span></p>
 			<p>Nyomtatás: <br>
 			  <span class="nobj">UI_PRINTQUEUE</span></p>
 		</li>
@@ -340,32 +339,27 @@ a {
         <tr>
           <td style="font-weight: bold;">level 1</td>
           <td>no external link</td>
-          <td><span class="nobj">UI_APPLVIEW, UI_MENU, UI_LANGUAGE</span></td>
+          <td><span class="nobj">UI_MENU, UI_LANGUAGE</span></td>
         </tr>
         <tr style="background-color: #F5F5F5;">
           <td style="font-weight: bold;">level 2a</td>
           <td>link to <= level 1</td>
-          <td><span class="nobj">UI_LOCALE, UI_MESSAGE, UI_NUMTOTEXT</span></td>
+          <td><span class="nobj">UI_MESSAGE</span></td>
         </tr>
         <tr>
           <td style="font-weight: bold;">level 2b</td>
           <td>link to <= NOM level 1</td>
-          <td><span class="nobj">UI_REPORT, UI_AUDIT, UI_GROUPINPUT, UI_VIEWFIELDS</span></td>
-        </tr>
-        <tr style="background-color: #F5F5F5;">
-          <td style="font-weight: bold;">level 3a</td>
-          <td>link to <= level 2a</td>
-          <td><span class="nobj">UI_ZIPCATALOG</span></td>
+          <td><span class="nobj">UI_REPORT, UI_AUDIT</span></td>
         </tr>
         <tr>
-          <td style="font-weight: bold;">level 3b</td>
+          <td style="font-weight: bold;">level 3</td>
           <td>link to <= level 2b</td>
           <td><span class="nobj">UI_MENUFIELDS, UI_REPORTFIELDS, UI_REPORTSOURCES</span></td>
         </tr>
         <tr style="background-color: #F5F5F5;">
           <td style="font-weight: bold;">level 4</td>
           <td>link to <= NOM level 2</td>
-          <td><span class="nobj">UI_FILTER, UI_USERCONFIG, UI_PRINTQUEUE</span></td>
+          <td><span class="nobj">UI_USERCONFIG, UI_PRINTQUEUE</span></td>
         </tr>
       </table>
     </li>

@@ -28,5 +28,4 @@ To start web2py there is NO NEED to install it. Just unzip and do:
 
     python web2py.py
 
-More info and deployment on PythonAnywhere, Heroku, Amazon EC2, Google App Engine, OpenShift etc.
-see http://www.nervatura.com.
+More info see http://www.nervatura.com.

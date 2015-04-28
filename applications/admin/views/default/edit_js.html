@@ -3,7 +3,7 @@
 }}
 
 <form action="{{=URL('edit', args=filename)}}" method="post" name="editform" id="editform" class="form-inline row-fluid">
-<div id="eheader" class="span12 well well-small" >
+<div class="span12 well well-small">
     <label class="">{{=T('Save file:')}}</label>
     <a value="save" title="{{=T('Save file: %s', filename)}}" href="#" name="save" onclick="return doClickSave();" class="icon saveicon" style="background-image: -webkit-linear-gradient(top,white,#E6E6E6);">{{=IMG(_src=URL('static', 'images/save_icon.png'), _alt=T('Save'))}}</a>
     <label class="">{{=T('Saved file hash:')}}</label>
@@ -143,6 +143,9 @@
         clientHeight = (this.getScrollerElement().clientHeight / 2)
         this.scrollTo(null, (coords.top + coords.bottom)/2 - 10);
     });
+    CodeMirror.commands.save = function () {
+        doClickSave();
+    }
     </script>
 
     <div class="editor-bar-bottom" style="margin-top:9px;">

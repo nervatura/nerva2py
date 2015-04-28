@@ -1,3 +1,17 @@
+1.1.0
+- update web2py to 2.10.3
+- Nervatura Report: fixes invoice template
+- update pyamf to 0.7.2
+- NAS and nerv2py base: update jquery-mobile to 1.4.5
+- removed Flash Client and all dependencies
+- NOM removed user interface objects: 
+  UI_APPLVIEW, UI_VIEWFIELDS, UI_FILTER, UI_GROUPINPUT, UI_NUMTOTEXT, UI_ZIPCATALOG, UI_LOCALE
+- wxPython Client: modified sample program
+- NAS: new report admin UI (install, delete or edit report templates)
+- new report install file format: replace sql to xml (see the documentation - Nervatura Report / Deploying Report Templates)
+- add 25 new report template
+- update DEMO database 
+
 1.0.0-beta3
 - update web2py to 2.9.11
 - Nervatura Report: client-side (javascript) report support (XML, JSON and javascript templates)

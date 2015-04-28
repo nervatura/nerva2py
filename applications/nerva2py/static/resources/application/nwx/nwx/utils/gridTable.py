@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2014, Csaba Kappel
+Copyright © 2011-2015, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -363,7 +363,7 @@ class browserTable(wx.grid.PyGridTableBase):
       grid.EndBatch()
       
 class filterTable(wx.grid.PyGridTableBase):
-  def __init__(self, id=[], colLabels={}, labelChoice={}, data=[]):
+  def __init__(self, id=[], colLabels={}, labelChoice={}, data=[], updateData=None):
     wx.grid.PyGridTableBase.__init__(self)
     self.identifiers = id
     rowLabels=[]
@@ -372,6 +372,7 @@ class filterTable(wx.grid.PyGridTableBase):
     self.rowLabels = rowLabels 
     self.colLabels = colLabels 
     self.data = data
+    self.updateData = updateData
     self.labelChoice = labelChoice
     self.ftypeset1 = ":==, =N, !="
     self.ftypeset2 = ":==, =N, !=, >=, <=" 
@@ -405,6 +406,7 @@ class filterTable(wx.grid.PyGridTableBase):
     rtype = getattr(self.data[row], "fieldtype")
     if id=="ftype" or id=="fieldlabel":
       setattr(self.data[row], id, value.strip())
+      self.updateData(row)
       return
     if id=="fvalue":
       if rtype=="bool":
@@ -420,6 +422,7 @@ class filterTable(wx.grid.PyGridTableBase):
         except Exception:
           return
     setattr(self.data[row], id, value)
+    self.updateData(row)
   
   def GetColId(self, col):
     return self.identifiers[col]

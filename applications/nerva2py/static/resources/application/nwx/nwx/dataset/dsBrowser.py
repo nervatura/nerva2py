@@ -3,15 +3,15 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2014, Csaba Kappel
+Copyright © 2011-2015, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
 
-import wx
+import wx, sqlite3, time, json
+from nwx.utils.adapter import npiAdapter  # @UnresolvedImport
 from datetime import date
-from pyamf.remoting.client import RemotingService  # @UnresolvedImport
-from nwx.dataset.models import filter, userconfig  # @UnresolvedImport
+from nwx.view.fMain import dict2obj  # @UnresolvedImport
 
 class dsBrowser():
   
@@ -23,8 +23,6 @@ class dsBrowser():
     
     dataSet["userconfig"] = []
     dataSet["_userconfig"] = []
-    dataSet["filter"] = []
-    dataSet["_filter"] = []
       
     dataSet["applviews"] = []
     dataSet["viewfields"] = []
@@ -37,73 +35,58 @@ class dsBrowser():
     return dataSet
       
   def loadDataset(self, dataSet):
-    dataSetInfo = []
-    paramList = []
     
-    paramList.append({"name":"@parent", "value": dataSet["mainView"], "wheretype":"in", "type":"string"})
-    paramList.append({"name":"@lang", "value":str(self.parentView.application.app_settings["locale"][:2]).lower(), 
-      "wheretype":"in", "type":"string"})
-    dataSetInfo.append({"infoName":"applviews", "infoType":"view", "sqlKey":"fBrowser_getApplViews",
-                          "sqlStr":None, "whereStr":"", "havingStr":"", "paramList":paramList})    
+    conn = sqlite3.connect('storage.db')  # @UndefinedVariable
+    conn.row_factory = sqlite3.Row  # @UndefinedVariable
     
-    paramList = []
-    paramList.append({"name":"@parent", "value": dataSet["mainView"], "wheretype":"in", "type":"string"})
-    paramList.append({"name":"@lang", "value":str(self.parentView.application.app_settings["locale"][:2]).lower(), 
-      "wheretype":"in", "type":"string"})
-    dataSetInfo.append({"infoName":"viewfields", "infoType":"view", "sqlKey":"fBrowser_getViewFields",
-                          "sqlStr":None, "whereStr":"", "havingStr":"", "paramList":paramList})
+    cur = conn.cursor()
+    sqlStr = self.parentView.getSql("fBrowser_getApplViews")
+    for row in cur.execute(sqlStr, (dataSet["mainView"],)):
+      item = {}; fields = row.keys()
+      for index in range(len(fields)):
+        item[fields[index]] = row[index]
+      dataSet["applviews"].append(dict2obj(item))
     
-    paramList = []
-    dataSetInfo.append({"infoName":"userconfig", "infoType":"table", "classAlias":"models.ui_userconfig", 
-                        "filterStr":"employee_id="+str(self.parentView.application.app_settings["employee_id"])+" and (cfgroup='browserConfig' or section='"+dataSet["mainView"]+"') ", 
-                        "orderStr":None})            
-    dataSetInfo.append({"infoName":"filter", "infoType":"table", "classAlias":"models.ui_filter", 
-                        "filterStr":"employee_id="+str(self.parentView.application.app_settings["employee_id"])+" and parentview='"+dataSet["mainView"]+"' ", 
-                        "orderStr":None})
-            
-    client = RemotingService(self.parentView.application.app_settings["url"]+"/"+self.parentView.application.app_config["connection"]["npi_service"])
-    service = client.getService("default")
+    sqlStr = self.parentView.getSql("fBrowser_getViewFields")
+    for row in cur.execute(sqlStr, (dataSet["mainView"],)):
+      item = {}; fields = row.keys()
+      for index in range(len(fields)):
+        item[fields[index]] = row[index]
+      dataSet["viewfields"].append(dict2obj(item))
     
-    resultSet = service.loadDataSet_amf(self.parentView.getCredentials(), dataSetInfo)  
-    if resultSet.__class__.__name__!="ArrayCollection":
-      wx.MessageBox(str(resultSet), "loadDataset", wx.OK | wx.ICON_ERROR)
+    dataSet["userconfig"] = []
+    conn.close()
+    
+    dataSetInfo = [{"infoName":"userconfig", "infoType":"table", "classAlias":"ui_userconfig", 
+       "filterStr":"employee_id="+str(self.parentView.application.app_settings["employee_id"])+
+       " and (cfgroup='browserConfig' or section='"+dataSet["mainView"]+"') ", 
+       "orderStr":None}]
+    
+    conn = npiAdapter(self.parentView.application.app_settings["url"]+"/"+
+      self.parentView.application.app_config["connection"]["npi_service"])
+    response = conn.loadDataSet(self.parentView.getCredentials(), dataSetInfo)
+    if response=="error":
       return
-    for recordSetInfo in resultSet:
-      if recordSetInfo.infoName=="applviews":
-        dataSet["applviews"] = recordSetInfo.recordSet
-        continue
-      elif recordSetInfo.infoName=="viewfields":
-        dataSet["viewfields"] = recordSetInfo.recordSet
-        continue
-      elif recordSetInfo.infoName=="userconfig":
-        dataSet["userconfig"] = recordSetInfo.recordSet
-        continue
-      elif recordSetInfo.infoName=="filter":
-        dataSet["filter"] = recordSetInfo.recordSet
-        for item in dataSet["filter"]:
-          viewfield =  self.parentView.getItemFromKey2(dataSet["viewfields"], 
-            "viewname", item.viewname, "fieldname", item.fieldname)
-          item.fieldlabel = viewfield["langname"]
-          item.fieldtype = viewfield["fieldtype"]
-          item.wheretype = viewfield["wheretype"]
-          item.sqlstr = viewfield["sqlstr"]
-        dataSet["filterId"] = len(dataSet["filter"])
-        continue
+    else:
+      for recordSetInfo in response:
+        for record in recordSetInfo["recordSet"]:
+          dataSet[recordSetInfo["infoName"]].append(dict2obj(record,"ui_"+recordSetInfo["infoName"]))
+
     dataSet["changeData"] = False
   
   def loadResult(self, dataSet, sqlstr, param):
     try:
       wx.SetCursor(wx.StockCursor(wx.CURSOR_WAIT))
       self.parentView.setStatusState(1)
-      client = RemotingService(self.parentView.application.app_settings["url"]+"/"+self.parentView.application.app_config["connection"]["npi_service"])
-      service = client.getService("default")
       
-      resultSet = service.loadView_amf(self.parentView.getCredentials(), None, 
-        sqlstr, param["WhereString"], param["HavingString"], param["paramList"])  
-      if resultSet.__class__.__name__!="ArrayCollection":
-        wx.MessageBox(str(resultSet), "loadResult", wx.OK | wx.ICON_ERROR)
+      conn = npiAdapter(self.parentView.application.app_settings["url"]+"/"+
+        self.parentView.application.app_config["connection"]["npi_service"])
+      response = conn.loadView(self.parentView.getCredentials(), None, sqlstr, param["WhereString"], 
+        param["HavingString"], param["paramList"])
+      if response=="error":
         return
-      dataSet["result"] = resultSet
+      else:
+        dataSet["result"] = response
         
     except Exception, err:
       wx.MessageBox(str(err), "loadResult", wx.OK | wx.ICON_ERROR)
@@ -112,32 +95,23 @@ class dsBrowser():
       self.parentView.setStatusState(0)
   
   def saveDataSet(self, dataSet):
-    try:
+    try:      
       wx.SetCursor(wx.StockCursor(wx.CURSOR_WAIT))
       self.parentView.setStatusState(2)
-      client = RemotingService(self.parentView.application.app_settings["url"]+"/"+self.parentView.application.app_config["connection"]["npi_service"])
-      service = client.getService("default")
         
       dataSetPy = []
-      dataSetPy.append({"tableName":"userconfig", "updateType":"delete", "recordSet":dataSet["_userconfig"]})
-      dataSetPy.append({"tableName":"filter", "updateType":"delete", "recordSet":dataSet["_filter"]})
-      dataSetPy.append({"tableName":"userconfig", "updateType":"update", "recordSet":dataSet["userconfig"]})
-      dataSetPy.append({"tableName":"filter", "updateType":"update", "recordSet":dataSet["filter"]})
+      dataSetPy.append({"tableName":"ui_userconfig", "updateType":"delete", "recordSet":dataSet["_userconfig"]})
+      dataSetPy.append({"tableName":"ui_userconfig", "updateType":"update", "recordSet":dataSet["userconfig"]})
       
-      resultSet = service.saveDataSet_amf(self.parentView.getCredentials(), dataSetPy)  
-      if resultSet.__class__.__name__!="list":
-        wx.MessageBox(str(resultSet), "saveDataSet", wx.OK | wx.ICON_ERROR)
+      conn = npiAdapter(self.parentView.application.app_settings["url"]+"/"+
+        self.parentView.application.app_config["connection"]["npi_service"])
+      response = conn.saveDataSet(self.parentView.getCredentials(), dataSetPy)
+      if response=="error":
         return
-      for recordSetInfo in resultSet:
-        for srow in recordSetInfo.recordSet:
-          if getattr(srow, "oid", None):
-            item = self.parentView.getItemFromKey_(dataSet[recordSetInfo.tableName], "id", srow.oid)
-            if item:
-              item.id = srow.id
-          
-      dataSet["_userconfig"] = []
-      dataSet["_filter"] = []
-      dataSet["changeData"] = False
+      else:
+        dataSet["_userconfig"] = []
+        dataSet["changeData"] = False
+        self.loadDataset(dataSet)
         
     except Exception, err:
       wx.MessageBox(str(err), "saveDataSet", wx.OK | wx.ICON_ERROR)
@@ -146,35 +120,29 @@ class dsBrowser():
       self.parentView.setStatusState(0)
 
   def addFilterRow(self, dataSet, ftype, sectionView, filter_type):
-      frow = filter()
-      dataSet["filterId"] = dataSet["filterId"] + 1
-      frow.id = -dataSet["filterId"]
-      frow.employee_id = self.parentView.application.app_settings["employee_id"]
-      frow.parentview = dataSet["mainView"]
-      frow.viewname = sectionView
-      frow.ftype = "=="
+      frow = {"ftype":"=="}
       fname = ""
       if ftype=="browser_filter_text":
-        frow.fvalue = ""
+        frow["fvalue"] = ""
         fname = filter_type["stringField"][0]
       elif ftype=="browser_filter_number":
-        frow.fvalue = "0"
+        frow["fvalue"] = "0"
         fname = filter_type["numberField"][0]
       elif ftype=="browser_filter_date":
-        frow.fvalue = date.strftime(date.today(),"%Y-%m-%d")
+        frow["fvalue"] = date.strftime(date.today(),"%Y-%m-%d")
         fname = filter_type["dateField"][0]
       elif ftype=="browser_filter_boolean":
-        frow.fvalue = "t"
+        frow["fvalue"] = "t"
         fname = filter_type["boolField"][0]
       viewfield =  self.parentView.getItemFromKey2(dataSet["viewfields"], 
-              "viewname", sectionView, "fieldname", fname)
-      frow.fieldname = fname
-      frow.fieldlabel = viewfield["langname"]
-      frow.fieldtype = viewfield["fieldtype"]
-      frow.wheretype = viewfield["wheretype"]
-      frow.sqlstr = viewfield["sqlstr"]
-        
-      dataSet["filter"].append(frow)
+        "viewname", sectionView, "fieldname", fname)
+      frow["fieldname"] = fname
+      frow["fieldlabel"] = viewfield["langname"]
+      frow["fieldtype"] = viewfield["fieldtype"]
+      frow["wheretype"] = viewfield["wheretype"]
+      frow["sqlstr"] = viewfield["sqlstr"]
+      
+      self.setConfig(dataSet, sectionView, "filter_"+str(time.time()), json.dumps(frow), None, dataSet["mainView"])
       dataSet["changeData"] = True
    
   def deleteFilterRow(self, dataSet, item):
@@ -202,7 +170,7 @@ class dsBrowser():
           dataSet["userconfig"].remove(config)
           dataSet["_userconfig"].append(config)
         return
-    config = userconfig()
+    config = dict2obj({},"ui_userconfig")
     config.employee_id = self.parentView.application.app_settings["employee_id"] 
     config.section = isection 
     config.cfgroup = icfgroup 

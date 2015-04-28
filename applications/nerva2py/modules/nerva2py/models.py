@@ -3,42 +3,16 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2014, Csaba Kappel
+Copyright © 2011-2015, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
-"""
-      
-class ui_filter(object):
-  __tablename__ = 'ui_filter'
-  def __init__(self):
-    self.id = None
-    self.employee_id = None
-    self.parentview = None
-    self.viewname = None
-    self.fieldname = None
-    self.ftype = None
-    self.fvalue = None
-  def __repr__(self):
-    return "<ui_filter('%s','%s','%s','%s','%s','%s','%s')>" % \
-      (self.id, self.employee_id, self.parentview, self.viewname, self.fieldname, self.ftype, self.fvalue) 
-
-class ui_groupinput(object):
-  __tablename__ = 'ui_groupinput'
-  def __init__(self):
-    self.id = None
-    self.groups_id = None
-    self.formname = None
-    self.contname = None
-    self.isenabled = 1
-    self.isvisibled = 1
-  def __repr__(self):
-    return "<ui_groupinput('%s','%s','%s','%s','%s','%s')>" % \
-      (self.id, self.groups_id, self.formname, self.contname, self.isenabled, self.isvisibled)
+""" 
 
 class ui_menu(object):
   __tablename__ = 'ui_menu'
   def __init__(self):
     self.id = None
+    self.menukey = None
     self.description = None
     self.modul = None
     self.icon = None
@@ -46,8 +20,8 @@ class ui_menu(object):
     self.url = 0
     self.address = None
   def __repr__(self):
-    return "<ui_menu('%s','%s','%s','%s','%s','%s','%s')>" % \
-      (self.id, self.description, self.modul, self.icon, self.funcname, self.url,self.address)
+    return "<ui_menu('%s','%s','%s','%s','%s','%s','%s','%s')>" % \
+      (self.id, self.menukey, self.description, self.modul, self.icon, self.funcname, self.url,self.address)
 
 class ui_menufields(object):
   __tablename__ = 'ui_menufields'
@@ -547,14 +521,13 @@ class tax(object):
   __tablename__ = 'tax'
   def __init__(self):
     self.id = None
-    self.taxkey = None
+    self.taxcode = None
     self.description = None
     self.rate = 0
-    self.taxcode = None
     self.inactive = 0
   def __repr__(self):
-    return "<tax('%s','%s','%s','%s','%s','%s')>" % \
-      (self.id, self.taxkey, self.description, self.rate, self.taxcode, self.inactive)
+    return "<tax('%s','%s','%s','%s','%s')>" % \
+      (self.id, self.taxcode, self.description, self.rate, self.inactive)
 
 class tool(object):
   __tablename__ = 'tool'

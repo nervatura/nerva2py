@@ -25,20 +25,20 @@
     padding-right:9px;
 }
 .ctr_bubble {
-	color:#FFD700;
-	background-color:#232323;
-	padding:2px;
-	padding-left:7px;
-	padding-right:7px;
-	border-radius: 12px;
-	font-size: small;
+  color:#FFD700;
+  background-color:#232323;
+  padding:2px;
+  padding-left:7px;
+  padding-right:7px;
+  border-radius: 12px;
+  font-size: small;
 }
 .menu_separator {
   margin-top:0px;
   margin-bottom:0px;
   height: 10px;
   border-width:0;
-  background-color: #393939;	
+  background-color: #393939;  
 }
 
 .label {
@@ -59,7 +59,7 @@
   border-radius: 8px;
 }
 .label_error {
-	padding: 8px;
+  padding: 8px;
   background: none repeat scroll 0 0 transparent;
   background-color: #FF0000;
   border-radius: 0.6em 0.6em 0.6em 0.6em;
@@ -71,8 +71,8 @@
   border-radius: 8px;
 }
 .block_line {
-	margin: 0px;
-	border: 1px solid #AAAAAA;
+  margin: 0px;
+  border: 1px solid #AAAAAA;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2) inset;
 }
 
@@ -84,13 +84,13 @@
 }
 
 a { 
-	text-decoration:none;
+  text-decoration:none;
 }
 a:hover {
-	text-decoration: none;
+  text-decoration: none;
 }
 a.button {
-	text-decoration: none
+  text-decoration: none
 }
 
 .ui-content {
@@ -103,7 +103,7 @@ a.button {
   position:fixed;
 }
 .ui-panel-inner {
-	overflow: auto;
+  overflow: auto;
   position: absolute;
   top: 1px; left: 0; right: 0; bottom: 0;  
   -webkit-overflow-scrolling: touch;
@@ -135,22 +135,22 @@ a.button {
   background-position: -144px -36px; 
 }
 .ui-icon-dollar {
-	background-position: -216px -18px; 
+  background-position: -216px -18px; 
 }
 .ui-icon-chat {
-	background-position: -360px -18px; 
+  background-position: -360px -18px; 
 }
 .ui-icon-direction {
-	background-position: -504px -18px; 
+  background-position: -504px -18px; 
 }
 .ui-icon-trash {
-	background-position: -396px -18px; 
+  background-position: -396px -18px; 
 }
 .ui-icon-calendar { 
-	background-position: -216px -36px; 
+  background-position: -216px -36px; 
 }
 .ui-icon-wrench { 
-	background-position: -576px -18px; 
+  background-position: -576px -18px; 
 }
 .ui-icon-alt {
   background: #ffffff;
@@ -189,12 +189,12 @@ a.button {
 }
 
 .web2py_htmltable a:hover {
-	text-decoration: underline;
+  text-decoration: underline;
 }
 
 .web2py_paginator { 
-	text-align:left;
-	border: 1px solid #BBBBBB;
+  text-align:left;
+  border: 1px solid #BBBBBB;
   border-collapse: collapse;
   padding: 8px;
   color: #333333;

@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2014, Csaba Kappel
+Copyright © 2011-2015, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -58,9 +58,9 @@ def getVernum():
 def getLogin_json(database, username, password):
   validator = npi.getLogin(database, username, password)
   if validator["valid"]==True:
+    validator["engine"] = ns.engine
     validator["employee"] = ns.employee.as_dict(datetime_to_str=False)
     validator["audit"] = ns.db(ns.db.ui_audit.usergroup==ns.employee.usergroup).select()
-    validator["groupinput"] = ns.db(ns.db.ui_groupinput.groups_id==ns.employee.usergroup).select()
     transfilter = ns.db((ns.db.link.ref_id_1==ns.employee.usergroup)&(ns.db.link.deleted==0)
                         &(ns.db.link.nervatype_2==ns.db((ns.db.groups.groupname=="nervatype")
                         &(ns.db.groups.groupvalue=="groups")).select()[0].id)).select()
@@ -83,9 +83,9 @@ def getLogin_amf(database, username, password, validdata=False):
   validator = npi.getLogin(database, username, password)
   pyamf.register_package(nerva2py.models, 'models')
   if validator["valid"]==True:
+    validator["engine"] = ns.engine
     validator["employee"] = ns.employee.as_dict(datetime_to_str=False)
     validator["audit"] = ArrayCollection(ns.db(ns.db.ui_audit.usergroup==ns.employee.usergroup).select().as_list(datetime_to_str=False))
-    validator["groupinput"] = ArrayCollection(ns.db(ns.db.ui_groupinput.groups_id==ns.employee.usergroup).select().as_list(datetime_to_str=False))
     transfilter = ns.db((ns.db.link.ref_id_1==ns.employee.usergroup)
                         &(ns.db.link.nervatype_2==ns.db((ns.db.groups.groupname=="nervatype")&(ns.db.groups.groupvalue=="groups")).select()[0].id)
                         &(ns.db.link.ref_id_2.belongs(ns.db(ns.db.groups.groupname=="nervatype")._select(ns.db.groups.id)))).select()
@@ -143,7 +143,7 @@ def loadDataSet_json(login, dataSetInfo):
         recordSet = loadView_json(login, recordSetInfo["sqlKey"], recordSetInfo["sqlStr"], recordSetInfo["whereStr"], 
                                   recordSetInfo["havingStr"], recordSetInfo["paramList"], False, "")
       if (recordSetInfo["infoType"] == "execute"):
-        executeSql_json(login, recordSetInfo["sqlKey"], recordSetInfo["sqlStr"], recordSetInfo["paramList"])
+        recordSet = executeSql_json(login, recordSetInfo["sqlKey"], recordSetInfo["sqlStr"], recordSetInfo["paramList"])
       if (recordSetInfo["infoType"] == "function"):
         func = getattr(tool, recordSetInfo["functionName"], None)
         params = {}
@@ -181,7 +181,7 @@ def loadDataSet_amf(login, dataSetInfo):
         recordSet = loadView_amf(login, recordSetInfo["sqlKey"], recordSetInfo["sqlStr"], recordSetInfo["whereStr"], 
                                   recordSetInfo["havingStr"], recordSetInfo["paramList"], False, "")
       if (recordSetInfo["infoType"] == "execute"):
-        executeSql_amf(login, recordSetInfo["sqlKey"], recordSetInfo["sqlStr"], recordSetInfo["paramList"])
+        recordSet = executeSql_amf(login, recordSetInfo["sqlKey"], recordSetInfo["sqlStr"], recordSetInfo["paramList"])
       if (recordSetInfo["infoType"] == "function"):
         func = getattr(tool, recordSetInfo["functionName"], None)
         params = {}
@@ -229,7 +229,7 @@ def saveRecordSet_json(login, recordSet, validate=False):
 
 @service.amfrpc3("default")
 def saveRecordSet_amf(login, recordSet, validate=False):
-  return npi.saveRecordSet(login, recordSet, validate)
+  return ArrayCollection(npi.saveRecordSet(login, recordSet, validate))
 
 @service.jsonrpc
 @service.jsonrpc2

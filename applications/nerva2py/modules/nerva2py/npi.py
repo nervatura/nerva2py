@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2014, Csaba Kappel
+Copyright © 2011-2015, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -47,7 +47,7 @@ class Npi(object):
       if login.has_key("appl"):
         appl = login["appl"]
       else:
-        appl = "nflex"
+        appl = ""
       sqlStr = self.ns.local.setSqlParams(sqlKey=sqlKey, sqlStr=sqlStr, whereStr=whereStr, havingStr=havingStr, 
                             paramList=paramList, rlimit=False, appl=appl)
       if simpleList==False:
@@ -83,7 +83,7 @@ class Npi(object):
       if login.has_key("appl"):
         appl = login["appl"]
       else:
-        appl = "nflex"
+        appl = ""
       sqlStr = self.ns.local.setSqlParams(sqlKey=sqlKey, sqlStr=sqlStr, whereStr="", havingStr="", 
                             paramList=paramList, rlimit=False, appl=appl)
       self.ns.db.executesql(sqlStr)

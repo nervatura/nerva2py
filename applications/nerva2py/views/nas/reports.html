@@ -1,0 +1,58 @@
+{{extend 'nas/layout.html'}}
+
+<style>
+.label {
+  font-weight: bold !important;
+  background-color: #EEEEE0;
+  padding: 8px;
+  margin: 0.5em 0;
+  border-radius: 8px;
+}
+</style>
+
+{{block header}}
+  {{=response.cmd_menu}}
+  <h1 style="color: #FFD700;font-size: small;margin: 0px;padding: 3px 0px 0px">{{=response.title}}</h1>
+  <h1 style="margin: 0px;padding: 0px 0px 4px;"> {{=response.subtitle}}</h1>
+  {{=response.cmd_exit}}
+{{end}}
+
+<div align="center" >
+<div id="input_form" style="max-width: 800px;padding-top: 5px;">
+  {{=form.custom.begin}}
+  <table width="100%" cellpadding="0px;" cellspacing="5px;" style="padding-bottom: 10px;">
+    <tr>
+      <td style="width: 100px;">
+        <div class="label">{{=form.custom.label.database}}</div></td>
+      <td>{{=form.custom.widget.database}}</td>
+      <td style="width: 160px;">
+        <div class="label">{{=form.custom.label.repname}}</div></td>
+      <td>{{=form.custom.widget.repname}}</td>
+      <td style="width: 100px;">{{=form.custom.submit}}</td>
+    </tr>
+    <tr>
+      <td colspan="5">
+        <table width="100%" cellpadding="0px;" cellspacing="0px;" style="">
+          <tr>
+            <td style="padding-right: 5px;width: 100px;">
+              <div class="label">{{=form.custom.label.label}}</div></td>
+            <td>{{=form.custom.widget.label}}</td>
+            <td style="padding-right: 5px;padding-left: 5px;width: 100px;">
+              <div class="label">{{=form.custom.label.reptype}}</div></td>
+            <td>{{=form.custom.widget.reptype}}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+  {{=form.custom.end}}
+  <form method="post" id="frm_install" enctype="multipart/form-data" action="#">
+    {{=repgrid}}
+    <div style="display:none;">
+      <input type="hidden" value="" id="ins_database" name="ins_database">
+      <input type="hidden" value="" id="ins_reportkey" name="ins_reportkey">
+      <input type="hidden" value="" id="ins_cmd" name="ins_cmd">
+    </div>
+  </form>
+</div>
+</div>

@@ -3,12 +3,12 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2014, Csaba Kappel
+Copyright © 2011-2015, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
 
-import os
+import os, json
 from wx import xrc
 from nwx.view.fBase import fChildFrame  # @UnresolvedImport
 from nwx.dataset.dsBrowser import dsBrowser  # @UnresolvedImport
@@ -16,8 +16,9 @@ from nwx.dataset.dsBrowser import dsBrowser  # @UnresolvedImport
 import wx.grid
 import  wx.lib.gridmovers
 from nwx.utils.gridTable import browserTable, filterTable  # @UnresolvedImport
+from nwx.view.fMain import dict2obj  # @UnresolvedImport
 import xlwt  # @UnresolvedImport
-
+    
 class fBrowser(fChildFrame):
   mainView = ""
   sectionView = ""
@@ -303,7 +304,6 @@ class fBrowser(fChildFrame):
     self.setFilterData()      
     self.setResultData()  
   
-  
   def setFilterData(self):            
     self.dg_filters.ClearGrid()
     dataField=["fieldlabel", "ftype", "fvalue"] 
@@ -312,18 +312,34 @@ class fBrowser(fChildFrame):
                 "fvalue":self.getLocale("filter_fvalue_headerText")} 
     
     filter_table = [] 
-    for fitem in self.dataSet["filter"]:
-      if fitem.viewname == self.sectionView:
+    for citem in self.dataSet["userconfig"]:
+      if citem.section == self.mainView and citem.cfgroup == self.sectionView and citem.cfname.startswith("filter_"):
+        fitem = dict2obj(json.loads(citem.cfvalue))
+        fitem.citem = citem
         filter_table.append(fitem)
-    filter_table.sort(cmp=None, key=lambda item: item.id, reverse=False)
     
-    stable = filterTable(dataField, headerText, self.filter_type, filter_table)
+    stable = filterTable(dataField, headerText, self.filter_type, filter_table, self.setFilterSource)
     self.dg_filters.SetTable(stable, True)
     self.dg_filters.SetColSize(0, 150)
     self.dg_filters.SetColSize(1, 50)
     self.dg_filters.SetColSize(2, 160)
     self.dg_filters.ForceRefresh()
-      
+  
+  def setFilterSource(self, row):
+    frow = self.dg_filters.GetTable().GetRowData(row)
+    cfvalue = {
+      "fvalue":getattr(frow, "fvalue"),
+      "ftype":getattr(frow, "ftype"),
+      "fieldlabel":getattr(frow, "fieldlabel").strip()}
+    viewfield =  self.parent.getItemFromKey2(self.dataSet["viewfields"], 
+      "viewname", self.sectionView, "langname", cfvalue["fieldlabel"])
+    cfvalue["fieldname"] = viewfield["fieldname"]
+    cfvalue["fieldtype"] = viewfield["fieldtype"]
+    cfvalue["wheretype"] = viewfield["wheretype"]
+    cfvalue["sqlstr"] = viewfield["sqlstr"]
+    self.ds.setConfig(self.dataSet, self.sectionView, getattr(frow, "citem").cfname, 
+      json.dumps(cfvalue), None, self.mainView)
+    
   def setResultData(self):
     self.dg_result.ClearGrid()
     self.lsrow = None
@@ -498,7 +514,7 @@ class fBrowser(fChildFrame):
             param["WhereString"] = param["WhereString"] + " and " + getattr(filter, "sqlstr") + " <= @filter"+str(fin)
             continue
           
-        if getattr(filter, "fieldtype")=="float":#from nwx.dataset.models import userconfig
+        if getattr(filter, "fieldtype")=="float":
           param["paramList"].append({"name":"@filter"+str(fin), "value":getattr(filter, "fvalue"), "wheretype":"where", "type":"number"})
           if getattr(filter, "ftype") == "==":
             param["WhereString"] = param["WhereString"] + " and " + getattr(filter, "sqlstr") + " = @filter"+str(fin)
@@ -537,9 +553,9 @@ class fBrowser(fChildFrame):
         if getattr(filter, "fieldtype")=="bool":
           bval = False
           if getattr(filter, "fvalue") == "t":
-            bval = True
+            bval = 1
           else:
-            bval = False
+            bval = 0
           param["paramList"].append({"name":"@filter"+str(fin), "value":bval, "wheretype":"where", "type":"boolean"})
           if getattr(filter, "ftype") == "==":
             param["WhereString"] = param["WhereString"] + " and " + getattr(filter, "sqlstr")  + " = @filter"+str(fin)
@@ -863,7 +879,8 @@ class fBrowser(fChildFrame):
     for srow in self.dg_filters.GetSelectedRows():
       delRows.append(self.dg_filters.GetTable().GetRowData(srow))
       for drow in delRows:
-        self.ds.deleteFilterRow(self.dataSet, drow)
+        self.ds.setConfig(self.dataSet, self.sectionView, getattr(drow, "citem").cfname, None, None, self.mainView, True)
+        #self.ds.deleteFilterRow(self.dataSet, drow)
     self.setFilterData()  
   
   def _dg_filters(self, event=None):

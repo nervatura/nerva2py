@@ -87,11 +87,17 @@ if 'WEB2PY_PATH' not in os.environ:
     os.environ['WEB2PY_PATH'] = path
 
 try:
-    from gluon.contrib.simplejson import loads, dumps
-except:
+    # try external module
     from simplejson import loads, dumps
+except ImportError:
+    try:
+        # try stdlib (Python >= 2.6)
+        from json import loads, dumps
+    except:
+        # fallback to pure-Python module
+        from gluon.contrib.simplejson import loads, dumps
 
-IDENTIFIER = "%s#%s" % (socket.gethostname(),os.getpid())
+IDENTIFIER = "%s#%s" % (socket.gethostname(), os.getpid())
 
 logger = logging.getLogger('web2py.scheduler.%s' % IDENTIFIER)
 
@@ -160,6 +166,7 @@ class TaskReport(object):
     def __str__(self):
         return '<TaskReport: %s>' % self.status
 
+
 class JobGraph(object):
     """Experimental: with JobGraph you can specify
     dependencies amongs tasks"""
@@ -170,7 +177,9 @@ class JobGraph(object):
 
     def add_deps(self, task_parent, task_child):
         """Creates a dependency between task_parent and task_child"""
-        self.db.scheduler_task_deps.insert(task_parent=task_parent, task_child=task_child, job_name=self.job_name)
+        self.db.scheduler_task_deps.insert(task_parent=task_parent,
+                                           task_child=task_child,
+                                           job_name=self.job_name)
 
     def validate(self, job_name):
         """Validates if all tasks job_name can be completed, i.e. there
@@ -195,22 +204,25 @@ class JobGraph(object):
         try:
             rtn = []
             for k, v in nested_dict.items():
-                v.discard(k) # Ignore self dependencies
+                v.discard(k)  # Ignore self dependencies
             extra_items_in_deps = reduce(set.union, nested_dict.values()) - set(nested_dict.keys())
             nested_dict.update(dict((item, set()) for item in extra_items_in_deps))
             while True:
-                ordered = set(item for item,dep in nested_dict.items() if not dep)
+                ordered = set(item for item, dep in nested_dict.items() if not dep)
                 if not ordered:
                     break
                 rtn.append(ordered)
-                nested_dict = dict((item, (dep - ordered)) for item, dep in nested_dict.items()
-                    if item not in ordered)
+                nested_dict = dict(
+                    (item, (dep - ordered)) for item, dep in nested_dict.items()
+                    if item not in ordered
+                    )
             assert not nested_dict, "A cyclic dependency exists amongst %r" % nested_dict
             db.commit()
             return rtn
         except:
             db.rollback()
             return None
+
 
 def demo_function(*argv, **kwargs):
     """ test function """
@@ -219,9 +231,9 @@ def demo_function(*argv, **kwargs):
         time.sleep(1)
     return 'done'
 
-#the two functions below deal with simplejson decoding as unicode, esp for the dict decode
-#and subsequent usage as function Keyword arguments unicode variable names won't work!
-#borrowed from http://stackoverflow.com/questions/956867/how-to-get-string-objects-instead-unicode-ones-from-json-in-python
+# the two functions below deal with simplejson decoding as unicode, esp for the dict decode
+# and subsequent usage as function Keyword arguments unicode variable names won't work!
+# borrowed from http://stackoverflow.com/questions/956867/how-to-get-string-objects-instead-unicode-ones-from-json-in-python
 
 
 def _decode_list(lst):
@@ -268,7 +280,7 @@ def executor(queue, task, out):
         def write(self, data):
             self.out_queue.put(data)
 
-    W2P_TASK = Storage({'id' : task.task_id, 'uuid' : task.uuid})
+    W2P_TASK = Storage({'id': task.task_id, 'uuid': task.uuid})
     stdout = LogOutput(out)
     try:
         if task.app:
@@ -292,13 +304,13 @@ def executor(queue, task, out):
             if not isinstance(_function, CALLABLETYPES):
                 raise NameError(
                     "name '%s' not found in scheduler's environment" % f)
-            #Inject W2P_TASK into environment
-            _env.update({'W2P_TASK' : W2P_TASK})
-            #Inject W2P_TASK into current
+            # Inject W2P_TASK into environment
+            _env.update({'W2P_TASK': W2P_TASK})
+            # Inject W2P_TASK into current
             from gluon import current
             current.W2P_TASK = W2P_TASK
             globals().update(_env)
-            args = loads(task.args)
+            args = _decode_list(loads(task.args))
             vars = loads(task.vars, object_hook=_decode_dict)
             result = dumps(_function(*args, **vars))
         else:
@@ -357,8 +369,7 @@ class MetaScheduler(threading.Thread):
 
             start = time.time()
 
-            while p.is_alive() and (
-                    not task.timeout or time.time() - start < task.timeout):
+            while p.is_alive() and (not task.timeout or time.time() - start < task.timeout):
                 if tout:
                     try:
                         logger.debug(' partial output saved')
@@ -568,7 +579,7 @@ class Scheduler(MetaScheduler):
                 queue=0,
                 distribution=None,
                 workers=0)
-        ) #dict holding statistics
+        )  # dict holding statistics
 
         from gluon import current
         current._scheduler = self
@@ -598,7 +609,7 @@ class Scheduler(MetaScheduler):
 
     def define_tables(self, db, migrate):
         """Defines Scheduler tables structure"""
-        from gluon.dal import DEFAULT
+        from pydal.base import DEFAULT
         logger.debug('defining tables (migrate=%s)', migrate)
         now = self.now
         db.define_table(
@@ -631,7 +642,7 @@ class Scheduler(MetaScheduler):
             Field('prevent_drift', 'boolean', default=False,
                   comment='Cron-like start_times between runs'),
             Field('timeout', 'integer', default=60, comment='seconds',
-                  requires=IS_INT_IN_RANGE(0, None)),
+                  requires=IS_INT_IN_RANGE(1, None)),
             Field('sync_output', 'integer', default=0,
                   comment="update output every n sec: 0=never",
                   requires=IS_INT_IN_RANGE(0, None)),
@@ -740,7 +751,7 @@ class Scheduler(MetaScheduler):
         contention and retries `assign_task` after 0.5 seconds
         """
         logger.debug('Assigning tasks...')
-        db.commit()  #db.commit() only for Mysql
+        db.commit()  # db.commit() only for Mysql
         x = 0
         while x < 10:
             try:
@@ -761,7 +772,7 @@ class Scheduler(MetaScheduler):
         contention and retries `pop_task` after 0.5 seconds
         """
         db = self.db
-        db.commit() #another nifty db.commit() only for Mysql
+        db.commit()  # another nifty db.commit() only for Mysql
         x = 0
         while x < 10:
             try:
@@ -784,7 +795,7 @@ class Scheduler(MetaScheduler):
             #let's do that and loop again
             self.wrapped_assign_tasks(db)
             return None
-        #ready to process something
+        # ready to process something
         grabbed = db(
             (st.assigned_worker_name == self.worker_name) &
             (st.status == ASSIGNED)
@@ -793,12 +804,12 @@ class Scheduler(MetaScheduler):
         task = grabbed.select(limitby=(0, 1), orderby=st.next_run_time).first()
         if task:
             task.update_record(status=RUNNING, last_run_time=now)
-            #noone will touch my task!
+            # noone will touch my task!
             db.commit()
             logger.debug('   work to do %s', task.id)
         else:
             if self.is_a_ticker and self.greedy:
-                #there are other tasks ready to be assigned
+                # there are other tasks ready to be assigned
                 logger.info('TICKER: greedy loop')
                 self.wrapped_assign_tasks(db)
             else:
@@ -814,10 +825,10 @@ class Scheduler(MetaScheduler):
                 seconds=task.period * times_run
             )
         if times_run < task.repeats or task.repeats == 0:
-            #need to run (repeating task)
+            # need to run (repeating task)
             run_again = True
         else:
-            #no need to run again
+            # no need to run again
             run_again = False
         run_id = 0
         while True and not self.discard_results:
@@ -878,9 +889,9 @@ class Scheduler(MetaScheduler):
         sr = db.scheduler_run
         if not self.discard_results:
             if task_report.result != 'null' or task_report.tb:
-                #result is 'null' as a string if task completed
-                #if it's stopped it's None as NoneType, so we record
-                #the STOPPED "run" anyway
+                # result is 'null' as a string if task completed
+                # if it's stopped it's None as NoneType, so we record
+                # the STOPPED "run" anyway
                 logger.debug(' recording task report in db (%s)',
                              task_report.status)
                 db(sr.id == task.run_id).update(
@@ -892,7 +903,7 @@ class Scheduler(MetaScheduler):
             else:
                 logger.debug(' deleting task report in db because of no result')
                 db(sr.id == task.run_id).delete()
-        #if there is a stop_time and the following run would exceed it
+        # if there is a stop_time and the following run would exceed it
         is_expired = (task.stop_time
                       and task.next_run_time > task.stop_time
                       and True or False)
@@ -906,7 +917,8 @@ class Scheduler(MetaScheduler):
                      times_failed=0
                      )
             db(st.id == task.task_id).update(**d)
-            self.update_dependencies(db, task.task_id)
+            if status == COMPLETED:
+                self.update_dependencies(db, task.task_id)
         else:
             st_mapping = {'FAILED': 'FAILED',
                           'TIMEOUT': 'TIMEOUT',
@@ -1044,16 +1056,16 @@ class Scheduler(MetaScheduler):
         ticker = all_active.find(lambda row: row.is_ticker is True).first()
         not_busy = self.w_stats.status == ACTIVE
         if not ticker:
-            #if no other tickers are around
+            # if no other tickers are around
             if not_busy:
-                #only if I'm not busy
+                # only if I'm not busy
                 db(sw.worker_name == my_name).update(is_ticker=True)
                 db(sw.worker_name != my_name).update(is_ticker=False)
                 logger.info("TICKER: I'm a ticker")
             else:
-                #I'm busy
+                # I'm busy
                 if len(all_active) >= 1:
-                    #so I'll "downgrade" myself to a "poor worker"
+                    # so I'll "downgrade" myself to a "poor worker"
                     db(sw.worker_name == my_name).update(is_ticker=False)
                 else:
                     not_busy = True
@@ -1073,9 +1085,11 @@ class Scheduler(MetaScheduler):
         sw, st, sd = db.scheduler_worker, db.scheduler_task, db.scheduler_task_deps
         now = self.now()
         all_workers = db(sw.status == ACTIVE).select()
-        #build workers as dict of groups
+        # build workers as dict of groups
         wkgroups = {}
         for w in all_workers:
+            if w.worker_stats['status'] == 'RUNNING':
+                continue
             group_names = w.group_names
             for gname in group_names:
                 if gname not in wkgroups:
@@ -1084,13 +1098,14 @@ class Scheduler(MetaScheduler):
                 else:
                     wkgroups[gname]['workers'].append(
                         {'name': w.worker_name, 'c': 0})
-        #set queued tasks that expired between "runs" (i.e., you turned off
-        #the scheduler): then it wasn't expired, but now it is
+        # set queued tasks that expired between "runs" (i.e., you turned off
+        # the scheduler): then it wasn't expired, but now it is
         db(
             (st.status.belongs((QUEUED, ASSIGNED))) &
             (st.stop_time < now)
-            ).update(status=EXPIRED)
+        ).update(status=EXPIRED)
 
+        # calculate dependencies
         deps_with_no_deps = db(
             (sd.can_visit == False) &
             (~sd.task_child.belongs(
@@ -1099,7 +1114,7 @@ class Scheduler(MetaScheduler):
             )
             )._select(sd.task_child)
         no_deps = db(
-            (st.status.belongs((QUEUED,ASSIGNED))) &
+            (st.status.belongs((QUEUED, ASSIGNED))) &
             (
                 (sd.id == None) | (st.id.belongs(deps_with_no_deps))
 
@@ -1122,27 +1137,27 @@ class Scheduler(MetaScheduler):
 
 
         limit = len(all_workers) * (50 / (len(wkgroups) or 1))
-        #if there are a moltitude of tasks, let's figure out a maximum of
-        #tasks per worker. This can be further tuned with some added
-        #intelligence (like esteeming how many tasks will a worker complete
-        #before the ticker reassign them around, but the gain is quite small
-        #50 is a sweet spot also for fast tasks, with sane heartbeat values
-        #NB: ticker reassign tasks every 5 cycles, so if a worker completes its
-        #50 tasks in less than heartbeat*5 seconds,
-        #it won't pick new tasks until heartbeat*5 seconds pass.
+        # if there are a moltitude of tasks, let's figure out a maximum of
+        # tasks per worker. This can be further tuned with some added
+        # intelligence (like esteeming how many tasks will a worker complete
+        # before the ticker reassign them around, but the gain is quite small
+        # 50 is a sweet spot also for fast tasks, with sane heartbeat values
+        # NB: ticker reassign tasks every 5 cycles, so if a worker completes its
+        # 50 tasks in less than heartbeat*5 seconds,
+        # it won't pick new tasks until heartbeat*5 seconds pass.
 
-        #If a worker is currently elaborating a long task, its tasks needs to
-        #be reassigned to other workers
-        #this shuffles up things a bit, in order to give a task equal chances
-        #to be executed
+        # If a worker is currently elaborating a long task, its tasks needs to
+        # be reassigned to other workers
+        # this shuffles up things a bit, in order to give a task equal chances
+        # to be executed
 
-        #let's freeze it up
+        # let's freeze it up
         db.commit()
         x = 0
         for group in wkgroups.keys():
             tasks = all_available(st.group_name == group).select(
                 limitby=(0, limit), orderby = st.next_run_time)
-            #let's break up the queue evenly among workers
+            # let's break up the queue evenly among workers
             for task in tasks:
                 x += 1
                 gname = task.group_name
@@ -1162,18 +1177,18 @@ class Scheduler(MetaScheduler):
                     if not task.task_name:
                         d['task_name'] = task.function_name
                     db(
-                        (st.id==task.id) &
+                        (st.id == task.id) &
                         (st.status.belongs((QUEUED, ASSIGNED)))
                         ).update(**d)
                     wkgroups[gname]['workers'][myw]['c'] += 1
             db.commit()
-        #I didn't report tasks but I'm working nonetheless!!!!
+        # I didn't report tasks but I'm working nonetheless!!!!
         if x > 0:
             self.w_stats.empty_runs = 0
         self.w_stats.queue = x
         self.w_stats.distribution = wkgroups
         self.w_stats.workers = len(all_workers)
-        #I'll be greedy only if tasks assigned are equal to the limit
+        # I'll be greedy only if tasks assigned are equal to the limit
         # (meaning there could be others ready to be assigned)
         self.greedy = x >= limit
         logger.info('TICKER: workers are %s', len(all_workers))
@@ -1186,13 +1201,16 @@ class Scheduler(MetaScheduler):
         # should only sleep until next available task
 
     def set_worker_status(self, group_names=None, action=ACTIVE,
-        exclude=None, limit=None):
+                          exclude=None, limit=None, worker_name=None):
         """Internal function to set worker's status"""
         ws = self.db.scheduler_worker
         if not group_names:
             group_names = self.group_names
         elif isinstance(group_names, str):
             group_names = [group_names]
+        if worker_name:
+            self.db(ws.worker_name == worker_name).update(status=action)
+            return
         exclusion = exclude and exclude.append(action) or [action]
         if not limit:
             for group in group_names:
@@ -1202,13 +1220,12 @@ class Scheduler(MetaScheduler):
                     ).update(status=action)
         else:
             for group in group_names:
-                workers = self.db(
-                   (ws.group_names.contains(group)) &
-                   (~ws.status.belongs(exclusion))
-                    )._select(ws.id, limitby=(0,limit))
+                workers = self.db((ws.group_names.contains(group)) &
+                                  (~ws.status.belongs(exclusion))
+                                  )._select(ws.id, limitby=(0, limit))
                 self.db(ws.id.belongs(workers)).update(status=action)
 
-    def disable(self, group_names=None, limit=None):
+    def disable(self, group_names=None, limit=None, worker_name=None):
         """Sets DISABLED on the workers processing `group_names` tasks.
         A DISABLED worker will be kept alive but it won't be able to process
         any waiting tasks, essentially putting it to sleep.
@@ -1219,7 +1236,7 @@ class Scheduler(MetaScheduler):
             exclude=[DISABLED, KILL, TERMINATE],
             limit=limit)
 
-    def resume(self, group_names=None, limit=None):
+    def resume(self, group_names=None, limit=None, worker_name=None):
         """Wakes a worker up (it will be able to process queued tasks)"""
         self.set_worker_status(
             group_names=group_names,
@@ -1227,7 +1244,7 @@ class Scheduler(MetaScheduler):
             exclude=[KILL, TERMINATE],
             limit=limit)
 
-    def terminate(self, group_names=None, limit=None):
+    def terminate(self, group_names=None, limit=None, worker_name=None):
         """Sets TERMINATE as worker status. The worker will wait for any
         currently running tasks to be executed and then it will exit gracefully
         """
@@ -1237,7 +1254,7 @@ class Scheduler(MetaScheduler):
             exclude=[KILL],
             limit=limit)
 
-    def kill(self, group_names=None, limit=None):
+    def kill(self, group_names=None, limit=None, worker_name=None):
         """Sets KILL as worker status. The worker will be killed even if it's
         processing a task."""
         self.set_worker_status(
@@ -1312,7 +1329,7 @@ class Scheduler(MetaScheduler):
             have all fields == None
 
         """
-        from gluon.dal import Query
+        from pydal.objects import Query
         sr, st = self.db.scheduler_run, self.db.scheduler_task
         if isinstance(ref, (int, long)):
             q = st.id == ref
@@ -1335,7 +1352,7 @@ class Scheduler(MetaScheduler):
             **dict(orderby=orderby,
                    left=left,
                    limitby=(0, 1))
-             ).first()
+            ).first()
         if row and output:
             row.result = row.scheduler_run.run_result and \
                 loads(row.scheduler_run.run_result,

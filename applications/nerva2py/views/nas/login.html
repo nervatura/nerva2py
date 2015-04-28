@@ -13,7 +13,7 @@
   vertical-align: middle;
 }
 label, label.ui-input-text {
-  font-weight: bold;
+  font-weight: bold !important;
   background-color: #EEEEE0;
   padding: 8px;
   margin: 0.5em 0;
@@ -33,13 +33,13 @@ label, label.ui-input-text {
   <div data-role="navbar" data-iconpos="top">
     <ul>
       <li><a data-icon="home" data-ajax="false" data-theme="b" href={{=URL('default','start')}}>{{=T('HOME')}}</a></li>
-      <li><a data-icon="page" data-ajax="false" data-theme="b" href={{=URL('default','ndoc')}}>{{=T('DOCUMENTATION & RESOURCES')}}</a></li>
+      <li><a data-icon="file-text" data-ajax="false" data-theme="b" href={{=URL('default','ndoc')}}>{{=T('DOCUMENTATION & RESOURCES')}}</a></li>
       <li><a data-icon="info" data-ajax="false" data-theme="b" href={{=URL('default','about')}}>{{=T('ABOUT')}}</a></li>
-      <li><a data-icon="wrench" data-ajax="false" data-theme="e" href={{=URL('nas','index')}}>{{=T('NAS ADMIN')}}</a></li>
+      <li><a data-icon="gear" data-ajax="false" data-theme="b" href={{=URL('nas','index')}}>{{=T('NAS ADMIN')}}</a></li>
     </ul>
   </div><!-- /navbar -->
-  <h1 style="color: #FFD700;margin-bottom: 0px;margin-top: 13px;">{{=response.title}}</h1>
-  <h1><span class="vernum"> Ver.No: {{=response.verNo}}</span></h1>
+  <h1 style="color: #FFD700;margin: 0px;padding: 4px 0px 0px">{{=response.title}}</h1>
+  <h1 style="padding: 0px 0px 7px;margin: 0px;"><span class="vernum"> Ver.No: {{=response.verNo}}</span></h1>
 {{end}}
 
 <div align="center" >
@@ -73,11 +73,6 @@ label, label.ui-input-text {
               Nervatura Mobile Client</a>
           </li>
           <li style="padding-top: 0px;margin-bottom: 0px;">
-            <a target="_blank" href="{{=URL('ndr', 'getAppl', vars={'appl':'nflex/nervex.html'})}}" 
-              style="color: #3B7687;text-decoration: none;font-weight: bold;font-size: 16px;font-style: italic;">
-              Nervatura Flash Client</a>
-          </li>
-          <li style="padding-top: 0px;margin-bottom: 0px;">
             <a href="{{=URL( 'wizard', 'index')}}" target="_blank" 
               style="color: #3B7687;text-decoration: none;font-weight: bold;font-size: 16px;font-style: italic;">
               Nervatura Data Interface Wizard</a>
@@ -85,7 +80,7 @@ label, label.ui-input-text {
           <li style="padding-top: 0px;margin-bottom: 0px;">
             <a href="{{=URL( 'report', 'index')}}" target="_blank" 
               style="color: #3B7687;text-decoration: none;font-weight: bold;font-size: 16px;font-style: italic;">
-              Nervatura Report DEMO</a>
+              Nervatura Report HELP & DEMO</a>
           </li>
         </ul>
       </div>
@@ -112,11 +107,6 @@ label, label.ui-input-text {
               style="color: #3B7687;text-decoration: none;font-weight: bold;;font-size: 16px;font-style: italic;">
               Nervatura Data Representation</a>
           </li>
-          <li style="padding-top: 0px;margin-bottom: 0px;">
-            <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'docs/report/report','content':'view','lang':'auto'})}}" target="_blank" 
-              style="color: #3B7687;text-decoration: none;font-weight: bold;;font-size: 16px;font-style: italic;">
-              Nervatura Report</a>
-          </li>
         </ul>
       </div>
 	  </div>
@@ -134,7 +124,7 @@ label, label.ui-input-text {
       </tr>
     </table>
 	  <p><a href="http://www.nervatura.com" target="_blank" title="Nervatura Homepage" 
-	             style="font-weight: bold;">©2011-2014 Nervatura Framework</a></p>
+	             style="font-weight: bold;">©2011-2015 Nervatura Framework</a></p>
 	 </div>
 	</div>
 </div>

@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2014, Csaba Kappel
+Copyright © 2011-2015, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -314,7 +314,7 @@ def exportToReport():
     if print_item["state"]==False:
       return print_item["error_message"]
     return "OK"
-  elif report_tmp["filetype"]=="fpdf":
+  elif report_tmp["filetype"]=="ntr":
     if params["output"]=="xml":
       response.headers['Content-Type']='text/xml'
     elif params["output"]=="pdf":

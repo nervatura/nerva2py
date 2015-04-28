@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2014, Csaba Kappel
+Copyright © 2011-2015, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -20,11 +20,11 @@ if 0:
 from gluon.http import redirect 
 from gluon.html import URL
 from gluon.html import SPAN, DIV, P, BR
-import datetime
+import datetime, os
 
 from nerva2py.nervastore import NervaStore
 from nerva2py.ndi import Ndi
-from nerva2py.tools import DatabaseTools
+from nerva2py.tools import DatabaseTools, NervaTools
 from nerva2py.ordereddict import OrderedDict
 
 #----------------------------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ from nerva2py.ordereddict import OrderedDict
 
 ns = NervaStore(request, session, T, db)
 ndi = Ndi(ns)
-dbtool = DatabaseTools(ns)
+dbtool = DatabaseTools(ns); ntool = NervaTools(ns);
 trans_year = datetime.date.today().year
 
 def create_demo():
@@ -962,41 +962,18 @@ def create_demo():
   #----------------------------------------------------------------------------------------------------
     #sample reports:
   #----------------------------------------------------------------------------------------------------
-    #load 3 general reports and 4 other templates
+    #load general reports and other templates
     #----------------------------------------------------------------------------------------------------
     rs.append(DIV(SPAN("insert report...",_style="color:brown;font-weight: bold;font-style: italic;"),BR()))
-    def set_def_report(key,value):
-      if not ns.db.deffield(fieldname=key):
-        fkey = key.split("_")
-        if len(fkey)==4:
-          description = "default "+fkey[1]+" "+fkey[2]+" report"
-        else:
-          description = "default "+fkey[1]+" report"
-        values = {"fieldname":key,
-                  "nervatype":ns.valid.get_groups_id("nervatype", "setting"),
-                  "fieldtype":ns.valid.get_groups_id("fieldtype", "string"),
-                  "description":description}
-        ns.connect.updateData("deffield", values=values, validate=False, insert_row=True)
-      values = {"id":ns.valid.get_id_from_refnumber("fieldvalue",key), "fieldname":key, "value":value}
-      ns.connect.updateData("fieldvalue", values=values, validate=False, insert_row=True)
-    reports = {"fpdf_customer_sheet_en":"default_customer_report",
-               "fpdf_employee_sheet_en":"default_employee_report",
-               "fpdf_invoice_en":"default_trans_invoice_report",
-               "fpdf_vat_en":None,
-               "gshi_vat_en":None,
-               "html_vat":None,
-               "xls_vat_en":None}
-    for report in reports.keys():
-      load = dbtool.loadReport(fileName=report+".sql", fileStr=None, insert=(not ns.db.ui_report(reportkey=report)))
+    demo_reports= ntool.getReportFiles(os.path.join(ns.request.folder,'static/resources/report'))
+    for report in demo_reports["reports"]:
+      load = dbtool.loadReport(fileName=report["filename"], fileStr=None, insert=(not ns.db.ui_report(reportkey=report["reportkey"])))
       if load != "OK":
         rs.append(DIV(SPAN("report"+": ",_style="color:blue;font-weight: bold;"),
                     SPAN(load,_style="color:red;font-weight: bold;"),BR()))
       else:
-        if reports[report]:
-          #set defaut report
-          set_def_report(reports[report],report)
         rs.append(DIV(SPAN("report"+": ",_style="color:blue;font-weight: bold;"),
-                      SPAN("OK|"+report,_style="color:green;font-weight: bold;"),BR()))
+                      SPAN("OK|"+report["repname"],_style="color:green;font-weight: bold;"),BR()))
 
   #----------------------------------------------------------------------------------------------------
     #sample user menu:
@@ -1056,25 +1033,25 @@ def get_demo_report():
     param["reportcode"] = request.vars.reportcode
   else:
     return "Error|Missing reportcode!"
-  if param["reportcode"]=="fpdf_customer_sheet_en":
+  if param["reportcode"]=="ntr_customer_en":
     customer = ndi.ns.db.customer(custnumber="DMCUST/00001")
     if customer:
       param["filters"] = "@id="+str(customer.id)
     else:
       return "Error|Missing customer No.: DMCUST/00001"
-  elif param["reportcode"]=="fpdf_invoice_en":
+  elif param["reportcode"]=="ntr_invoice_en":
     trans = ndi.ns.db.trans(transnumber="DMINV/00001")
     if trans:
       param["filters"] = "@id="+str(trans.id)
     else:
       return "Error|Missing invoice No.: DMINV/00001"
-  elif param["reportcode"]=="fpdf_employee_sheet_en":
+  elif param["reportcode"]=="ntr_employee_en":
     employee = ndi.ns.db.employee(empnumber="DMEMP/00001")
     if employee:
       param["filters"] = "@id="+str(employee.id)
     else:
       return "Error|Missing employee No.: DMEMP/00001"
-  elif param["reportcode"] in("html_vat","gshi_vat_en","fpdf_vat_en","xls_vat_en"):
+  elif param["reportcode"] in("html_vat","gshi_vat_en","ntr_vat_en","xls_vat_en"):
     param["filters"] = "date_from="+str(trans_year-1)+"-01-01|date_to="+str(trans_year-1)+"-12-31"
   else:
     return "Error|Unknown reportcode!"

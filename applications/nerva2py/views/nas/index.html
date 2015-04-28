@@ -3,7 +3,7 @@
 <style>
 <!--
 label, label.ui-input-text {
-  font-weight: bold;
+  font-weight: bold !important;
   background-color: #EEEEE0;
   padding: 8px;
   margin: 0.5em 0;
@@ -13,16 +13,13 @@ label, label.ui-input-text {
   padding-right: 5px;
   
 }
-.ui-checkbox, .ui-radio {
-  position: inherit;
-}
 -->
 </style>
 
 {{block header}}
   {{=response.cmd_menu}}
-  <h1 style="color: #FFD700;font-size: small;margin-bottom: 0px;margin-top: 5px;">{{=response.title}}</h1>
-  <h1 style="margin-bottom: 5px;margin-top: 0px;"> {{=response.subtitle}}</h1>
+  <h1 style="color: #FFD700;font-size: small;margin: 0px;padding: 3px 0px 0px">{{=response.title}}</h1>
+  <h1 style="margin: 0px;padding: 0px 0px 4px;"> {{=response.subtitle}}</h1>
   {{=response.cmd_exit}}
 {{end}}
 

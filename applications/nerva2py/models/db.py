@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2014, Csaba Kappel
+Copyright © 2011-2015, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -161,15 +161,5 @@ if create_tbl:
   createTable(table)
   if ename=="sqlite":
     db.databases.insert(alias="demo", engine_id=engine_id[ename], dbname="demo")
-   
-table = db.define_table('nflex',
-  Field('id', readable=False, writable=False),
-  Field('sqlkey', type='string', length=150, notnull=True, required=True),
-  Field('engine', type='string', length=150, notnull=True, required=True),
-  Field('section', type='string', length=150),
-  Field('sqlstr', type='text', notnull=True, required=True))
-if create_tbl: 
-  createTable(table)
-  from nerva2py.nflex.insert_fbase_dal import insert_nflex_rows
-  insert_nflex_rows(db)
+
   

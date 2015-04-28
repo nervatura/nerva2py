@@ -58,11 +58,6 @@
   <li><a href="{{=URL( 'nwc', 'index',vars={'mobile':'true'})}}" target="_blank"><span class="sname">NWC</span>&nbsp;<b><i>Nervatura Mobile Client</i></b></a><br>
   {{=T('Database')}}: <b><i>demo</i></b>, {{=T('Username')}}: <b><i>demo</i></b>, {{=T('Password')}}: {{=T('leave the field empty, not need')}}<br>
   <i>{{=T('Restricted DEMO MODE version! Restricted functions are: Database Settings, Access Rights and Change Password.')}}</i></li>
-  <li><a href="{{=URL('ndr', 'getAppl', vars={'appl':'nflex/nervex.html'})}}" 
-    target="_blank"><span class="sname">NPI</span>&nbsp;<b><i>Nervatura Flash Client</i></b></a><br>
-  {{=T('Database')}}: <b><i>demo</i></b>, {{=T('Username')}}: <b><i>demo</i></b>, {{=T('Password')}}: {{=T('leave the field empty, not need')}}<br>
-  <i>{{=T('Restricted DEMO MODE version! Restricted functions are: Database Settings, Access Rights and Change Password.')}}</i>
-  </li>
   <li><a href="{{=URL( 'wizard', 'index')}}" 
     target="_blank"><span class="sname">NDI</span>&nbsp;<b><i>Nervatura Data Interface Wizard</i></b></a></li>
   <li><a href="{{=URL( 'report', 'index')}}" target="_blank"><span class="sname">NDR</span>&nbsp;<b><i>Nervatura Report</i></b></a></li>
@@ -84,7 +79,7 @@
         <table width="100%" cellpadding="5px;" cellspacing="0" style="background-color: #F5F5DC;">
           <tr><td>
             <div style="float: left;width: 120px;">
-              <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'report/html_vat','content':'text/plain','file_type':'sql'})}}" 
+              <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'report/html_vat','content':'text/plain','file_type':'xml'})}}" 
               target="_blank">Download</a>
             </div>
             <div style="float: left;">
@@ -104,19 +99,19 @@
         <table width="100%" cellpadding="5px;" cellspacing="0" style="background-color: #F5F5DC;">
           <tr><td>
             <div style="float: left;width: 120px;">
-              <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'report/fpdf_vat_en','content':'text/plain','file_type':'sql'})}}"
+              <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'report/ntr_vat_en','content':'text/plain','file_type':'xml'})}}"
                 target="_blank">Download</a>
             </div>
             <div style="float: left;width: 150px;">
-              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'fpdf_vat_en'})}}"
+              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'ntr_vat_en'})}}"
                 target="_blank" >DEMO Preview</a>
             </div>
             <div style="float: left;width: 120px;">
-              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'fpdf_vat_en','output':'pdf'})}}"
+              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'ntr_vat_en','output':'pdf'})}}"
                 target="_blank" >DEMO PDF</a>
             </div>
             <div style="float: left;width: 120px;">
-              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'fpdf_vat_en','output':'xml'})}}"
+              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'ntr_vat_en','output':'xml'})}}"
                 target="_blank" >DEMO XML</a>
             </div>
           </td></tr>
@@ -133,7 +128,7 @@
         <table width="100%" cellpadding="5px;" cellspacing="0" style="background-color: #F5F5DC;">
           <tr><td>
             <div style="float: left;width: 120px;">
-              <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'report/gshi_vat_en','content':'text/plain','file_type':'sql'})}}"
+              <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'report/gshi_vat_en','content':'text/plain','file_type':'xml'})}}"
                 target="_blank">Download</a>
             </div>
             <div style="float: left;">
@@ -154,7 +149,7 @@
         <table width="100%" cellpadding="5px;" cellspacing="0" style="background-color: #F5F5DC;">
           <tr><td>
             <div style="float: left;width: 120px;">
-              <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'report/xls_vat_en','content':'text/plain','file_type':'sql'})}}"
+              <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'report/xls_vat_en','content':'text/plain','file_type':'xml'})}}"
                 target="_blank">Download</a>
             </div>
             <div style="float: left;">
@@ -175,19 +170,19 @@
         <table width="100%" cellpadding="5px;" cellspacing="0" style="background-color: #F5F5DC;">
           <tr><td>
             <div style="float: left;width: 120px;">
-              <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'report/fpdf_invoice_en','content':'text/plain','file_type':'sql'})}}"
+              <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'report/ntr_invoice_en','content':'text/plain','file_type':'xml'})}}"
                 target="_blank">Download</a>
             </div>
             <div style="float: left;width: 150px;">
-              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'fpdf_invoice_en'})}}"
+              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'ntr_invoice_en'})}}"
               target="_blank" >DEMO Preview</a>
             </div>
             <div style="float: left;width: 120px;">
-              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'fpdf_invoice_en','output':'pdf'})}}"
+              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'ntr_invoice_en','output':'pdf'})}}"
               target="_blank" >DEMO PDF</a>
             </div>
             <div style="float: left;width: 120px;">
-              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'fpdf_invoice_en','output':'xml'})}}"
+              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'ntr_invoice_en','output':'xml'})}}"
               target="_blank" >DEMO XML</a>
             </div>
           </td></tr>
@@ -200,19 +195,19 @@
         <table width="100%" cellpadding="5px;" cellspacing="0" style="background-color: #F5F5DC;">
           <tr><td>
             <div style="float: left;width: 120px;">
-              <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'report/fpdf_customer_sheet_en','content':'text/plain','file_type':'sql'})}}"
+              <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'report/ntr_customer_en','content':'text/plain','file_type':'xml'})}}"
                 target="_blank">Download</a>
             </div>
             <div style="float: left;width: 150px;">
-              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'fpdf_customer_sheet_en'})}}"
+              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'ntr_customer_en'})}}"
                 target="_blank" >DEMO Preview</a>
             </div>
             <div style="float: left;width: 120px;">
-              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'fpdf_customer_sheet_en','output':'pdf'})}}"
+              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'ntr_customer_en','output':'pdf'})}}"
                 target="_blank" >DEMO PDF</a>
             </div>
             <div style="float: left;width: 120px;">
-              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'fpdf_customer_sheet_en','output':'xml'})}}"
+              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'ntr_customer_en','output':'xml'})}}"
                 target="_blank" >DEMO XML</a>
             </div>
           </td></tr>
@@ -225,19 +220,19 @@
         <table width="100%" cellpadding="5px;" cellspacing="0" style="background-color: #F5F5DC;">
           <tr><td>
             <div style="float: left;width: 120px;">
-              <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'report/fpdf_employee_sheet_en','content':'text/plain','file_type':'sql'})}}"
+              <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'report/ntr_employee_en','content':'text/plain','file_type':'xml'})}}"
                 target="_blank">Download</a>
             </div>
             <div style="float: left;width: 150px;">
-              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'fpdf_employee_sheet_en'})}}"
+              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'ntr_employee_en'})}}"
                 target="_blank" >DEMO Preview</a>
             </div>
             <div style="float: left;width: 120px;">
-              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'fpdf_employee_sheet_en','output':'pdf'})}}"
+              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'ntr_employee_en','output':'pdf'})}}"
                 target="_blank" >DEMO PDF</a>
             </div>
             <div style="float: left;width: 120px;">
-              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'fpdf_employee_sheet_en','output':'xml'})}}"
+              <a href="{{=URL( 'demo', 'get_demo_report',vars={'database':'demo','username':'demo','password':'','reportcode':'ntr_employee_en','output':'xml'})}}"
                 target="_blank" >DEMO XML</a>
             </div>
           </td></tr>

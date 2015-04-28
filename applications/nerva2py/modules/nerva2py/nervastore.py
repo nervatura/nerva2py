@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2014, Csaba Kappel
+Copyright © 2011-2015, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -17,7 +17,7 @@ from gluon.storage import Storage
 import datetime
 import time
 import os
-from hashlib import md5
+from hashlib import md5  # @UnresolvedImport
 from base64 import encodestring, decodestring
 from pyDes import des, PAD_PKCS5
 
@@ -238,9 +238,8 @@ class Validators(object):
       elif len(self.ns.db((self.ns.db.trans.employee_id==ref_id)&(self.ns.db.trans.deleted==0)).select())>0: retvalue=False
       elif len(self.ns.db((self.ns.db.trans.cruser_id==ref_id)&(self.ns.db.trans.deleted==0)).select())>0: retvalue=False
       elif len(self.ns.db((self.ns.db.log.employee_id==ref_id)).select())>0: retvalue=False
-      #ui_filter,ui_printqueue,ui_userconfig
-      if len(self.ns.db((self.ns.db.ui_filter.employee_id==ref_id)).select())>0: retvalue=False
-      elif len(self.ns.db((self.ns.db.ui_printqueue.employee_id==ref_id)).select())>0: retvalue=False
+      #ui_printqueue,ui_userconfig
+      if len(self.ns.db((self.ns.db.ui_printqueue.employee_id==ref_id)).select())>0: retvalue=False
       elif len(self.ns.db((self.ns.db.ui_userconfig.employee_id==ref_id)).select())>0: retvalue=False
     elif nervatype=="event":
       #address,contact
@@ -262,7 +261,6 @@ class Validators(object):
       elif len(self.ns.db((self.ns.db.rate.rategroup==ref_id)&(self.ns.db.rate.deleted==0)).select())>0: retvalue=False
       elif len(self.ns.db((self.ns.db.tool.toolgroup==ref_id)&(self.ns.db.tool.deleted==0)).select())>0: retvalue=False
       elif len(self.ns.db((self.ns.db.trans.department==ref_id)&(self.ns.db.trans.deleted==0)).select())>0: retvalue=False
-      elif len(self.ns.db((self.ns.db.ui_groupinput. groups_id==ref_id)).select())>0: retvalue=False
     elif nervatype=="numberdef":
       #protected, always false
       retvalue=False
@@ -615,16 +613,6 @@ class Validators(object):
         crdate = datetime.datetime.strptime(str(refnumber).split("~")[1],'%Y-%m-%d %H:%M:%S')
         return self.ns.db((self.ns.db.log.employee_id==employee_id)&(self.ns.db.log.crdate==crdate)).select()[0]["id"]
       
-      elif nervatype=="ui_applview":
-        #viewname
-        return self.ns.db.ui_applview(viewname=refnumber).id
-      elif nervatype=="ui_viewfields":
-        #viewname~fieldname
-        viewname = str(refnumber).split("~")[0]
-        fieldname = str(refnumber).split("~")[1]
-        return self.ns.db((self.ns.db.ui_viewfields.viewname==viewname)
-                          &(self.ns.db.ui_viewfields.fieldname==fieldname)).select()[0]["id"]
-      
       elif nervatype=="ui_audit":
         #usergroup~nervatype~transtype
         usergroup = self.get_groups_id("usergroup", str(refnumber).split("~")[0])
@@ -639,9 +627,6 @@ class Validators(object):
       elif nervatype=="ui_language":
         #lang
         return self.ns.db.ui_language(lang=refnumber).id
-      elif nervatype=="ui_locale":
-        #country
-        return self.ns.db.ui_locale(country=refnumber).id
       
       elif nervatype=="ui_menu":
         #menukey
@@ -1580,11 +1565,11 @@ class DataStore(object):
   #database structure and initial values
   
   #specified in the order (Refuse to drop the table if any objects depend on it.)
-  drop_all_table_lst = ["ui_zipcatalog","pattern","movement","payment","item","trans","barcode","price","tool",
+  drop_all_table_lst = ["pattern","movement","payment","item","trans","barcode","price","tool",
                         "product","tax","rate","place","currency","project","customer","event","contact","address","numberdef",
-                        "log","fieldvalue","deffield","ui_audit","link","ui_userconfig","ui_filter","ui_printqueue","employee",
-                        "ui_viewfields","ui_groupinput","ui_reportsources","ui_reportfields","ui_report","ui_numtotext",
-                        "ui_message","ui_menufields","ui_menu","ui_locale","ui_language","ui_applview","groups"]
+                        "log","fieldvalue","deffield","ui_audit","link","ui_userconfig","ui_printqueue","employee",
+                        "ui_reportsources","ui_reportfields","ui_report",
+                        "ui_message","ui_menufields","ui_menu","ui_language","groups"]
   
   backup_nom_table_lst = ["groups","numberdef", #level 1a
                           "currency","tax", #level 1b
@@ -1597,12 +1582,11 @@ class DataStore(object):
                           "link","log", #level 7
                           "fieldvalue"] #level 8
   
-  backup_ui_table_lst = ["ui_applview","ui_menu","ui_language", #level 1
-                          "ui_locale","ui_message","ui_numtotext", #level 2a
-                          "ui_report","ui_audit","ui_groupinput","ui_viewfields", #level 2b
-                          "ui_zipcatalog", #level 3a
-                          "ui_menufields","ui_reportfields","ui_reportsources", #level 3b
-                          "ui_filter","ui_userconfig" #level 4
+  backup_ui_table_lst = ["ui_menu","ui_language", #level 1
+                          "ui_message", #level 2a
+                          "ui_report","ui_audit", #level 2b
+                          "ui_menufields","ui_reportfields","ui_reportsources", #level 3
+                          "ui_userconfig" #level 4
                           #ui_printqueue no backup
                           ] 
   
@@ -1616,9 +1600,6 @@ class DataStore(object):
       self.ns.db.executesql("CREATE INDEX groups_groupvalue_id_idx ON groups (groupvalue)")
       self.ns.db.executesql("CREATE INDEX groups_deleted_idx ON groups (deleted)")
       self.ns.db.executesql("CREATE INDEX groups_inactive_idx ON groups (inactive)")
-      
-      self.ns.db.executesql("CREATE UNIQUE INDEX applview_viewname_idx ON ui_applview (viewname)")
-      self.ns.db.executesql("CREATE INDEX applview_parent_idx ON ui_applview (parentview)")
           
       self.ns.db.executesql("CREATE INDEX menucmd_modul_idx ON ui_menu (modul)")
       
@@ -1628,8 +1609,6 @@ class DataStore(object):
       self.ns.db.executesql("CREATE INDEX message_fieldname_idx ON ui_message (fieldname)")
       self.ns.db.executesql("CREATE INDEX message_lang_idx ON ui_message (lang)")
       self.ns.db.executesql("CREATE INDEX message_secname_idx ON ui_message (secname)")
-      
-      self.ns.db.executesql("CREATE UNIQUE INDEX numtotext_pk_idx ON ui_numtotext (lang, digi, deci)")
       
       self.ns.db.executesql("CREATE UNIQUE INDEX report_reportkey_idx ON ui_report (reportkey)")
       self.ns.db.executesql("CREATE INDEX report_filetype_idx ON ui_report (filetype)")
@@ -1641,15 +1620,6 @@ class DataStore(object):
       self.ns.db.executesql("CREATE UNIQUE INDEX reportsources_pk_idx ON ui_reportsources (report_id, dataset)")
       self.ns.db.executesql("CREATE INDEX reportsources_reports_idx ON ui_reportsources (report_id)")
       
-      self.ns.db.executesql("CREATE UNIQUE INDEX groupinput_pk_idx ON ui_groupinput (groups_id, formname, contname)")
-      self.ns.db.executesql("CREATE INDEX groupinput_contname_idx ON ui_groupinput (contname)")
-      self.ns.db.executesql("CREATE INDEX groupinput_formname_idx ON ui_groupinput (formname)")
-      self.ns.db.executesql("CREATE INDEX groupinput_groups_id_idx ON ui_groupinput (groups_id)")
-
-      self.ns.db.executesql("CREATE UNIQUE INDEX viewfields_pk_idx ON ui_viewfields (viewname, fieldname)")
-      self.ns.db.executesql("CREATE INDEX viewfields_viewname_idx ON ui_viewfields (viewname)")
-      self.ns.db.executesql("CREATE INDEX viewfields_fieldname_idx ON ui_viewfields (fieldname)")
-      
       self.ns.db.executesql("CREATE UNIQUE INDEX employee_empnumber_idx ON employee (empnumber)")
       self.ns.db.executesql("CREATE UNIQUE INDEX employee_username_idx ON employee (username)")
       self.ns.db.executesql("CREATE INDEX employee_inactiv_idx ON employee (inactive)")
@@ -1657,8 +1627,6 @@ class DataStore(object):
       
       self.ns.db.executesql("CREATE INDEX printqueue_nervatype_idx ON ui_printqueue (nervatype)")
       self.ns.db.executesql("CREATE INDEX printqueue_usename_idx ON ui_printqueue (employee_id)")
-      
-      self.ns.db.executesql("CREATE INDEX filter_parent_idx ON ui_filter (parentview)")
 
       self.ns.db.executesql("CREATE INDEX idx_userconfig_pk ON ui_userconfig (employee_id, cfgroup, cfname)")
       self.ns.db.executesql("CREATE INDEX idx_userconfig_ec ON ui_userconfig (employee_id, cfgroup)")
@@ -1785,10 +1753,6 @@ class DataStore(object):
       self.ns.db.executesql("CREATE INDEX patterns_transtype_idx ON pattern (transtype)")
       self.ns.db.executesql("CREATE INDEX pattern_deleted_idx ON rate (deleted)")
 
-      self.ns.db.executesql("CREATE UNIQUE INDEX zipcatalog_pk_idx ON ui_zipcatalog (country, city, zipcode)")
-      self.ns.db.executesql("CREATE INDEX zipcatalog_country_city_idx ON ui_zipcatalog (country, city)")
-      self.ns.db.executesql("CREATE INDEX zipcatalog_country_zipcode_idx ON ui_zipcatalog (country, zipcode)")
-
       self.ns.db.commit()  
       return True
     except Exception, err:
@@ -1824,39 +1788,10 @@ class DataStore(object):
       if create:
         self.createTable(table)
       
-      table = self.ns.db.define_table('ui_applview',
-        Field('id', readable=False, writable=False),
-        Field('viewname', type='string', length=150, required=True, notnull=True, unique=True),
-        Field('sqlstr', type='text', required=True, notnull=True),
-        Field('inistr', type='text'),
-        Field('menu', type='string', length=150),
-        Field('menuitem', type='string', length=150),
-        Field('parentview', type='string', length=150, required=True, notnull=True),
-        Field('orderby', type='integer', default=0, required=True, notnull=True))
-      if self.ns.engine in("mssql"):
-        table.sqlstr.type = 'string'
-        table.sqlstr.length = 'max'
-        table.inistr.type = 'string'
-        table.inistr.length = 'max'
-      if create:
-        self.createTable(table)
-      
       table = self.ns.db.define_table('ui_language',
         Field('id', readable=False, writable=False),
         Field('lang', type='string', length=2, required=True, notnull=True, unique=True),
         Field('description', type='string', length=150))
-      if create:
-        self.createTable(table)
-
-      table = self.ns.db.define_table('ui_locale',
-        Field('id', readable=False, writable=False),
-        Field('country', type='string', length=150, required=True, notnull=True, unique=True),
-        Field('lang', type='string', length=2, required=True, notnull=True, 
-              requires = IS_IN_DB(self.ns.db(self.ns.db.ui_language), self.ns.db.ui_language.lang, '%(lang)s')),
-        Field('description', type='text'))
-      if self.ns.engine in("mssql"):
-        table.description.type = 'string'
-        table.description.length = 'max'
       if create:
         self.createTable(table)
 
@@ -1904,17 +1839,6 @@ class DataStore(object):
       if self.ns.engine in("mssql"):
         table.msg.type = 'string'
         table.msg.length = 'max'
-      if create:
-        self.createTable(table)
-
-      table = self.ns.db.define_table('ui_numtotext',
-        Field('id', readable=False, writable=False),
-        Field('lang', type='string', length=2, required=True, notnull=True, 
-              requires = IS_IN_DB(self.ns.db(self.ns.db.ui_language), self.ns.db.ui_language.lang, '%(lang)s')),
-        Field('digi', type='integer', default=0, required=True, notnull=True),
-        Field('deci', type='integer', default=0, required=True, notnull=True),
-        Field('number_str', type='string', length=150),
-        Field('number_str2', type='string', length=150))
       if create:
         self.createTable(table)
 
@@ -1990,47 +1914,6 @@ class DataStore(object):
         table.sqlstr.length = 'max'
       if create:
         self.createTable(table)
-      
-      table = self.ns.db.define_table('ui_groupinput',
-        Field('id', readable=False, writable=False),
-        Field('groups_id', self.ns.db.groups, ondelete='CASCADE', notnull=True, required=True, 
-              requires = IS_IN_DB(self.ns.db(self.ns.db.groups.groupname.like('usergroup') & (self.ns.db.groups.deleted==0)), self.ns.db.groups.id, '%(groupvalue)s'),
-              represent = lambda value,row: self.ns.valid.show_refnumber("refnumber", "groups", value, "groupvalue")),
-        Field('formname', type='string', length=150, required=True, notnull=True),
-        Field('contname', type='string', length=150, required=True, notnull=True),
-        Field('isenabled', type='integer', default=0, required=True, notnull=True, 
-              requires=self.ns.valid.check_boolean(self.ns.T), 
-              widget=lambda field,value: SQLFORM.widgets.boolean.widget(field,bool(value))),
-        Field('isvisibled', type='integer', default=0, required=True, notnull=True, 
-              requires=self.ns.valid.check_boolean(self.ns.T), 
-              widget=lambda field,value: SQLFORM.widgets.boolean.widget(field,bool(value))))
-      if create:
-        self.createTable(table)
-      
-      table = self.ns.db.define_table('ui_viewfields',
-        Field('id', readable=False, writable=False),
-        Field('viewname', type='string', length=150, notnull=True, required=True, 
-              requires = IS_IN_DB(self.ns.db(self.ns.db.ui_applview), self.ns.db.ui_applview.viewname, '%(viewname)s')),
-        Field('fieldname', type='string', length=150, required=True, notnull=True),
-        Field('fieldtype', self.ns.db.groups, ondelete='RESTRICT', notnull=True, required=True, 
-              requires = IS_IN_DB(self.ns.db(self.ns.db.groups.groupname.like('fieldtype')), self.ns.db.groups.id, '%(groupvalue)s'),
-              represent = lambda value,row: self.ns.valid.show_refnumber("refnumber", "groups", value, "groupvalue")),
-        Field('wheretype', self.ns.db.groups, ondelete='RESTRICT', notnull=True, required=True, 
-              requires = IS_IN_DB(self.ns.db(self.ns.db.groups.groupname.like('wheretype')), self.ns.db.groups.id, '%(groupvalue)s'),
-              represent = lambda value,row: self.ns.valid.show_refnumber("refnumber", "groups", value, "groupvalue")),
-        Field('orderby', type='integer', default=0, notnull=True, required=True),
-        Field('sqlstr', type='text'),
-        Field('aggretype', self.ns.db.groups, ondelete='RESTRICT', notnull=True, required=True, 
-              requires = IS_EMPTY_OR(IS_IN_DB(self.ns.db(self.ns.db.groups.groupname.like('aggretype')), self.ns.db.groups.id, '%(groupvalue)s')),
-              represent = lambda value,row: self.ns.valid.show_refnumber("refnumber", "groups", value, "groupvalue")))
-      if self.ns.engine in("mssql"):
-        table.fieldtype.ondelete = "NO ACTION"
-        table.wheretype.ondelete = "NO ACTION"
-        table.aggretype.ondelete = "NO ACTION"
-        table.sqlstr.type = 'string'
-        table.sqlstr.length = 'max'
-      if create:
-        self.createTable(table)
 
       table = self.ns.db.define_table('employee',
         Field('id', readable=False, writable=False),
@@ -2083,24 +1966,6 @@ class DataStore(object):
       if self.ns.engine in("mssql"):
         table.employee_id.ondelete = "NO ACTION"
         table.report_id.ondelete = "NO ACTION"
-      if create:
-        self.createTable(table)
-
-      table = self.ns.db.define_table('ui_filter',
-        Field('id', readable=False, writable=False),
-        Field('employee_id', self.ns.db.employee, ondelete='CASCADE', notnull=True, required=True, 
-              requires = IS_IN_DB(self.ns.db, self.ns.db.employee.id, '%(username)s'),
-              represent = lambda value,row: self.ns.valid.show_refnumber("refnumber", "employee", value, "username")),
-        Field('parentview', type='string', length=150, notnull=True, required=True, 
-              requires = IS_IN_DB(self.ns.db(self.ns.db.ui_applview), self.ns.db.ui_applview.viewname, '%(viewname)s')),
-        Field('viewname', type='string', length=150, notnull=True, required=True, 
-              requires = IS_IN_DB(self.ns.db(self.ns.db.ui_applview), self.ns.db.ui_applview.viewname, '%(viewname)s')),
-        Field('fieldname', type='string', length=150, required=True, notnull=True),
-        Field('ftype', type='string', length=150, required=True, notnull=True),
-        Field('fvalue', type='text'))
-      if self.ns.engine in("mssql"):
-        table.fvalue.type = 'string'
-        table.fvalue.length = 'max'
       if create:
         self.createTable(table)
 
@@ -2804,15 +2669,6 @@ class DataStore(object):
         table.notes.length = 'max'
       if create:
         self.createTable(table)
-
-      table = self.ns.db.define_table('ui_zipcatalog',
-        Field('id', readable=False, writable=False),
-        Field('country', type='string', length=150, required=True, notnull=True, 
-              requires = IS_IN_DB(self.ns.db(self.ns.db.ui_locale), self.ns.db.ui_locale.country, '%(country)s')),
-        Field('zipcode', type='string', length=150, notnull=True, required=True),
-        Field('city', type='string', length=150, notnull=True, required=True))
-      if create:
-        self.createTable(table)
   
       return True
     except Exception, err:
@@ -2838,45 +2694,6 @@ class DataStore(object):
         for sql in rp_sql:
           if str(sql).lower().find("insert")>-1 or str(sql).lower().find("update")>-1:
             self.ns.db.executesql(sql)
-  
-      self.ns.db.commit()  
-      return True
-    except Exception, err:
-      self.ns.db.rollback()
-      self.ns.error_message = err
-      return False
-  
-  def insertFlashClientData(self):
-    #Flash Client db init
-    try:      
-      pg_sql = str(open(os.path.join(self.ns.request.folder,'modules/nerva2py/nflex/insert_fbase_pg.sql'), 'r').read()).split(";")
-      for sql in pg_sql:
-        if str(sql).find("INSERT")>-1 or str(sql).find("UPDATE")>-1:
-          self.ns.db.executesql(sql)
-      
-      upd_sql=[]
-      if self.ns.engine=="postgres":
-        pass
-      elif self.ns.engine=="sqlite":
-        upd_sql = str(open(os.path.join(self.ns.request.folder,'modules/nerva2py/nflex/insert_fbase_lite.sql'), 'r').read()).split(";")
-      elif self.ns.engine in("mysql","google_sql"):
-        upd_sql = str(open(os.path.join(self.ns.request.folder,'modules/nerva2py/nflex/insert_fbase_mysql.sql'), 'r').read()).split(";")
-      elif self.ns.engine=="mssql":
-        upd_sql = str(open(os.path.join(self.ns.request.folder,'modules/nerva2py/nflex/insert_fbase_mssql.sql'), 'r').read()).split(";")
-      else:
-        self.ns.error_message = str(self.ns.T('Unsupported Nervatura Flash Client database engine: ')) +self.ns.engine
-        return False
-      for sql in upd_sql:
-        if str(sql).find("INSERT")>-1 or str(sql).find("UPDATE")>-1:
-          self.ns.db.executesql(sql)
-      
-      lfiles = os.listdir(os.path.join(self.ns.request.folder,'modules/nerva2py/nflex/'))
-      for lfile in lfiles:
-        if lfile.startswith("locale_"):
-          lc_sql = str(open(os.path.join(self.ns.request.folder,'modules/nerva2py/nflex/'+lfile), 'r').read()).split(";")
-          for sql in lc_sql:
-            if str(sql).find("INSERT")>-1 or str(sql).find("UPDATE")>-1:
-              self.ns.db.executesql(sql)
   
       self.ns.db.commit()  
       return True
@@ -3002,20 +2819,14 @@ class DataStore(object):
       for values in fieldtype:
         self.ns.connect.updateData("groups", values=values, log_enabled=False, validate=False, insert_row=True, update_row=False)
       
-      filetype = [{'id':self.ns.valid.get_groups_id('filetype', 'doc'),
-                   'groupname':'filetype', 'groupvalue':'doc', 'description':'MsWord document'},
-                  {'id':self.ns.valid.get_groups_id('filetype', 'xls'),
+      filetype = [{'id':self.ns.valid.get_groups_id('filetype', 'xls'),
                    'groupname':'filetype', 'groupvalue':'xls', 'description':'MsExcel workbook'},
-                  {'id':self.ns.valid.get_groups_id('filetype', 'odt'),
-                   'groupname':'filetype', 'groupvalue':'odt', 'description':'OpenOffice document'},
-                  {'id':self.ns.valid.get_groups_id('filetype', 'mxml'),
-                   'groupname':'filetype', 'groupvalue':'mxml', 'description':'Flash report'},
                   {'id':self.ns.valid.get_groups_id('filetype', 'html'),
                    'groupname':'filetype', 'groupvalue':'html', 'description':'HTML document'},
                   {'id':self.ns.valid.get_groups_id('filetype', 'gshi'),
                    'groupname':'filetype', 'groupvalue':'gshi', 'description':'Genshi template'},
-                  {'id':self.ns.valid.get_groups_id('filetype', 'fpdf'),
-                   'groupname':'filetype', 'groupvalue':'fpdf', 'description':'FPDF template'}]
+                  {'id':self.ns.valid.get_groups_id('filetype', 'ntr'),
+                   'groupname':'filetype', 'groupvalue':'ntr', 'description':'Nervatura Report'}]
       for values in filetype:
         self.ns.connect.updateData("groups", values=values, log_enabled=False, validate=False, insert_row=True, update_row=False)
         
@@ -3833,7 +3644,9 @@ class LocalStore(object):
   def formatParamType(self, ptype, value):
     if ((ptype =="string") or (ptype =="date")):
       return "'"+value+"'"
-    if ((ptype=="integer") or (ptype=="number") or (ptype=="boolean")):
+    #elif ((ptype=="integer") or (ptype=="number") or (ptype=="boolean")):
+    #  return value
+    else:
       return value
   
   def getAppEngine(self, app_engine):
@@ -3904,7 +3717,7 @@ class LocalStore(object):
       return False
     return True
   
-  def setSqlParams(self, sqlKey, sqlStr, whereStr, havingStr, paramList, rlimit=False, orderbyStr="", rowlimit=500, appl="nflex"):
+  def setSqlParams(self, sqlKey, sqlStr, whereStr, havingStr, paramList, rlimit=False, orderbyStr="", rowlimit=500, appl=""):
     if (sqlStr == None): 
       sqlStr = self.getSql(self.getAppEngine(self.ns.engine), sqlKey, appl)
     else:

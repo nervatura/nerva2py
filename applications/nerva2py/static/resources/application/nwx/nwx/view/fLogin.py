@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2014, Csaba Kappel
+Copyright © 2011-2015, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -11,9 +11,9 @@ http://www.nervatura.com/nerva2py/default/licenses
 import wx, os, locale
 from wx import xrc
 import webbrowser
-from pyamf.remoting.client import RemotingService  # @UnresolvedImport
 from nwx.utils.configobj import ConfigObj  # @UnresolvedImport
 from nwx.view.fBase import Dialog  # @UnresolvedImport
+from nwx.utils.adapter import npiAdapter  # @UnresolvedImport
 
 class fLogin(Dialog):
   application = None
@@ -53,7 +53,7 @@ class fLogin(Dialog):
     else:
       self.application.app_settings["username"] = ""
     self.application.app_settings["password"] = ""
-    self.application.app_settings["usergroup"] = str(self.application.app_config["default"]["usergroup"])
+    #self.application.app_settings["usergroup"] = str(self.application.app_config["default"]["usergroup"])
     self.application.app_settings["transfilter"] = int(self.application.app_config["default"]["transfilter"])
     self.application.app_settings["department"] = None
     self.application.app_settings["department_id"] = None
@@ -65,6 +65,7 @@ class fLogin(Dialog):
     self.application.app_settings["close_color"] = self.application.app_config["default"]["close_color"]
     
     self.application.app_settings["os"] = str(wx.GetOsDescription()).split(" ")[0]
+    self.application.app_settings["engine"] = "sqlite"
       
   def __init__(self, app, parent = None):
     self.application = app
@@ -194,17 +195,21 @@ class fLogin(Dialog):
       
   def callLogin(self):
     try:
-      client = RemotingService(self.application.app_settings["url"]+"/"+self.application.app_config["connection"]["npi_service"])
-      service = client.getService("default")
-      login = service.getLogin_amf(self.application.app_settings["database"], self.application.app_settings["username"], self.application.app_settings["password"],True)
-
-      if login["valid"]==True:
+      conn = npiAdapter(self.application.app_settings["url"]+"/"+
+          self.application.app_config["connection"]["npi_service"])
+      login = conn.getLogin(self.application.app_settings["database"], 
+                            self.application.app_settings["username"], 
+                            self.application.app_settings["password"])
+      if login=="error":
+        return
+      elif login["valid"]==True:
         self.user_config["locale"] = self.application.app_settings["locale"]
         self.user_config["url"] = self.application.app_settings["url"]
         self.user_config["database"] = self.application.app_settings["database"]
         self.user_config["username"] = self.application.app_settings["username"]
         self.user_config.write()
         self.application.app_settings["employee_id"] = login["employee"]["id"]
+        self.application.app_settings["engine"] = login["engine"]
         self.login_ok = True
         self.Close()
       else:

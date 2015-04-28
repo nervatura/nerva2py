@@ -1,0 +1,44 @@
+{{extend 'nas/layout.html'}}
+
+<style>
+
+</style>
+
+{{block header}}
+  {{=response.cmd_menu}}
+  <h1 style="color: #FFD700;font-size: small;margin: 0px;padding: 3px 0px 0px">{{=response.title}}</h1>
+  <h1 style="margin: 0px;padding: 0px 0px 4px;"> {{=response.subtitle}}</h1>
+  {{=response.cmd_exit}}
+{{end}}
+
+<div align="center" >
+<div id="input_form" style="max-width: 800px;padding-top: 5px;">
+  <table width="100%" cellpadding="0px;" cellspacing="0px;" style="padding-top: 5px;">
+    <tr>
+      <td style="padding-left: 10px;width: 25px;" align="left">{{=response.cmd_labels}}</td>
+      <td style="padding-left: 5px;width: 25px;" align="left">{{=response.cmd_view}}</td>
+      <td style="padding-left: 5px;width: 25px;" align="left">{{=response.cmd_edit}}</td>
+      <td style="padding-left: 5px;width: 25px;" align="left">
+        <div id="edit_label_update" style="display: block;">{{=response.cmd_labels_update}}</div>
+        <div id="edit_template_update" style="display: none;">{{=response.frm_report_update}}</div></td>
+      <td style="font-weight: bold;vertical-align: bottom;padding-right: 10px;" align="right">
+        {{=response.report_name}}</td>
+    </tr>
+  </table>
+  <hr style="margin-top: 5px;margin-bottom: 5px;border-color: #333333;border-width: 2px;border-style: solid;">
+  <div id="edit_label" style="width: 100%;display: block;" >
+    <form id="frm_labels" method="post" enctype="multipart/form-data" action="#">
+      {{=response.update_labels}}
+      {{=labels}}
+    </form>
+  </div>
+  <div id="view_template" style="width: 100%;display: none;overflow: auto;background-color:#F8F8FF;" >
+    {{=tmp_view}}
+  </div>
+  <div id="edit_template" style="width:100%;display: none;" >
+    <form id="frm_report" method="post" enctype="multipart/form-data" action="#">
+      {{=tmp_edit}}
+    </form>
+  </div>
+</div>
+</div>

@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2014, Csaba Kappel
+Copyright © 2011-2015, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -14,6 +14,7 @@ if 0:
 from nerva2py.ordereddict import OrderedDict
 from nerva2py.ndi import Ndi
 
+import xml.etree.ElementTree as et
 from xlwt import easyxf
 from xlwt import Workbook
 from StringIO import StringIO
@@ -99,121 +100,11 @@ class NervaTools(object):
     #return {"returnType":"error", "returnValue":"Error message. The operation can not continue!"}
     return {"returnType":"ok", "returnValue":""}
   
-  def convertNumberToText_gen(self, lang, inumvalue):
-    
-    in_number_str = inumvalue;
-    tmp_str3 = ""
-    if len(str(in_number_str)) == 3:
-      nstr = self.ns.db((self.ns.db.ui_numtotext.lang==lang.upper())
-                   &(self.ns.db.ui_numtotext.digi==len(in_number_str))
-                   &(self.ns.db.ui_numtotext.deci==int(in_number_str[0:1]))).select()
-      if len(nstr)>0:
-        nstr = nstr[0]
-        if nstr.number_str != None:
-          tmp_str3 = nstr.number_str
-      in_number_str = in_number_str[1:]
-        
-    tmp_str2 = ""
-    if len(str(in_number_str)) == 2:
-      nstr = self.ns.db((self.ns.db.ui_numtotext.lang==lang.upper())
-                   &(self.ns.db.ui_numtotext.digi==len(in_number_str))
-                   &(self.ns.db.ui_numtotext.deci==int(in_number_str[0:1]))).select()
-      if len(nstr)>0:
-        nstr = nstr[0]
-        if in_number_str[1:2]=="0":
-          number_str = nstr.number_str
-        else:
-          number_str = nstr.number_str2
-        if number_str != None:
-          tmp_str2 = nstr.number_str
-      in_number_str = in_number_str[1:]
-
-    tmp_str = ""
-    if len(str(in_number_str)) == 1:
-      nstr = self.ns.db((self.ns.db.ui_numtotext.lang==lang.upper())
-                   &(self.ns.db.ui_numtotext.digi==len(in_number_str))
-                   &(self.ns.db.ui_numtotext.deci==int(in_number_str[0:1]))).select()
-      if len(nstr)>0:
-        nstr = nstr[0]
-        if nstr.number_str != None:
-          tmp_str = nstr.number_str
-    
-    out_string = tmp_str3 + tmp_str2 + tmp_str
-    return out_string;
-  
-  def convertNumberToText_hu(self, params):
-    if params["numvalue"]==None:
-      return ""
-    if len(str(int(abs(params["numvalue"]))))>12:
-      return ""
-    
-    in_number_str = str(int(abs(params["numvalue"])));
-    if len(in_number_str) > 9:
-      tmp_str4 = in_number_str[0:len(in_number_str)-9]
-      tmp_str4 = self.convertNumberToText_gen(params["lang"], tmp_str4)
-    else:
-      tmp_str4=""
-    if tmp_str4 != "":
-      tmp_str4 = tmp_str4 + 'milliárd'
-      in_number_str = in_number_str[len(in_number_str)-9:]
-    else:
-      tmp_str4 = ""
-    
-    if len(in_number_str) > 6:
-      tmp_str3 = in_number_str[0:len(in_number_str)-6]
-      tmp_str3 = self.convertNumberToText_gen(params["lang"], tmp_str3)
-    else:
-      tmp_str3=""
-    if tmp_str3 != "":
-      tmp_str3 = tmp_str3 + 'millió'
-      in_number_str = in_number_str[len(in_number_str)-6:]
-    else:
-      tmp_str3 = ""
-    
-    if len(in_number_str) > 3:
-      tmp_str2 = in_number_str[0:len(in_number_str)-3]
-      tmp_str2 = self.convertNumberToText_gen(params["lang"], tmp_str2)
-    else:
-      tmp_str2=""
-    if tmp_str2 != "":
-      tmp_str2 = tmp_str2 + 'ezer'
-      in_number_str = in_number_str[len(in_number_str)-3:]
-    else:
-      tmp_str2 = ""
-        
-    if len(in_number_str) > 0:
-      tmp_str = in_number_str
-      tmp_str = self.convertNumberToText_gen(params["lang"], tmp_str)
-    else:
-      tmp_str=""
-  
-    out_string = ""
-    if tmp_str4 != "":
-      out_string = tmp_str4
-    if tmp_str3 != "":
-      if out_string !="":
-        out_string = out_string + '-' + tmp_str3
-      else:
-        out_string = tmp_str3
-    if tmp_str2 !="":
-      if out_string !="":
-        out_string = out_string + '-' + tmp_str2
-      else:
-        out_string = tmp_str2
-    if tmp_str != "":
-      if out_string != "":
-        out_string = out_string + '-' + tmp_str
-      else:
-        out_string = tmp_str
-    if params["numvalue"]<0:
-      out_string = "mínusz " + out_string
-    return out_string
-  
   def getPriceValue(self, params):
     if params.has_key("appl"):
       appl = params["appl"]
     else:
-      appl = "nflex"
+      appl = ""
     sql_str = self.ns.local.getSql(self.ns.local.getAppEngine(self.ns.engine), "dbsFunctions_getPriceValue_1",appl)
     sql_str = sql_str.replace("@product_id", str(params["product_id"]))
     sql_str = sql_str.replace(":row_id", str(params["row_id"]))
@@ -331,6 +222,36 @@ class NervaTools(object):
           if prow[0]["mp"]!=0 and prow[0]["mp"]<price:
             price = prow[0]["mp"]
     return price
+  
+  def getReportFiles(self, report_dir):
+    reports = []; types = {}; labels = {}
+    files = os.listdir(report_dir)
+    for filename in files:
+      if filename.lower().endswith(".xml"):
+        try:
+          repdef = et.XML(str(open(os.path.join(report_dir,filename), 'r').read()))
+        except Exception:
+          repdef = None
+        if repdef is not None:
+          if len(repdef.getiterator("report"))>0:
+            report_attr = repdef.getiterator("report")[0]
+            if report_attr.get("reportkey",None):
+              report = {"reportkey":report_attr.get("reportkey"), "repname":report_attr.get("repname"), 
+                "description":report_attr.get("description"), "reptype":report_attr.get("filetype","ntr"),
+                "filename":filename}
+              types[report["reptype"]] = report["reptype"]
+              if report_attr.get("nervatype")=="trans":
+                report["label"] = report_attr.get("transtype")
+              else:
+                report["label"] = report_attr.get("nervatype")
+              labels[report["label"]] = report["label"]
+              if os.path.isfile(os.path.join(report_dir,filename.replace("xml","png"))): 
+                report["preview"] = filename.replace(".xml","")
+              reports.append(report)
+    reports.sort(key=lambda x: x['repname'])
+    types = types.values(); types.sort()
+    labels = labels.values(); labels.sort()
+    return {"reports":reports, "types":types, "labels":labels}
 
   def getReportTemplate(self, params):
     report_ = self.ns.db(self.ns.db.ui_report.reportkey==params["reportkey"]).select()
@@ -775,7 +696,7 @@ class DataOutput(object):
       if len(datarows["ds"])==0:
         return str(self.ns.T("NODATA"))
     filetype = self.ns.db.groups(id=report["filetype"])["groupvalue"]
-    if filetype=="fpdf":
+    if filetype=="ntr":
       if params["output"]=="tmp":
         return {"filetype":filetype, "template":report["report"],"data":datarows}
       from nerva2py.report import Report
@@ -963,8 +884,6 @@ class DatabaseTools(object):
               xname.appendChild(doc.createCDATASection("empnumber"))
             elif str(nom_field)=="ref_id":
               xname.appendChild(doc.createCDATASection("refnumber"))
-            elif str(nom_field)=="groups_id" and nom=="ui_groupinput":
-              xname.appendChild(doc.createCDATASection("usergroup"))
             elif str(nom_field)=="menu_id":
               xname.appendChild(doc.createCDATASection("menukey"))
             elif str(nom_field)=="report_id":
@@ -1077,13 +996,6 @@ class DatabaseTools(object):
             rs.append(DIV(SPAN("OK ",_style="color:green;font-weight: bold;"),
                           SPAN("Loading report templates and data ...",_style="font-weight: bold;"),BR()))
    
-          #only Flash Client ini
-          if self.ns.store.insertFlashClientData()==False:
-            rs.append(DIV(SPAN("Error: "+str(self.ns.error_message),_style="color:red;font-weight: bold;"),BR()))
-            err_no+=1
-          else:
-            rs.append(DIV(SPAN("OK ",_style="color:green;font-weight: bold;"),
-                          SPAN("Flash Client data initialization ...",_style="font-weight: bold;"),BR()))
         if err_no==0:
           rs.append(DIV(SPAN("Result: ",_style="color:blue;font-weight: bold;"),
                   SPAN("The process has run without error!",_style="font-weight: bold;"),BR(),
@@ -1198,9 +1110,6 @@ class DatabaseTools(object):
               if item[fname]=="" and fname!="number_str":
                 del item[fname]
               else:
-                if fname=="usergroup" and nom=="ui_groupinput":
-                  item["groups_id"] = self.ns.valid.get_groups_id(fname,item[fname],True)
-                  del item["usergroup"]
                 if fname=="empnumber":
                   item["employee_id"] = self.ns.valid.get_id_from_refnumber("employee",item[fname],True)
                   del item["empnumber"]
@@ -1266,26 +1175,56 @@ class DatabaseTools(object):
       if fileName:
         if not os.path.isfile(os.path.join(self.ns.request.folder,'static/resources/report/'+fileName)):
           return "Error|Missing application!"
-        rp_sql = str(open(os.path.join(self.ns.request.folder,'static/resources/report/'+fileName), 'r').read()).split(";--")
+        repdef = et.XML(str(open(os.path.join(self.ns.request.folder,'static/resources/report/'+fileName), 'r').read()))
       elif fileStr:
-        rp_sql = str(fileStr).split(";--")
+        repdef = et.XML(str(fileStr))
       else:
         return "Error|Missing parameter filename or file..."
-      for sql in rp_sql:
-        if (str(sql).lower().find("insert")>-1 and insert) or str(sql).lower().find("update")>-1:
-          if str(sql).lower().find("set report")>-1:
-            report = str(sql)[str(sql).lower().find("'")+1:str(sql).lower().rfind("'",0,str(sql).lower().rfind("where"))]
-            reportkey = str(sql)[str(sql).lower().rfind("'",0,str(sql).lower().rfind("'")-1)+1:str(sql).lower().rfind("'")]
-            values = {"id":self.ns.valid.get_id_from_refnumber("ui_report",reportkey), "report":report}
-            self.ns.connect.updateData("ui_report", values=values, validate=False, insert_row=True)
-          else:
-            if str(sql).lower().find("engine")>-1:
-              if str(sql).lower().find(self.ns.local.getAppEngine(self.ns.engine))>-1:
-                sql = str(sql).replace("[engine "+self.ns.local.getAppEngine(self.ns.engine)+"]", "")
-                self.ns.db._adapter.execute(sql)
-            else:
-              self.ns.db._adapter.execute(sql)
-      self.ns.db.commit()
+      if len(repdef.getiterator("report"))>0:
+        report_attr = repdef.getiterator("report")[0]
+        values = {"reportkey":report_attr.get("reportkey"), "repname":report_attr.get("repname"), 
+                  "description":report_attr.get("description")}
+        values["nervatype"] = self.ns.valid.get_groups_id("nervatype", report_attr.get("nervatype",None))
+        if report_attr.get("transtype",None):
+          values["transtype"] = self.ns.valid.get_groups_id("transtype", report_attr.get("transtype"))
+        if report_attr.get("direction",None):
+          values["direction"] = self.ns.valid.get_groups_id("direction", report_attr.get("direction"))
+        values["filetype"] = self.ns.valid.get_groups_id("filetype", report_attr.get("filetype","ntr"))
+        if report_attr.get("label",None):
+          values["label"] = report_attr.get("label",None)
+        if len(repdef.getiterator("template"))>0:
+          values["report"] = repdef.getiterator("template")[0].text
+        report_id = self.ns.connect.updateData("ui_report", values=values, validate=False, insert_row=True)
+        
+        if report_id:
+          datasets = repdef.getiterator("dataset")
+          dataset_id = {}
+          for dataset in datasets:
+            if dataset.get("engine","")=="" or dataset.get("engine","")==self.ns.local.getAppEngine(self.ns.engine):
+              if dataset.get("engine","")==self.ns.local.getAppEngine(self.ns.engine) or dataset_id.has_key(dataset.get("name",None))==False:
+                values = {"report_id":report_id, "dataset":dataset.get("name",None), "sqlstr":dataset.text}
+                if dataset_id.has_key(dataset.get("name",None)):
+                  values["id"] = dataset_id[dataset.get("name",None)]
+                dataset_id[dataset.get("name",None)] = self.ns.connect.updateData("ui_reportsources", values=values, validate=False, insert_row=True)
+                self.ns.db.commit()
+          fields = repdef.getiterator("field")
+          for field in fields:
+            values = {"report_id":report_id, "fieldname":field.get("fieldname",None), 
+              "description":field.get("description",None), "orderby":field.get("orderby",0),
+              "dataset":field.get("dataset",None), "defvalue":field.get("defvalue",None),
+              "valuelist":field.get("valuelist",None)}
+            values["fieldtype"] = self.ns.valid.get_groups_id("fieldtype", field.get("fieldtype","string"))
+            values["wheretype"] = self.ns.valid.get_groups_id("wheretype", field.get("wheretype","in"))
+            if field.text!="":
+              values["sqlstr"] = field.text
+            self.ns.connect.updateData("ui_reportfields", values=values, validate=False, insert_row=True)
+            self.ns.db.commit()
+          messages = repdef.getiterator("message")
+          for message in messages:
+            values = {"secname":report_attr.get("reportkey")+"_"+message.get("secname",""), 
+              "fieldname":message.get("fieldname",None), "msg":message.text}
+            self.ns.connect.updateData("ui_message", values=values, validate=False, insert_row=True)
+            self.ns.db.commit()        
       return "OK"
     except Exception, err:
       return "Error|"+str(err)

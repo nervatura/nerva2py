@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2014, Csaba Kappel
+Copyright © 2011-2015, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -9336,7 +9336,7 @@ def frm_reports():
         gform[0].__delitem__(i)
         break
     
-    if filetype=="fpdf":
+    if filetype=="ntr":
       response.rtable = TABLE(_style="width: 100%;")
       orientation = ns.db((ns.db.groups.groupname=="orientation")&(ns.db.groups.deleted==0)&(ns.db.groups.inactive==0)).select(orderby=ns.db.groups.id)
       cmb_orientation = SELECT(*[OPTION(T(ori["description"]), _value=ori["groupvalue"]) for ori in orientation], 
@@ -9387,7 +9387,7 @@ def frm_reports():
       session[formkey].params["size"] = request.post_vars.size if request.post_vars.size else "A4"
       redirect(URL('cmd_get_report/'+str(request.post_vars._formkey)))
   else:  
-    filetype_id = ns.db((ns.db.groups.groupname=="filetype")&(ns.db.groups.groupvalue.belongs(("html","fpdf","gshi","xls")))).select(ns.db.groups.id)
+    filetype_id = ns.db((ns.db.groups.groupname=="filetype")&(ns.db.groups.groupvalue.belongs(("html","ntr","gshi","xls")))).select(ns.db.groups.id)
     nervatype_id = ns.db((ns.db.groups.groupname=="nervatype")&(ns.db.groups.groupvalue=="report")).select(ns.db.groups.id)
     reports = (ns.db.ui_report.filetype.belongs(filetype_id)&ns.db.ui_report.nervatype.belongs(nervatype_id))
     

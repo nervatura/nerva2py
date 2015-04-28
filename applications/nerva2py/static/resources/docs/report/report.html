@@ -65,9 +65,21 @@ th,td {
   </h1>
   <p align="center"><b><i>Python and Javascript version<br>Ver.No: {{=response.verNo}}</i></b></p>
   
-  <p>
-    <b>Function Overview</b>
-  </p>
+  <h3>
+    <ol>
+     <li><a href="#function_overview">Function Overview</a></li>
+     <li><a href="#object_overview">Object Overview</a></li>
+     <li><a href="#function_details">Function Details</a></li>
+     <li><a href="#object_properties">Object Properties</a></li>
+     <li><a href="#deploying">Deploying Report Templates</a></li>
+    </ol>
+  </h3>
+  
+  <hr />
+  
+  <h3>
+    <a name="function_overview">1. Function Overview</a>
+  </h3>
   
   <table
     style="border-width: 1px; border-style: solid; border-collapse: collapse;"
@@ -166,9 +178,9 @@ th,td {
     </tbody>
   </table>
   
-  <p>
-    <b>Object Overview</b>
-  </p>
+  <h3>
+    <a name="object_overview">2. Object Overview</a>
+  </h3>
   
   <table
     style="border-width: 1px; border-style: solid; border-collapse: collapse;"
@@ -231,9 +243,9 @@ th,td {
     </tbody>
   </table>
  
-   <p>
-     <b>Function Details</b>
-   </p>
+  <h3>
+    <a name="function_details">3. Function Details</a>
+  </h3>
   
   <table
     style="border-width: 1px; border-style: solid; border-collapse: collapse;"
@@ -483,9 +495,9 @@ th,td {
     </tbody>
   </table>
   
-  <p>
-    <b>Object Properties</b>
-  </p>
+  <h3>
+    <a name="object_properties">4. Object Properties</a>
+  </h3>
   
   <table
     style="border-width: 1px; border-style: solid; border-collapse: collapse;"
@@ -788,5 +800,155 @@ th,td {
     </tbody>
   </table>
   
+  <h3>
+    <a name="deploying">5. Deploying Report Templates</a>
+  </h3>
+  
+  <p class="exblock">
+    <b>Complete Examples: </b>
+    <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'report/gshi_vat_en','content':'text/plain','file_type':'xml'})}}"
+    target="_blank">Genshi VAT Report</a>, <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'report/ntr_vat_en','content':'text/plain','file_type':'xml'})}}"
+    target="_blank">Nervatura VAT Report</a>, <a href="{{=URL( 'ndr', 'getResource',vars={'file_name':'report/ntr_invoice_en','content':'text/plain','file_type':'xml'})}}"
+    target="_blank">Nervatura Invoice</a>
+  </p>
+  
+  <table
+    style="border-width: 1px; border-style: solid; border-collapse: collapse;"
+    border="1" cellpadding="2" cellspacing="0" width="100%">
+    <tbody>
+      <tr class="fhead">
+        <td><span class="fname">&lt;report</span> reportkey, nervatype, transtype, 
+          direction, repname, description, label, filetype 
+          <span class="fname">&gt;</span></td>
+      </tr>
+      <tr>
+        <td>
+          <div class="fdesc" style="margin-top: 15px;margin-bottom: 15px;">
+            <span class="retpar">reportkey</span>: <span class="fdesc">
+              unique report identifier</span><br>
+            <span class="retpar">nervatype</span>: <span class="fdesc">
+              report or customer, employee, event, place, 
+              product, project, tool, trans</span><br>
+            <span class="retpar">transtype</span>: <span class="fdesc">
+              invoice, receipt, order, offer, worksheet, rent, delivery, 
+              store, inventory, waybill, production, formula, bank,
+              cash (only nervatype=trans)</span><br>
+            <span class="retpar">direction</span>: <span class="fdesc">
+              out, in, transfer (only nervatype=trans)</span><br>
+            <span class="retpar">repname</span>: <span class="fdesc">
+              report short name</span><br>
+            <span class="retpar">description</span>: <span class="fdesc">
+              report description</span><br>
+            <span class="retpar">label</span>: <span class="fdesc">
+              group label (only nervatype=report)</span><br>
+            <span class="retpar">filetype</span>: <span class="fdesc">
+              ntr (Nervatura Report), xls (Excel workbook), html (HTML document),
+              gshi(Genshi template)</span><br>
+          </div>
+          <p class="exblock"><b><u><i>Examples:</i></u></b><br><br>
+            &lt;report reportkey="ntr_cash_in_en" nervatype="trans" 
+            transtype="cash" direction="in" repname="Petty Cash Voucher EN" 
+            description="Deposit Voucher" filetype="ntr"&gt;<br>
+            ...<br>
+            &lt;/report&gt;<br><br>
+            &lt;reportkey="xls_vat_en" nervatype="report" repname="VAT Summary - MS Excel" 
+            description="Recoverable and payable VAT summary grouped by currency. MS Excel output." 
+            label="Invoice" filetype="xls"&gt;<br>
+            ...<br>
+            &lt;/report&gt;<br>
+          </p>        
+        </td>
+      </tr>
+      <tr class="fhead">
+        <td><span class="fname">&lt;dataset</span> name, engine 
+          <span class="fname">&gt;</span>&lt;![CDATA[]]&gt;<span class="fname">&lt;/dataset&gt;</span></td>
+      </tr>
+      <tr>
+        <td>
+          <div class="fdesc" style="margin-top: 15px;margin-bottom: 15px;">
+            <span class="retpar">name</span>: <span class="fdesc">
+              logical name</span><br>
+            <span class="retpar">engine</span>: <span class="fdesc">
+              empty (all) or sqlite, mysql, postgres, mssql</span><br>
+            <span class="retpar">text</span>: <span class="fdesc">
+              a valid SQL statement. Parameters: @fieldname (nervatype=report) or @id </span><br>
+          </div>
+          <p class="exblock"><b><u><i>Examples:</i></u></b><br><br>
+            &lt;dataset name="head" engine=""&gt;&lt;![CDATA[select ...]]&gt;&lt;/dataset&gt;<br><br>
+            &lt;dataset name="fieldvalue" engine="mysql"&gt;&lt;![CDATA[select ...]]&gt;&lt;/dataset&gt;<br>
+          </p>        
+        </td>
+      </tr>
+      <tr class="fhead">
+        <td><span class="fname">&lt;field</span> fieldname, fieldtype, wheretype, description,
+           orderby, dataset, defvalue
+          <span class="fname">&gt;</span>&lt;![CDATA[]]&gt;<span class="fname">&lt;/field&gt;</span></td>
+      </tr>
+      <tr>
+        <td>
+          <div class="fdesc" style="margin-top: 15px;margin-bottom: 15px;">
+            Only nervatype=report!<br><br>
+            <span class="retpar">fieldname</span>: <span class="fdesc">
+              logical name</span><br>
+            <span class="retpar">fieldtype</span>: <span class="fdesc">
+              bool, date, integer, float, valuelist, string</span><br>
+            <span class="retpar">wheretype</span>: <span class="fdesc">
+              in, where</span><br>
+            <span class="retpar">description</span>: <span class="fdesc">
+              label</span><br>
+            <span class="retpar">orderby</span>: <span class="fdesc">
+              field order by</span><br>
+            <span class="retpar">dataset</span>: <span class="fdesc">
+              a valid dataset name</span><br>
+            <span class="retpar">defvalue</span>: <span class="fdesc">
+              default parameter value</span><br>
+            <span class="retpar">valuelist</span>: <span class="fdesc">
+              if fieldtype=valuelist: valid values are listed, separated by |</span><br>
+            <span class="retpar">text</span>: <span class="fdesc">
+              a valid SQL statement. Parameters: @fieldname</span><br>
+          </div>
+          <p class="exblock"><b><u><i>Examples:</i></u></b><br><br>
+            &lt;field fieldname="date_from" fieldtype="date" wheretype="in" description="From date" 
+            orderby="0" defvalue="-360"/&gt;<br><br>
+            &lt;field fieldname="customer" fieldtype="string" wheretype="where" 
+            description="Customer/Supplier" orderby="6" 
+            &gt;&lt;![CDATA[ custname.value like @customer]]&gt;&lt;/field&gt;<br>
+          </p>        
+        </td>
+      </tr>
+      <tr class="fhead">
+        <td><span class="fname">&lt;message</span> secname, fieldname 
+          <span class="fname">&gt;</span>&lt;![CDATA[]]&gt;<span class="fname">&lt;/message&gt;</span></td>
+      </tr>
+      <tr>
+        <td>
+          <div class="fdesc" style="margin-top: 15px;margin-bottom: 15px;">
+            <span class="retpar">secname</span>: <span class="fdesc">
+              report (report template) or a valid dataset name</span><br>
+            <span class="retpar">fieldname</span>: <span class="fdesc">
+              logical name</span><br>
+            <span class="retpar">text</span>: <span class="fdesc">
+              label</span><br>
+          </div>
+          <p class="exblock"><b><u><i>Examples:</i></u></b><br><br>
+            &lt;message secname="report" fieldname="transdate"&gt;&lt;![CDATA[Invoice Date]]&gt;&lt;/message&gt;<br><br>
+            &lt;message secname="head" fieldname="lb_address"&gt;&lt;![CDATA[Address]]&gt;&lt;/message&gt;<br>
+          </p>        
+        </td>
+      </tr>
+      <tr class="fhead">
+        <td><span class="fname">&lt;template&gt;</span>&lt;![CDATA[]]&gt;<span class="fname">&lt;/template&gt;</span></td>
+      </tr>
+      <tr>
+        <td>
+          <div class="fdesc" style="margin-top: 15px;margin-bottom: 15px;">
+            <span class="retpar">text</span>: <span class="fdesc">
+              report template</span><br>
+          </div>        
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
 </body>
 </html>

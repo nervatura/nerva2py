@@ -57,9 +57,9 @@ $(document).bind("mobileinit", function(){
   });
 });
     </script>
-    
-    <link rel="stylesheet" href="{{=URL('static','css/jquery.mobile.css')}}" />
-    <script src="{{=URL('static','js/jquery.mobile.js')}}"></script>
+
+    <link rel="stylesheet" href="{{=URL('static','css/jquery.mobile-1.4.5.min.css')}}" />
+    <script src="{{=URL('static','js/jquery.mobile-1.4.5.min.js')}}"></script>
     <script src="{{=URL('static','js/pdf.js')}}"></script>
 
     <style>
@@ -90,6 +90,9 @@ $(document).bind("mobileinit", function(){
         padding-left: 5px;
         padding-right: 5px;
       }
+      textarea.ui-input-text {
+        max-height : 300px;
+      }
     </style>
   </head>
   
@@ -104,12 +107,12 @@ $(document).bind("mobileinit", function(){
     <div data-role="header" data-fullscreen="false" data-position="fixed">
       <div data-role="navbar">
         <ul>
-          <li><a data-icon="home" data-ajax="false" data-theme="a" href="{{=URL('index')}}">{{=T('HOME')}}</a></li>
-          <li><a data-icon="info" data-ajax="false" data-theme="a"
+          <li><a data-icon="home" data-ajax="false" data-theme="b" href="{{=URL('index')}}">{{=T('HOME')}}</a></li>
+          <li><a data-icon="info" data-ajax="false" data-theme="b"
             href="{{=URL( 'ndr', 'getResource',vars={'file_name':'docs/report/report','content':'view','lang':'auto'})}}" 
             target="_blank">{{=T('HELP')}}</a></li>
-          <li><a data-icon="refresh" data-ajax="false" data-theme="a" href="{{=URL('python_demo')}}">{{=T('PYTHON DEMO')}}</a></li>
-          <li><a data-icon="refresh" data-ajax="false" data-theme="a" href="{{=URL('javascript_demo')}}">{{=T('JAVASCRIPT DEMO')}}</a></li>
+          <li><a data-icon="refresh" data-ajax="false" data-theme="b" href="{{=URL('python_demo')}}">{{=T('PYTHON DEMO')}}</a></li>
+          <li><a data-icon="refresh" data-ajax="false" data-theme="b" href="{{=URL('javascript_demo')}}">{{=T('JAVASCRIPT DEMO')}}</a></li>
         </ul>
       </div><!-- /navbar -->
     </div>

@@ -1,3 +1,38 @@
+## 2.10.1-2.10.2
+
+- welcome app defaults to Bootstrap 3
+- DAL -> pyDAL (thanks Giovanni, Niphlod, Paolo)
+  - new modular dal
+  - fixed problems with GAE support
+  - moved to full NDB support
+  - improved connection pooling logic
+- optional cache.ram.max_ram_utilization = 90 (experimental)
+- improved cache.disk logic (thanks Niphlod and Leonel)
+- lots of pep8 improvements, thanks Richard
+- added support for email attchments when auth.settings.server='gae'
+- fixed app.yaml.example for GAE
+- fixed many small issues
+- many many more tests (thanks Giovanni, Niphlod, Paolo)
+- upgrading static libraries (bootstrap, codemirror, jquery, etc)
+
+## 2.9.12
+
+- Tornado HTTPS support, thanks Diego
+- Modular DAL, thanks Giovanni
+- Added coverage support, thanks Niphlod
+- More tests, thanks Niphlod and Paolo Valleri
+- Added support for show_if in readonly sqlform, thanks Paolo
+- Improved scheduler, thanks Niphlod
+- Email timeout support
+- Made web2py's custom_import work with circular imports, thanks Jack Kuan
+- Added Portuguese, Catalan, and Burmese translations
+- Allow map_hyphen to work for application names, thanks Tim Nyborg
+- New module appconfig.py, thanks Niphlod
+- Added geospatial support to Teradata adaptor, thanks Andrew Willimott 
+- Many bug fixes
+
+
+
 ## 2.9.6 - 2.9.10
 
 - fixed support of GAE + SQL

@@ -138,9 +138,6 @@ th,td {
           <p class="fdesc">Redirect to the 
             static/resources/application/<span class="retpar">appl</span> file.
           </p>
-          <p class="exblock"><b><u><i>Example:</i></u></b><br><br>
-            http://localhost:8000/nerva2py/ndr/getAppl?appl=nflex/nervex.html
-          </p>
           <p>The result is the redirected file.</p>
         </td>
       </tr>
@@ -288,9 +285,9 @@ th,td {
           <p><b>Only to be used if the database (and the user) NDI or NPI access enabled!</b></p>
           <p class="exblock"><b><u><i>Example:</i></u></b><br><br>
             <i>HTML Preview:</i><br>
-            http://localhost:8000/nerva2py/ndr/exportToReport?code=none&database=demo&username=demo&password=&reportcode=fpdf_customer_sheet_en&filters=@id=2
+            http://localhost:8000/nerva2py/ndr/exportToReport?code=none&database=demo&username=demo&password=&reportcode=ntr_customer_en&filters=@id=2
             <br><br><i>Server-side printing:</i><br>
-            http://localhost:8000/nerva2py/ndr/exportToReport?code=none&database=demo&username=demo&password=&reportcode=fpdf_customer_sheet_en&filters=@id=2&output=printer&printername=HP-Deskjet&copies=2
+            http://localhost:8000/nerva2py/ndr/exportToReport?code=none&database=demo&username=demo&password=&reportcode=ntr_customer_en&filters=@id=2&output=printer&printername=HP-Deskjet&copies=2
           </p>
           <p>The result is a
             <ul>
@@ -327,11 +324,10 @@ th,td {
 						pattern, payment, place, price, product, project, rate, tax, tool,
 						trans<br>  
 						<span style="color: green; font-weight: bold;">Settings objects: </span>
-						ui_audit, ui_applview, ui_filter, ui_groupinput,
-						ui_language, ui_locale, ui_menu, ui_menufields, ui_message,
-						ui_numtotext, ui_report, ui_reportfields,
-						ui_reportsources, ui_userconfig,
-						ui_viewfields, ui_zipcatalog<br> 
+						ui_audit,
+						ui_language, ui_menu, ui_menufields, ui_message,
+						ui_report, ui_reportfields,
+						ui_reportsources, ui_userconfig<br> 
 						<span style="color: red; font-weight: bold;">Not included: </span>
 						ui_printqueue<br> <br> 
 						

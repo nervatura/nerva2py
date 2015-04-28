@@ -542,7 +542,7 @@ var json_temp = {
   "head": {
    "short_text": "Lorem ipsum dolor",
    "number": "123 456",
-   "date": "2014.01.01",
+   "date": "2015.01.01",
    "long_text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eu mattis diam, sed dapibus justo. In eget augue nisi. Cras eget odio vel mi vulputate interdum. Curabitur consequat sapien at lacus tincidunt, at sagittis felis lobortis. Aenean porta maximus quam eu porta. Fusce sed leo ut justo commodo facilisis. Vivamus vitae tempor erat, at ultrices enim. Nulla a pretium nunc, in cursus quam."
   },
   "html_text": "<p><b>Pellentesque eu mattis diam, sed dapibus justo. In eget augue nisi. Cras eget odio vel mi vulputate interdum. Curabitur consequat sapien at lacus tincidunt, at sagittis felis lobortis. Aenean porta maximus quam eu porta. Fusce sed leo ut justo commodo facilisis. Vivamus vitae tempor erat, at ultrices enim.</b></p>",
@@ -550,152 +550,152 @@ var json_temp = {
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    },
    {
     "text": "Lorem ipsum dolor",
     "number": "123 456",
-    "date": "2014.01.01"
+    "date": "2015.01.01"
    }
   ],
   "items_footer": {

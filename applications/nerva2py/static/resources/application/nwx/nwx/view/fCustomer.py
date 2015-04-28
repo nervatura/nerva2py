@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2014, Csaba Kappel
+Copyright © 2011-2015, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -326,7 +326,7 @@ class fCustomer(fChildFrame):
       self.parent.setStatusState(0)
   
   def getCusttypeValue(self):
-    custtype_name = self.parent.getItemFromKey_(self.dataSet["groups"], "id", self.dataSet["customer"][0].custtype).groupvalue
+    custtype_name = self.parent.getItemFromKey(self.dataSet["groups"], "id", self.dataSet["customer"][0].custtype).groupvalue
     if custtype_name=="private":
       return 1
     elif custtype_name=="other":
@@ -456,11 +456,11 @@ class fCustomer(fChildFrame):
     self.dataSet["changeData"] = True
     if dataField=="custtype":
       if newValue==2:
-        self.dataSet["customer"][0].custtype = self.parent.getItemFromKey2_(self.dataSet["groups"], "groupname", "custtype", "groupvalue", "other").id
+        self.dataSet["customer"][0].custtype = self.parent.getItemFromKey2(self.dataSet["groups"], "groupname", "custtype", "groupvalue", "other").id
       elif newValue==1:
-        self.dataSet["customer"][0].custtype = self.parent.getItemFromKey2_(self.dataSet["groups"], "groupname", "custtype", "groupvalue", "private").id
+        self.dataSet["customer"][0].custtype = self.parent.getItemFromKey2(self.dataSet["groups"], "groupname", "custtype", "groupvalue", "private").id
       else:
-        self.dataSet["customer"][0].custtype = self.parent.getItemFromKey2_(self.dataSet["groups"], "groupname", "custtype", "groupvalue", "company").id
+        self.dataSet["customer"][0].custtype = self.parent.getItemFromKey2(self.dataSet["groups"], "groupname", "custtype", "groupvalue", "company").id
   
   def loadCustomerGroups(self):
     self.lst_customergroups.Clear()

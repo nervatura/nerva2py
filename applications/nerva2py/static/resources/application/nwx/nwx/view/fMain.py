@@ -3,17 +3,38 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2014, Csaba Kappel
+Copyright © 2011-2015, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
 
 import wx.aui
 from nwx.utils.configobj import ConfigObj  # @UnresolvedImport
-import webbrowser 
+import webbrowser
+import sqlite3
 #import base64
 #from pyamf.remoting.client import RemotingService
 
+class dict2obj(dict):
+  def __init__(self, dict_, tablename=None):
+    super(dict2obj, self).__init__(dict_)
+    for key in self:
+      item = self[key]
+      if isinstance(item, list):
+        for idx, it in enumerate(item):
+          if isinstance(it, dict):
+            item[idx] = dict2obj(it)
+      elif isinstance(item, dict):
+        self[key] = dict2obj(item)
+    if tablename:
+      self["__tablename__"] = tablename
+     
+  def __getattr__(self, key):
+    return self[key]
+  
+  def __setattr__(self, key, value):
+    self[key] = value
+  
 class fMain(wx.aui.AuiMDIParentFrame):
   application = None
   locale = None
@@ -185,6 +206,21 @@ class fMain(wx.aui.AuiMDIParentFrame):
       retval = table[index]
     return retval
   
+  def getSql(self, sqlid):
+    conn = sqlite3.connect('storage.db')  # @UndefinedVariable
+    cur = conn.cursor()
+    rows = cur.execute("select sqlstr from sql where sqlkey=? and engine=?", (sqlid, self.application.app_settings["engine"])).fetchall()
+    if len(rows)==0:
+      rows = cur.execute("select sqlstr from sql where sqlkey=? and engine='all'", (sqlid,)).fetchall()
+    sql = rows[0][0]
+    conn.close()
+    return sql
+  
+  def dic2objList(self, table, tablename=None):
+    retval = []
+    for row in table:
+      retval.append(dict2obj(row,tablename))
+    return retval
 #------------------------------------------------------------------------------------------      
 #Menu events
 #------------------------------------------------------------------------------------------    

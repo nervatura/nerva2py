@@ -22,13 +22,21 @@ caching will be provided by the GAE memcache
 import time
 import thread
 import os
+import gc
 import sys
 import logging
 import re
+import random
 import hashlib
 import datetime
 import tempfile
 from gluon import recfile
+from gluon import portalocker
+from collections import defaultdict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from gluon.contrib.ordereddict import OrderedDict
 try:
     from gluon import settings
     have_settings = True
@@ -40,14 +48,35 @@ try:
 except:
    import pickle
 
+try:
+    import psutil
+    HAVE_PSUTIL = True
+except ImportError:
+    HAVE_PSUTIL = False
+
+def remove_oldest_entries(storage, percentage=90):
+    # compute current memory usage (%)
+    old_mem = psutil.virtual_memory().percent
+    # if we have data in storage and utilization exceeds 90%
+    while storage and old_mem > percentage:    
+        # removed oldest entry
+        storage.popitem(last=False)
+        # garbage collect
+        gc.collect(1)
+        # comute used memory again
+        new_mem = psutil.virtual_memory().percent
+        # if the used memory did not decrease stop
+        if new_mem >= old_mem: break
+        # net new measurement for memory usage and loop
+        old_mem = new_mem
+
+
 logger = logging.getLogger("web2py.cache")
 
 __all__ = ['Cache', 'lazy_cache']
 
 
 DEFAULT_TIME_EXPIRE = 300
-
-
 
 class CacheAbstract(object):
     """
@@ -57,7 +86,7 @@ class CacheAbstract(object):
     Use CacheInRam or CacheOnDisk instead which are derived from this class.
 
     Note:
-        Michele says: there are signatures inside gdbm files that are used 
+        Michele says: there are signatures inside gdbm files that are used
         directly by the python gdbm adapter that often are lagging behind in the
         detection code in python part.
         On every occasion that a gdbm store is probed by the python adapter,
@@ -70,6 +99,7 @@ class CacheAbstract(object):
     """
 
     cache_stats_name = 'web2py_cache_statistics'
+    max_ram_utilization = 90 # percent
 
     def __init__(self, request=None):
         """Initializes the object
@@ -128,10 +158,10 @@ class CacheAbstract(object):
         Auxiliary function called by `clear` to search and clear cache entries
         """
         r = re.compile(regex)
-        for key in storage:
+        for key in storage.keys():
             if r.match(str(key)):
                 del storage[key]
-                break
+        return
 
 
 class CacheInRam(CacheAbstract):
@@ -145,28 +175,25 @@ class CacheInRam(CacheAbstract):
 
     locker = thread.allocate_lock()
     meta_storage = {}
+    stats = {}
 
     def __init__(self, request=None):
         self.initialized = False
         self.request = request
-        self.storage = {}
-
+        self.storage = OrderedDict() if HAVE_PSUTIL else {}
+        self.app = request.application if request else ''
     def initialize(self):
         if self.initialized:
             return
         else:
             self.initialized = True
         self.locker.acquire()
-        request = self.request
-        if request:
-            app = request.application
+        if not self.app in self.meta_storage:
+            self.storage = self.meta_storage[self.app] = \
+                OrderedDict() if HAVE_PSUTIL else {}
+            self.stats[self.app] = {'hit_total': 0, 'misses': 0}
         else:
-            app = ''
-        if not app in self.meta_storage:
-            self.storage = self.meta_storage[app] = {
-                CacheAbstract.cache_stats_name: {'hit_total': 0, 'misses': 0}}
-        else:
-            self.storage = self.meta_storage[app]
+            self.storage = self.meta_storage[self.app]
         self.locker.release()
 
     def clear(self, regex=None):
@@ -178,9 +205,8 @@ class CacheInRam(CacheAbstract):
         else:
             self._clear(storage, regex)
 
-        if not CacheAbstract.cache_stats_name in storage.keys():
-            storage[CacheAbstract.cache_stats_name] = {
-                'hit_total': 0, 'misses': 0}
+        if not self.app in self.stats:
+            self.stats[self.app] = {'hit_total': 0, 'misses': 0}
 
         self.locker.release()
 
@@ -188,8 +214,8 @@ class CacheInRam(CacheAbstract):
                  time_expire=DEFAULT_TIME_EXPIRE,
                  destroyer=None):
         """
-        Attention! cache.ram does not copy the cached object. 
-        It just stores a reference to it. Turns out the deepcopying the object 
+        Attention! cache.ram does not copy the cached object.
+        It just stores a reference to it. Turns out the deepcopying the object
         has some problems:
 
         - would break backward compatibility
@@ -211,7 +237,7 @@ class CacheInRam(CacheAbstract):
             del self.storage[key]
             if destroyer:
                 destroyer(item[1])
-        self.storage[CacheAbstract.cache_stats_name]['hit_total'] += 1
+        self.stats[self.app]['hit_total'] += 1
         self.locker.release()
 
         if f is None:
@@ -224,7 +250,9 @@ class CacheInRam(CacheAbstract):
 
         self.locker.acquire()
         self.storage[key] = (now, value)
-        self.storage[CacheAbstract.cache_stats_name]['misses'] += 1
+        self.stats[self.app]['misses'] += 1
+        if HAVE_PSUTIL and self.max_ram_utilization!=None and random.random()<0.10:
+            remove_oldest_entries(self.storage, percentage = self.max_ram_utilization)
         self.locker.release()
         return value
 
@@ -246,80 +274,138 @@ class CacheOnDisk(CacheAbstract):
     """
     Disk based cache
 
-    This is implemented as a shelve object and it is shared by multiple web2py
-    processes (and threads) as long as they share the same filesystem.
+    This is implemented as a key value store where each key corresponds to a
+    single file in disk which is replaced when the value changes.
 
-    Disk cache provides persistance when web2py is started/stopped but it slower
-    than `CacheInRam`
+    Disk cache provides persistance when web2py is started/stopped but it is
+    slower than `CacheInRam`
 
     Values stored in disk cache must be pickable.
     """
 
     class PersistentStorage(object):
         """
-        Implements a key based storage in disk.
+        Implements a key based thread/process-safe safe storage in disk.
         """
-        def __init__(self, folder):
+
+        def __init__(self, folder, file_lock_time_wait=0.1):
             self.folder = folder
-            # Check the best way to do atomic file replacement.
-            if sys.version_info >= (3, 3):
-                self.replace = os.replace
-            elif sys.platform == "win32":
-                import ctypes
-                from ctypes import wintypes
-                ReplaceFile = ctypes.windll.kernel32.ReplaceFileW
-                ReplaceFile.restype = wintypes.BOOL
-                ReplaceFile.argtypes = [
-                    wintypes.LPWSTR,
-                    wintypes.LPWSTR,
-                    wintypes.LPWSTR,
-                    wintypes.DWORD,
-                    wintypes.LPVOID,
-                    wintypes.LPVOID,
-                    ]
+            self.key_filter_in = lambda key: key
+            self.key_filter_out = lambda key: key
+            self.file_lock_time_wait = file_lock_time_wait # How long we should wait before retrying to lock a file held by another process
+            # We still need a mutex for each file as portalocker only blocks other processes
+            self.file_locks = defaultdict(thread.allocate_lock)
 
-                def replace_windows(src, dst):
-                    if not ReplaceFile(dst, src, None, 0, 0, 0):
-                        os.rename(src, dst)
 
-                self.replace = replace_windows
-            else:
-                # POSIX rename() is always atomic
-                self.replace = os.rename
+            # Make sure we use valid filenames.
+            if sys.platform == "win32":
+                import base64
+                def key_filter_in_windows(key):
+                    """
+                    Windows doesn't allow \ / : * ? "< > | in filenames.
+                    To go around this encode the keys with base32.
+                    """
+                    return base64.b32encode(key)
+
+                def key_filter_out_windows(key):
+                    """
+                    We need to decode the keys so regex based removal works.
+                    """
+                    return base64.b32decode(key)
+
+                self.key_filter_in = key_filter_in_windows
+                self.key_filter_out = key_filter_out_windows
+
+
+        def wait_portalock(self, val_file):
+            """
+            Wait for the process file lock.
+            """
+            while True:
+                try:
+                    portalocker.lock(val_file, portalocker.LOCK_EX)
+                    break
+                except:
+                    time.sleep(self.file_lock_time_wait)
+
+
+        def acquire(self, key):
+            self.file_locks[key].acquire()
+
+
+        def release(self, key):
+            self.file_locks[key].release()
 
 
         def __setitem__(self, key, value):
-            tmp_name, tmp_path = tempfile.mkstemp(dir=self.folder)
-            tmp = os.fdopen(tmp_name, 'wb')
-            try:
-                pickle.dump((time.time(), value), tmp, pickle.HIGHEST_PROTOCOL)
-            finally:
-                tmp.close()
-            fullfilename = os.path.join(self.folder, recfile.generate(key))
-            if not os.path.exists(os.path.dirname(fullfilename)):
-                os.makedirs(os.path.dirname(fullfilename))
-            self.replace(tmp_path, fullfilename)
+            key = self.key_filter_in(key)
+            val_file = recfile.open(key, mode='wb', path=self.folder)
+            self.wait_portalock(val_file)
+            pickle.dump(value, val_file, pickle.HIGHEST_PROTOCOL)
+            val_file.close()
 
 
         def __getitem__(self, key):
-            if recfile.exists(key, path=self.folder):
-                timestamp, value = pickle.load(recfile.open(key, 'rb', path=self.folder))
-                return value
-            else:
+            key = self.key_filter_in(key)
+            try:
+                val_file = recfile.open(key, mode='rb', path=self.folder)
+            except IOError:
                 raise KeyError
 
+            self.wait_portalock(val_file)
+            value = pickle.load(recfile.open(key, 'rb', path=self.folder))
+            val_file.close()
+            return value
+
+
         def __contains__(self, key):
-            return recfile.exists(key, path=self.folder)
+            key = self.key_filter_in(key)
+            return (key in self.file_locks) or recfile.exists(key, path=self.folder)
 
 
         def __delitem__(self, key):
-            recfile.remove(key, path=self.folder)
+            key = self.key_filter_in(key)
+            try:
+                recfile.remove(key, path=self.folder)
+            except IOError:
+                raise KeyError
 
 
         def __iter__(self):
             for dirpath, dirnames, filenames in os.walk(self.folder):
                 for filename in filenames:
-                    yield filename
+                    yield self.key_filter_out(filename)
+
+
+        def safe_apply(self, key, function, default_value=None):
+            """ 
+            Safely apply a function to the value of a key in storage and set
+            the return value of the function to it.
+
+            Return the result of applying the function.
+            """
+            key = self.key_filter_in(key)
+            exists = True
+            try:
+                val_file = recfile.open(key, mode='r+b', path=self.folder)
+            except IOError:
+                exists = False
+                val_file = recfile.open(key, mode='wb', path=self.folder)
+            self.wait_portalock(val_file)
+            if exists:
+                timestamp, value = pickle.load(val_file)
+            else:
+                value = default_value
+            new_value = function(value)
+            val_file.seek(0)
+            pickle.dump((time.time(), new_value), val_file, pickle.HIGHEST_PROTOCOL)
+            val_file.truncate()
+            val_file.close()
+            return new_value
+
+
+        def keys(self):
+            return list(self.__iter__())
 
 
         def get(self, key, default=None):
@@ -328,10 +414,6 @@ class CacheOnDisk(CacheAbstract):
             except KeyError:
                 return default
 
-
-        def clear(self):
-            for key in self:
-                del self[key]
 
     def __init__(self, request=None, folder=None):
         self.initialized = False
@@ -357,23 +439,33 @@ class CacheOnDisk(CacheAbstract):
             os.mkdir(folder)
 
         self.storage = CacheOnDisk.PersistentStorage(folder)
-        
-        if not CacheAbstract.cache_stats_name in self.storage:
-            self.storage[CacheAbstract.cache_stats_name] = {'hit_total': 0, 'misses': 0}
 
 
     def __call__(self, key, f,
                  time_expire=DEFAULT_TIME_EXPIRE):
         self.initialize()
 
+        def inc_hit_total(v):
+            v['hit_total'] += 1
+            return v
+
+        def inc_misses(v):
+            v['misses'] += 1
+            return v
+
         dt = time_expire
+        self.storage.acquire(key)
+        self.storage.acquire(CacheAbstract.cache_stats_name)
         item = self.storage.get(key)
-        self.storage[CacheAbstract.cache_stats_name]['hit_total'] += 1
+        self.storage.safe_apply(CacheAbstract.cache_stats_name, inc_hit_total,
+                                default_value={'hit_total': 0, 'misses': 0})
 
         if item and f is None:
             del self.storage[key]
 
         if f is None:
+            self.storage.release(CacheAbstract.cache_stats_name)
+            self.storage.release(key)
             return None
 
         now = time.time()
@@ -383,26 +475,36 @@ class CacheOnDisk(CacheAbstract):
         else:
             value = f()
             self.storage[key] = (now, value)
-            self.storage[CacheAbstract.cache_stats_name]['misses'] += 1
+            self.storage.safe_apply(CacheAbstract.cache_stats_name, inc_misses, 
+                                    default_value={'hit_total': 0, 'misses': 0})
 
+        self.storage.release(CacheAbstract.cache_stats_name)
+        self.storage.release(key)
         return value
+
 
     def clear(self, regex=None):
         self.initialize()
         storage = self.storage
         if regex is None:
-            storage.clear()
+            keys = storage
         else:
-            self._clear(storage, regex)
-
-        if not CacheAbstract.cache_stats_name in storage:
-            storage[CacheAbstract.cache_stats_name] = {
-                'hit_total': 0, 'misses': 0}
+            r = re.compile(regex)
+            keys = (key for key in storage if r.match(key))
+        for key in keys:
+            storage.acquire(key)
+            try:
+                del storage[key]
+            except KeyError:
+                pass
+            storage.release(key)
 
 
     def increment(self, key, value=1):
         self.initialize()
-        self.storage[key] += value
+        self.storage.acquire(key)
+        value = self.storage.safe_apply(key, lambda x: x + value, default_value=0)
+        self.storage.release(key)
         return value
 
 
@@ -445,7 +547,7 @@ class Cache(object):
 
     def __init__(self, request):
         """
-        Args: 
+        Args:
             request: the global request object
         """
         # GAE will have a special caching
@@ -470,7 +572,7 @@ class Cache(object):
              quick=None):
         """Better fit for caching an action
 
-        Warning: 
+        Warning:
             Experimental!
 
         Currently only HTTP 1.1 compliant
@@ -484,8 +586,8 @@ class Cache(object):
             vars(bool): adds request.env.query_string
             lang(bool): adds T.accepted_language
             user_agent(bool or dict): if True, adds is_mobile and is_tablet to the key.
-                Pass a dict to use all the needed values (uses str(.items())) 
-                (e.g. user_agent=request.user_agent()). Used only if session is 
+                Pass a dict to use all the needed values (uses str(.items()))
+                (e.g. user_agent=request.user_agent()). Used only if session is
                 not True
             public(bool): if False forces the Cache-Control to be 'private'
             valid_statuses: by default only status codes starting with 1,2,3 will be cached.
@@ -594,8 +696,8 @@ class Cache(object):
         Args:
             key(str) : the key of the object to be store or retrieved
             time_expire(int) : expiration of the cache in seconds
-                `time_expire` is used to compare the current time with the time 
-                when the requested object was last saved in cache. 
+                `time_expire` is used to compare the current time with the time
+                when the requested object was last saved in cache.
                 It does not affect future requests.
                 Setting `time_expire` to 0 or negative value forces the cache to
                 refresh.

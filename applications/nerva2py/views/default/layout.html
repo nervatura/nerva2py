@@ -58,10 +58,11 @@ $(document).bind("mobileinit", function(){
 });
     </script>
     
-    <link rel="stylesheet" href="{{=URL('static','css/jquery.mobile.css')}}" />
-    <script src="{{=URL('static','js/jquery.mobile.js')}}"></script>
+    <link rel="stylesheet" href="{{=URL('static','css/jquery.mobile-1.4.5.min.css')}}" />
+    <link rel="stylesheet" href="{{=URL('static','css/ntura/app.css')}}" />
+    <link rel="stylesheet" href="{{=URL('static','css/ntura/icons.css')}}" />
+    <script src="{{=URL('static','js/jquery.mobile-1.4.5.min.js')}}"></script>
     
-    <link rel="stylesheet" href="{{=URL('static','css/ntura/nmc.css')}}" />
   
     <style>
        .ui-popup-container { 
@@ -139,19 +140,20 @@ $(document).bind("mobileinit", function(){
   <!--[if IE 9 ]>    <body class="ie9"> <![endif]-->
   <!--[if (gt IE 9)|!(IE)]><!--> 
   <body> <!--<![endif]-->
-    <div data-role="header" data-fullscreen="false" data-position="fixed">
+    <div data-role="page">
+    <div data-role="header" data-fullscreen="false" data-position="fixed" data-theme="b">
       {{if not response.nomenu:}}
       <div data-role="navbar">
         <ul>
           <li><a data-icon="home" data-ajax="false" data-theme="b" href={{=URL('default','start')}}>{{=T('HOME')}}</a></li>
-          <li><a data-icon="page" data-ajax="false" data-theme="b" href={{=URL('default','ndoc')}}>{{=T('DOCUMENTATION & RESOURCES')}}</a></li>
+          <li><a data-icon="file-text" data-ajax="false" data-theme="b" href={{=URL('default','ndoc')}}>{{=T('DOCUMENTATION & RESOURCES')}}</a></li>
           <li><a data-icon="info" data-ajax="false" data-theme="b" href={{=URL('default','about')}}>{{=T('ABOUT')}}</a></li>
-          <li><a data-icon="wrench" data-ajax="false" data-theme="e" href={{=URL('nas','index')}}>{{=T('NAS ADMIN')}}</a></li>
+          <li><a data-icon="gear" data-ajax="false" data-theme="b" href={{=URL('nas','index')}}>{{=T('NAS ADMIN')}}</a></li>
         </ul>
       </div><!-- /navbar -->
       {{pass}}
     </div>
-    <div id="container">
+    <div id="container" role="main" class="ui-content">
       <table width="100%" cellpadding="5px;" cellspacing="0" style="background-color: #F5F5DC;">
         <tr><td>
           <div style="float: left;margin: 3px;">
@@ -178,7 +180,7 @@ $(document).bind("mobileinit", function(){
       <hr>
       {{include}}
     </div>
-
+    </div>
   
     <!--[if lt IE 7 ]>
     <script src="{{=URL('static','js/dd_belatedpng.js')}}"></script>

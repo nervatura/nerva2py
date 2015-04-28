@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2014, Csaba Kappel
+Copyright © 2011-2015, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -2063,7 +2063,7 @@ class WebUiReport(object):
   
   def dlg_report(self, _nervatype,_transtype,_direction,ref_id,label,default=None):
     nervatype = self.ui.ns.valid.get_groups_id("nervatype", _nervatype)
-    filetype = self.ui.ns.valid.get_groups_id("filetype", "fpdf")
+    filetype = self.ui.ns.valid.get_groups_id("filetype", "ntr")
     query = (self.ui.ns.db.ui_report.nervatype==nervatype)&(self.ui.ns.db.ui_report.filetype==filetype)&(self.ui.ns.db.ui_report.repname!=None)
     if _transtype!=None:
       transtype = self.ui.ns.valid.get_groups_id("transtype", _transtype)
@@ -2281,7 +2281,7 @@ class WebUiReport(object):
       self.ui.response.subtitle = ""
       report_tmp["template"]=self.ui.response.render(StringIO(report_tmp["template"]),report_tmp["data"])
       return dict(template=XML(report_tmp["template"]))
-    elif report_tmp["filetype"]=="fpdf":
+    elif report_tmp["filetype"]=="ntr":
       if output=="xml":
         self.ui.response.headers['Content-Type']='text/xml'
       elif output=="pdf":
@@ -2754,20 +2754,20 @@ class WebUi(object):
       self.dir_images = "static/resources/application/nmc/images"
       self.response.title=self.ns.T('Nervatura Mobile Client')
       self.response.cmd_menu = self.control.get_mobil_button(label=self.ns.T("MENU"), href="#main-menu",
-                                                 icon="bars", cformat="ui-btn-left", ajax="true", iconpos="left")
+        icon="bars", cformat="ui-btn-left", ajax="true", iconpos="left")
       self.response.cmd_commands = self.control.get_mobil_button(label=self.ns.T("MORE..."), href="#local-menu",
-                                                 icon="forward", cformat="ui-btn-right", ajax="true", iconpos="left")
+        icon="forward", cformat="ui-btn-right", ajax="true", iconpos="left")
       self.response.cmd_exit = self.control.get_mobil_button(label=self.ns.T("EXIT"), href=URL('frm_logout'),
-                                                 icon="power", cformat="ui-btn-right", ajax="false", iconpos="left",
-                                                 style="color: red;margin:2px;")
+        icon="power", cformat="ui-btn-right", ajax="false", iconpos="left",
+        style="color: red;margin:2px;")
       self.response.cmd_help = self.control.get_mobil_button(label=self.ns.T("HELP"), href=URL('cmd_go_help?page=index'),
-                                                 cformat=None, icon="info", iconpos="left", target="blank",
-                                                 style="margin:5px;")
+        cformat=None, icon="info", iconpos="left", target="blank",
+        style="margin:5px;")
       self.response.cmd_home = self.control.get_mobil_button(label=self.ns.T("HOME"), href=URL('index'),
-                                                 icon="home", cformat="ui-btn-left", ajax="false", iconpos="left")
+        icon="home", cformat="ui-btn-left", ajax="false", iconpos="left")
       self.response.cmd_close = self.control.get_mobil_button(label=self.ns.T("Close"), href="#",
-                                              icon="delete", cformat="ui-btn-right", ajax="true", iconpos="notext", 
-                                              rel="close")
+        icon="delete", cformat="ui-btn-right", ajax="true", iconpos="notext", 
+        rel="close")
     else:
       self.dir_view = "nwc"
       self.dir_images = "static/resources/application/nwc/images"

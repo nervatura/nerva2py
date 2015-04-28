@@ -57,11 +57,12 @@ $(document).bind("mobileinit", function(){
   });
 });
     </script>
+        
+    <link rel="stylesheet" href="{{=URL('static','css/jquery.mobile-1.4.5.min.css')}}" />
+    <link rel="stylesheet" href="{{=URL('static','css/ntura/app.css')}}" />
+    <link rel="stylesheet" href="{{=URL('static','css/ntura/icons.css')}}" />
+    <script src="{{=URL('static','js/jquery.mobile-1.4.5.min.js')}}"></script>
     
-    <link rel="stylesheet" href="{{=URL('static','css/jquery.mobile.css')}}" />
-    <script src="{{=URL('static','js/jquery.mobile.js')}}"></script>
-    
-    <link rel="stylesheet" href="{{=URL('static','css/ntura/nmc.css')}}" />
     <script src="{{=URL('static','js/ntura/nas.js')}}"></script>
     
      <script>
@@ -98,22 +99,22 @@ $(document).bind("mobileinit", function(){
   <body> <!--<![endif]-->
     <div id="appl_url" class="{{=request.application+'/'+request.controller}}"></div>
     <div id="main-page" data-role="page"> 
-      <div data-role="header" data-fullscreen="false" data-position="fixed">
+      <div data-role="header" data-theme="b" data-fullscreen="false" data-position="fixed">
 	      {{block header}}
 	        {{=response.cmd_menu}}
 	        <h1 style="color: #FFD700;">{{=response.title}}</h1>
 	      {{end}}
       </div>
-      <div data-role="content">
+      <div role="main" class="ui-content">
 	      {{if response.flash:}}<div class="ui-body ui-body-e">{{=response.flash}}</div>{{pass}}
 	      {{include}}
       </div>
-      <div data-role="footer" data-fullscreen="false" data-position="fixed" >
+      <div data-role="footer" data-theme="b" data-fullscreen="false" data-position="fixed" >
 	      {{block footer}}
 	      {{end}}
       </div>
       {{if response.ns_menu:}}
-      <div id="main-menu" data-role="panel" data-position-fixed="true" data-display="overlay" data-theme="a">
+      <div id="main-menu" data-role="panel" data-position-fixed="true" data-display="overlay" data-theme="b">
         <div data-role="header">
           {{=response.cmd_home}}
           {{=response.cmd_close}}
@@ -121,7 +122,7 @@ $(document).bind("mobileinit", function(){
         
         <div data-role="content" style="margin-top:30px;padding:0px;margin-bottom: 20px;">
           <hr style="border-width:0;background-color: #333333;">
-          <div data-role="collapsible-set" data-mini="false" data-theme="a" data-content-theme="a" data-inset="false" 
+          <div data-role="collapsible-set" data-mini="false" data-theme="b" data-content-theme="b" data-inset="true" 
               data-collapsed-icon="arrow-r" data-expanded-icon="arrow-d" data-iconpos="right" 
               style="margin-top:20px;padding:0px;">
           {{for mnu in response.ns_menu:}}
@@ -129,7 +130,7 @@ $(document).bind("mobileinit", function(){
               <div data-role="collapsible">
                 <h3 style="margin: 0px;">{{=mnu[0]}}</h3>
                 {{for smnu1 in mnu[3]:}}
-                  <div data-role="collapsible-set" data-mini="false" data-theme="b" data-content-theme="a" data-inset="false" 
+                  <div data-role="collapsible-set" data-mini="false" data-theme="b" data-content-theme="b" data-inset="false" 
                     data-collapsed-icon="arrow-r" data-expanded-icon="arrow-d" data-iconpos="right" 
                     style="margin:0px;padding:0px;">
                     {{if smnu1[0]=='divider':}}
@@ -138,7 +139,7 @@ $(document).bind("mobileinit", function(){
                       <div data-role="collapsible">
                         <h3 style="margin: 0px;">{{=smnu1[0]}}</h3>
                         {{for smnu2 in smnu1[3]:}}
-                          <div data-role="collapsible-set" data-mini="false" data-theme="a" data-content-theme="a" data-inset="false" 
+                          <div data-role="collapsible-set" data-mini="false" data-theme="b" data-content-theme="b" data-inset="false" 
                             data-collapsed-icon="arrow-r" data-expanded-icon="arrow-d" data-iconpos="right" 
                             style="margin:0px;padding:0px;">
                             {{if smnu2[0]=='divider':}}
@@ -147,7 +148,7 @@ $(document).bind("mobileinit", function(){
                               <div data-role="collapsible">
                                 <h3 style="margin: 0px;">{{=smnu2[0]}}</h3>
                                 {{for smnu3 in smnu2[3]:}}
-                                  <div data-role="collapsible-set" data-mini="false" data-theme="a" data-content-theme="a" data-inset="false" 
+                                  <div data-role="collapsible-set" data-mini="false" data-theme="b" data-content-theme="b" data-inset="false" 
                                     data-collapsed-icon="arrow-r" data-expanded-icon="arrow-d" data-iconpos="right" 
                                     style="margin:0px;padding:0px;">
                                     {{if smnu3[0]=='divider':}}
@@ -157,7 +158,7 @@ $(document).bind("mobileinit", function(){
                                         <h3 style="margin: 0px;">{{=smnu3[0]}}</h3>
                                       </div>
                                     {{else:}}
-                                      <a href="{{=smnu3[2]}}" data-role="button" data-theme="a" data-corners="false"
+                                      <a href="{{=smnu3[2]}}" data-role="button" data-theme="b" data-corners="false"
                                         data-icon="forward" data-iconpos="right" data-ajax="false"
                                         style="color: #FFD700;margin:0px;text-align: left">{{=smnu3[0]}}</a>
                                     {{pass}}
@@ -165,7 +166,7 @@ $(document).bind("mobileinit", function(){
                                 {{pass}}
                               </div>
                             {{else:}}
-                              <a href="{{=smnu2[2]}}" data-role="button" data-theme="a" data-corners="false"
+                              <a href="{{=smnu2[2]}}" data-role="button" data-theme="b" data-corners="false"
                                 data-icon="forward" data-iconpos="right" data-ajax="false"
                                 style="color: #FFD700;margin:0px;text-align: left">{{=smnu2[0]}}</a>
                             {{pass}}
@@ -173,7 +174,7 @@ $(document).bind("mobileinit", function(){
                         {{pass}}
                       </div>
                     {{else:}}
-                      <a href="{{=smnu1[2]}}" data-role="button" data-theme="a" data-corners="false"
+                      <a href="{{=smnu1[2]}}" data-role="button" data-theme="b" data-corners="false"
                         data-icon="forward" data-iconpos="right" data-ajax="false"
                         style="color: #FFD700;margin:0px;text-align: left">{{=smnu1[0]}}</a>
                     {{pass}}
@@ -181,9 +182,9 @@ $(document).bind("mobileinit", function(){
                 {{pass}}
               </div>
             {{else:}}
-              <a href="{{=mnu[2]}}" data-role="button" data-theme="a" data-corners="false"
+              <a href="{{=mnu[2]}}" data-role="button" data-theme="b" data-corners="false"
                 data-icon="forward" data-iconpos="right" data-ajax="false"
-                style="color: #FFD700;margin:0px;text-align: left">{{=mnu[0]}}</a>
+                style="color: #FFD700;margin:0px;text-align: left;">{{=mnu[0]}}</a>
             {{pass}}
           {{pass}}
           </div>

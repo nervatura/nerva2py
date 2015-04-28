@@ -3,7 +3,7 @@
 """
 This file is part of the Nervatura Framework
 http://www.nervatura.com
-Copyright © 2011-2014, Csaba Kappel
+Copyright © 2011-2015, Csaba Kappel
 License: LGPLv3
 http://www.nervatura.com/nerva2py/default/licenses
 """
@@ -118,14 +118,14 @@ class AdminUiControl(object):
   def __init__(self, ui):
     self.ui = ui
   
-  def create_cmd(self,response,T):
+  def create_cmd(self,response,T,theme="a"):
     response.cmd_menu = self.get_mobil_button(label=T("MENU"), href="#main-menu", style="color: #FFD700;",
-                          icon="bars", cformat="ui-btn-left", ajax="true", iconpos="left", theme="a", mini="true")
+                          icon="bars", cformat="ui-btn-left", ajax="true", iconpos="left", theme=theme, mini="true")
     response.cmd_exit = self.get_mobil_button(label=T("EXIT"), href=URL("logout",**{'user_signature': True}),
                           icon="power", cformat="ui-btn-right", ajax="false", iconpos="left",
-                          style="color: red;margin:2px;", theme="a", mini="true")
+                          style="color: red;margin:2px;", theme=theme, mini="true")
     response.cmd_home = self.get_mobil_button(label=T("HOME"), href=URL('index',**{'user_signature': True}),
-                          icon="home", cformat="ui-btn-left", ajax="false", iconpos="left", theme="a", mini="true")
+                          icon="home", cformat="ui-btn-left", ajax="false", iconpos="left", theme=theme, mini="true")
     response.cmd_close = self.get_mobil_button(label=T("Close"), href="#",
                           icon="delete", cformat="ui-btn-right", ajax="true", iconpos="notext", rel="close")
   
@@ -191,11 +191,11 @@ class AdminUiControl(object):
     if tbl_id:
       table["_id"] = tbl_id
     table["_class"] = "ui-body-d ui-shadow table-stripe ui-responsive"
-    table["_data-column-btn-theme"] = "a"
+    table["_data-column-btn-theme"] = "b"
     if columntoggle:
       table["_data-mode"] = "columntoggle"
       table["_data-column-btn-text"] = "Columns to display..."
-      table["_data-column-popup-theme"] = "a"
+      table["_data-column-popup-theme"] = "b"
     thead = table.elements("thead")
     if len(thead)>0:
       head = thead[0][0]
@@ -215,7 +215,7 @@ class AdminUiControl(object):
           head[i]["_data-priority"] = pnum
           pnum+=1
   
-  def set_input_form(self, form, submit_label="Save"):
+  def set_input_form(self, form, submit_label="Save", theme="b"):
     form["_id"]="frm_input"
     form["_data-ajax"]="false"
     text_inputs = form.elements('input',_type='text')
@@ -226,7 +226,7 @@ class AdminUiControl(object):
       text_inputs[i]["_onkeydown"]="if (event.keyCode == 13) document.forms['frm_input'].submit();"
     submit_row = form.element("#submit_record__row")
     submit_row[1][0] = self.get_mobil_button(label=submit_label, href="#", 
-          cformat=None, style="text-align: left;", icon="check", ajax="false", theme="a",
+          cformat=None, style="text-align: left;", icon="check", ajax="false", theme=theme,
           onclick= "document.forms[0].submit();")
     return form
     
