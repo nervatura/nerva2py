@@ -2,8 +2,7 @@ Nervatura
 =========
 
 Open Source Business Management Framework v1.*
-
-Python version
+(Python version)
 
 The Nervatura Framework v2.* is based on the Node.js/Express.
 Please see https://github.com/nervatura/nervatura
