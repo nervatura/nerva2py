@@ -93,7 +93,7 @@ class dsCustomer():
                           "sqlStr":sqlStr, "whereStr":"", "havingStr":"", "paramList":paramList})
     else:
       dataSetInfo.append({"infoName":"custnumber", "infoType":"function", "functionName":"nextNumber",
-                          "paramList":{"id":"customer_number", "step":False}})
+                          "paramList":{"numberkey":"custnumber", "step":False}})
     
     conn = npiAdapter(self.parentView.application.app_settings["url"]+"/"+
       self.parentView.application.app_config["connection"]["npi_service"])
@@ -232,7 +232,7 @@ class dsCustomer():
         conn = npiAdapter(self.parentView.application.app_settings["url"]+"/"+
           self.parentView.application.app_config["connection"]["npi_service"])
         response = conn.callFunction(self.parentView.getCredentials(), 
-          "nextNumber", {"id":"customer_number", "step":True})
+          "nextNumber", {"numberkey":"custnumber", "step":True})
         if response=="error":
           return
         else:

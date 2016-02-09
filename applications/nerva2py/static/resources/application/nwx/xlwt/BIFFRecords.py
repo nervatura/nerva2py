@@ -31,7 +31,7 @@ class SharedStringTable(object):
             idx = self._str_indexes[s]
             self._tally[idx] += 1
         return idx
-	
+
     def add_rt(self, rt):
         rtList = []
         for s, xf in rt:
@@ -102,7 +102,7 @@ class SharedStringTable(object):
 
         self._save_atom(u_str[0:atom_len])
         self._save_splitted(u_str[atom_len:], is_unicode_str)
-	
+
     def _add_rt_to_sst(self, rt):
         rt_str, rt_fr = upack2rt(rt, self.encoding)
         is_unicode_str = rt_str[2] == '\x09'

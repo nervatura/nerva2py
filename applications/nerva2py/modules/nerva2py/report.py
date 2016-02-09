@@ -1131,7 +1131,14 @@ class Report(FPDF, HTMLMixin):
     return False
   
   def setData(self, key, value):
-    self.databind[key] = value;
+    if self.databind.has_key(key) and type(value).__name__=="dict":
+      if type(self.databind[key]).__name__=="dict":
+        for value_key in value.keys():
+          self.databind[key][value_key] = value[value_key]
+      else:
+        self.databind[key] = value;
+    else:
+      self.databind[key] = value
     return True
   
   def getData(self, key):

@@ -29,7 +29,7 @@ from gluon.html import URL, FIELDSET, P, DEFAULT_PASSWORD_DISPLAY
 from pydal.base import DEFAULT
 from pydal.objects import Table, Row, Expression, Field
 from pydal.adapters.base import CALLABLETYPES
-from pydal.helpers.methods import smart_query, bar_encode
+from pydal.helpers.methods import smart_query, bar_encode,  _repr_ref
 from pydal.helpers.classes import Reference, SQLCustomType
 from gluon.storage import Storage
 from gluon.utils import md5_hash
@@ -58,9 +58,12 @@ def represent(field, value, record):
     f = field.represent
     if not callable(f):
         return str(value)
-    n = f.func_code.co_argcount - len(f.func_defaults or [])
-    if getattr(f, 'im_self', None):
-        n -= 1
+    if hasattr(f,'func_code'):
+        n = f.func_code.co_argcount - len(f.func_defaults or [])
+        if getattr(f, 'im_self', None):
+            n -= 1
+    else:
+        n = 1
     if n == 1:
         return f(value)
     elif n == 2:
@@ -68,6 +71,26 @@ def represent(field, value, record):
     else:
         raise RuntimeError("field representation must take 1 or 2 args")
 
+class CacheRepresenter(object):
+    def __init__(self):
+        self.cache = {}
+    def __call__(self, field, value, row):
+        cache = self.cache
+        if field not in cache:
+            cache[field] = {}
+        try:
+            nvalue = cache[field][value]
+        except KeyError:
+            try:
+                nvalue = field.represent(value, row)
+            except KeyError:
+                try:
+                    nvalue = field.represent(value, row[field.tablename])
+                except KeyError:
+                    nvalue = None
+            if isinstance(field, _repr_ref):
+                cache[field][value] = nvalue
+        return nvalue
 
 def safe_int(x):
     try:
@@ -856,14 +879,14 @@ def formstyle_bootstrap3_stacked(form, fields):
                 label = ''
             elif isinstance(controls, (SELECT, TEXTAREA)):
                 controls.add_class('form-control')
-                            
+
         elif isinstance(controls, SPAN):
             _controls = P(controls.components)
 
         elif isinstance(controls, UL):
             for e in controls.elements("input"):
                 e.add_class('form-control')
-                
+
         if isinstance(label, LABEL):
             label['_class'] = 'control-label'
 
@@ -906,9 +929,9 @@ def formstyle_bootstrap3_inline_factory(col_label_size=3):
                     label = ''
                 elif isinstance(controls, (SELECT, TEXTAREA)):
                     controls.add_class('form-control')
-                
+
             elif isinstance(controls, SPAN):
-                _controls = P(controls.components, 
+                _controls = P(controls.components,
                               _class="form-control-static %s" % col_class)
             elif isinstance(controls, UL):
                 for e in controls.elements("input"):
@@ -1123,7 +1146,8 @@ class SQLFORM(FORM):
         extra_fields = extra_fields or []
         self.extra_fields = {}
         for extra_field in extra_fields:
-            self.fields.append(extra_field.name)
+            if not extra_field.name in self.fields:
+                self.fields.append(extra_field.name)
             self.extra_fields[extra_field.name] = extra_field
             extra_field.db = table._db
             extra_field.table = table
@@ -1205,6 +1229,9 @@ class SQLFORM(FORM):
                 elif field.type == 'boolean':
                     inp = self.widgets.boolean.widget(
                         field, default, _disabled=True)
+                elif isinstance(field.type, SQLCustomType) and callable(field.type.represent):
+                    # SQLCustomType has a represent, use it
+                    inp = field.type.represent(default, record)
                 else:
                     inp = field.formatter(default)
                 if getattr(field, 'show_if', None):
@@ -1246,6 +1273,9 @@ class SQLFORM(FORM):
                     dspval = ''
             elif field.type == 'blob':
                 continue
+            elif isinstance(field.type, SQLCustomType) and callable(field.type.widget):
+                # SQLCustomType has a widget, use it
+                inp = field.type.widget(field, default)
             else:
                 field_type = widget_class.match(str(field.type)).group()
                 field_type = field_type in self.widgets and field_type or 'string'
@@ -1669,7 +1699,7 @@ class SQLFORM(FORM):
                         self.vars.update(pk)
                     else:
                         ret = False
-            else:
+            elif self.table._db._uri:
                 if record_id:
                     self.vars.id = self.record[self.id_field_name]
                     if fields:
@@ -1682,6 +1712,7 @@ class SQLFORM(FORM):
 
     AUTOTYPES = {
         type(''): ('string', None),
+        type(u''): ('string',None),
         type(True): ('boolean', None),
         type(1): ('integer', IS_INT_IN_RANGE(-1e12, +1e12)),
         type(1.0): ('double', IS_FLOAT_IN_RANGE()),
@@ -1746,10 +1777,16 @@ class SQLFORM(FORM):
             keywords = keywords[0]
             request.vars.keywords = keywords
         key = keywords.strip()
-        if key and ' ' not in key and not '"' in key and not "'" in key:
+        if key and not '"' in key:
             SEARCHABLE_TYPES = ('string', 'text', 'list:string')
-            parts = [field.contains(
-                key) for field in fields if field.type in SEARCHABLE_TYPES]
+            sfields = [field for field in fields if field.type in SEARCHABLE_TYPES]
+            if settings.global_settings.web2py_runtime_gae:
+                return reduce(lambda a,b: a|b, [field.contains(key) for field in sfields])
+            else:
+                return reduce(lambda a,b:a&b,[
+                        reduce(lambda a,b: a|b, [
+                                field.contains(k) for field in sfields]
+                               ) for k in key.split()])
 
             # from https://groups.google.com/forum/#!topic/web2py/hKe6lI25Bv4
             # needs testing...
@@ -1763,10 +1800,6 @@ class SQLFORM(FORM):
             #        filters.append(reduce(lambda a, b: (a & b), all_words_filters))
             #parts = filters
 
-        else:
-            parts = None
-        if parts:
-            return reduce(lambda a, b: a | b, parts)
         else:
             return smart_query(fields, key)
 
@@ -1829,15 +1862,19 @@ class SQLFORM(FORM):
                 operators = SELECT(*[OPTION(T(option), _value=option) for option in options], _class='form-control')
                 _id = "%s_%s" % (value_id, name)
                 if field_type in ['boolean', 'double', 'time', 'integer']:
-                    value_input = SQLFORM.widgets[field_type].widget(field, field.default, _id=_id, _class='form-control')
+                    widget_ = SQLFORM.widgets[field_type]
+                    value_input = widget_.widget(field, field.default, _id=_id, _class=widget_._class + ' form-control')
                 elif field_type == 'date':
-                    iso_format = {'_data-w2p_date_format' : '%Y-%m-%d'}
-                    value_input = SQLFORM.widgets.date.widget(field, field.default, _id=_id, _class='form-control', **iso_format)
+                    iso_format = {'_data-w2p_date_format': '%Y-%m-%d'}
+                    widget_ = SQLFORM.widgets.date
+                    value_input = widget_.widget(field, field.default, _id=_id, _class=widget_._class + ' form-control', **iso_format)
                 elif field_type == 'datetime':
-                    iso_format = {'_data-w2p_datetime_format' : '%Y-%m-%d %H:%M:%S'}
-                    value_input = SQLFORM.widgets.datetime.widget(field, field.default, _id=_id, _class='form-control', **iso_format)
+                    iso_format = {'_data-w2p_datetime_format': '%Y-%m-%d %H:%M:%S'}
+                    widget_ = SQLFORM.widgets.datetime
+                    value_input = widget_.widget(field, field.default, _id=_id, _class=widget_._class + ' form-control', **iso_format)
                 elif (field_type.startswith('reference ') or
                       field_type.startswith('list:reference ')) and \
+                      hasattr(field.requires, 'options') or \
                       hasattr(field.requires, 'options'):
                     value_input = SELECT(
                         *[OPTION(v, _value=k)
@@ -1847,7 +1884,8 @@ class SQLFORM(FORM):
                 elif field_type.startswith('reference ') or \
                      field_type.startswith('list:integer') or \
                      field_type.startswith('list:reference '):
-                    value_input = SQLFORM.widgets.integer.widget(field, field.default, _id=_id, _class='form-control')
+                    widget_ = SQLFORM.widgets.integer
+                    value_input = widget_.widget(field, field.default, _id=_id, _class=widget_._class + ' form-control')
                 else:
                     value_input = INPUT(
                         _type='text', _id=_id,
@@ -1958,7 +1996,8 @@ class SQLFORM(FORM):
              cache_count=None,
              client_side_delete=False,
              ignore_common_filters=None,
-             auto_pagination=True):
+             auto_pagination=True,
+             use_cursor=False):
 
         formstyle = formstyle or current.response.formstyle
 
@@ -2060,18 +2099,15 @@ class SQLFORM(FORM):
             # is unique and usually indexed. See issue #679
             if not orderby:
                 orderby = field_id
-            else:
-                if isinstance(orderby, Expression):
-                    if orderby.first:
-                        # here we're with a DESC order on a field
-                        # stored as orderby.first
-                        if orderby.first is not field_id:
-                            orderby = orderby | field_id
-                    else:
-                        # here we're with an ASC order on a field
-                        # stored as orderby
-                        if orderby is not field_id:
-                            orderby = orderby | field_id
+            elif isinstance(orderby, list):
+                orderby = reduce(lambda a,b: a|b, orderby)
+            elif isinstance(orderby, Field) and orderby is not field_id:
+                # here we're with an ASC order on a field stored as orderby
+                orderby = orderby | field_id
+            elif (isinstance(orderby, Expression) and 
+                  orderby.first and orderby.first is not field_id):
+                # here we're with a DESC order on a field stored as orderby.first
+                orderby = orderby | field_id
             return orderby
 
         def url(**b):
@@ -2099,10 +2135,8 @@ class SQLFORM(FORM):
         # - url has valid signature (vars are not signed, only path_info)
         # = url does not contain 'create','delete','edit' (readonly)
         if user_signature:
-            if not (
-                '/'.join(str(a) for a in args) == '/'.join(request.args) or
-                URL.verify(request, user_signature=user_signature,
-                           hash_vars=False) or
+            if not ('/'.join(map(str,args)) == '/'.join(map(str,request.args)) or
+                    URL.verify(request, user_signature=user_signature, hash_vars=False) or
                     (request.args(len(args)) == 'view' and not logged)):
                 session.flash = T('not authorized')
                 redirect(referrer)
@@ -2533,7 +2567,7 @@ class SQLFORM(FORM):
 
         cursor = True
         # figure out what page we are one to setup the limitby
-        if paginate and dbset._db._adapter.dbengine == 'google:datastore':
+        if paginate and dbset._db._adapter.dbengine == 'google:datastore' and use_cursor:
             cursor = request.vars.cursor or True
             limitby = (0, paginate)
             try:
@@ -2555,7 +2589,7 @@ class SQLFORM(FORM):
             table_fields = [field for field in fields
                             if (field.tablename in tablenames and
                                 not(isinstance(field, Field.Virtual)))]
-            if dbset._db._adapter.dbengine == 'google:datastore':
+            if dbset._db._adapter.dbengine == 'google:datastore' and use_cursor:
                 rows = dbset.select(left=left, orderby=orderby,
                                     groupby=groupby, limitby=limitby,
                                     reusecursor=cursor,
@@ -2565,6 +2599,7 @@ class SQLFORM(FORM):
                 rows = dbset.select(left=left, orderby=orderby,
                                     groupby=groupby, limitby=limitby,
                                     cacheable=True, *table_fields)
+                next_cursor = None
         except SyntaxError:
             rows = None
             next_cursor = None
@@ -2583,7 +2618,7 @@ class SQLFORM(FORM):
         console.append(DIV(message or '', _class='web2py_counter'))
 
         paginator = UL()
-        if paginate and dbset._db._adapter.dbengine == 'google:datastore':
+        if paginate and dbset._db._adapter.dbengine == 'google:datastore' and use_cursor:
             # this means we may have a large table with an unknown number of rows.
             try:
                 page = int(request.vars.page or 1) - 1
@@ -2654,7 +2689,7 @@ class SQLFORM(FORM):
             htmltable = TABLE(COLGROUP(*cols), THEAD(head))
             tbody = TBODY()
             numrec = 0
-            repr_cache = {}
+            repr_cache = CacheRepresenter()
             for row in rows:
                 trcols = []
                 id = row[field_id]
@@ -2667,31 +2702,20 @@ class SQLFORM(FORM):
                         continue
                     if field.type == 'blob':
                         continue
-                    value = row[str(field)]
+                    if isinstance(field, Field.Virtual) and field.tablename in row:
+                        value = dbset.db[field.tablename][row[field.tablename][field_id]][field.name]
+                    else:
+                        value = row[str(field)]
                     maxlength = maxtextlengths.get(str(field), maxtextlength)
                     if field.represent:
                         if field.type.startswith('reference'):
-                            if field not in repr_cache:
-                                repr_cache[field] = {}
-                            try:
-                                nvalue = repr_cache[field][value]
-                            except KeyError:
-                                try:
-                                    nvalue = field.represent(value, row)
-                                except KeyError:
-                                    try:
-                                        nvalue = field.represent(
-                                            value, row[field.tablename])
-                                    except KeyError:
-                                        nvalue = None
-                                repr_cache[field][value] = nvalue
+                            nvalue = repr_cache(field, value, row)
                         else:
                             try:
                                 nvalue = field.represent(value, row)
                             except KeyError:
                                 try:
-                                    nvalue = field.represent(
-                                        value, row[field.tablename])
+                                    nvalue = field.represent(value, row[field.tablename])
                                 except KeyError:
                                     nvalue = None
                         value = nvalue
@@ -2708,6 +2732,9 @@ class SQLFORM(FORM):
                                           _href='%s/%s' % (upload, value))
                         else:
                             value = ''
+                    elif isinstance(field.type, SQLCustomType) and callable(field.type.represent):
+                        # SQLCustomType has a represent, use it
+                        value = field.type.represent(value, row)
                     if isinstance(value, str):
                         value = truncate_string(value, maxlength)
                     elif not isinstance(value, XmlComponent):

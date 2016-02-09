@@ -239,14 +239,14 @@ class employee(object):
     self.startdate = None
     self.enddate = None
     self.department = None
+    self.password = None
+    self.registration_key = None
     self.inactive = None
     self.deleted = None
-    self.password = None
-    self.email = None
   def __repr__(self):
     return "<employee('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')>" % \
       (self.id, self.empnumber, self.username, self.usergroup, self.startdate, self.enddate, self.department,
-       self.inactive, self.deleted, self.password, self.email)
+       self.password, self.registration_key, self.inactive, self.deleted)
 
 class event(object):
   __tablename__ = 'event'

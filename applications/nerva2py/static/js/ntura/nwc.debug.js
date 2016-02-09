@@ -382,20 +382,24 @@ function load_price() {
 	var product_id=document.getElementById("product_id");
 	var qty=document.getElementById("item_qty");
 	var fxprice=document.getElementById("item_fxprice");
+	var discount=document.getElementById("item_discount");
 	var trans_id=document.getElementById("item_trans_id").value;	
 	var surl = get_base_url()+'/cmd_get_price?trans_id='+trans_id+'&product_id='+product_id.value+'&qty='+qty.value;
 	jQuery.ajax({
     	type: "POST",
     	url: surl,
     	success: function(data) {
-    		if (parseFloat(data)!=0) {
-    			fxprice.value = data;
-    			if (parseFloat(qty.value)==0) {
-    				qty.value = 1;
-    			}
-    			calc_price("fxprice");
-    		}
-    	}
+    		var price = parseFloat(data.toString().split("|")[0]);
+    		if (isNaN(price)){price = 0;}
+    		var disc = 0
+    		if (data.toString().split("|").length>1){
+    			disc = parseFloat(data.toString().split("|")[1]);
+        		if (isNaN(disc)){disc = 0;}}
+    		fxprice.value = price;
+    		discount.value = disc;
+    		if (parseFloat(qty.value)==0) {
+				qty.value = 1;}
+			calc_price("fxprice");}
 	});
 }
 function _round(n,dec) {
@@ -1353,7 +1357,7 @@ function create_report(cmd,ms_missing) {
 	frm.setAttribute('action',document.getElementById("report_url").value);
 	frm.setAttribute('target',"_blank");
 	
-	frm_values = ["cmb_templates","cmb_orientation","cmb_size","page_copy"]
+	frm_values = ["cmb_templates","cmb_orientation","cmb_size","page_copy"];
 	for (var i=0;i<frm_values.length;i++) {
 		var frm_value = document.createElement("input");
 		frm_value.setAttribute("type", "hidden");

@@ -359,7 +359,7 @@ a {
       </tr>
       <tr>
         <td>link</td>
-        <td>nervatype_1~refnumber_1~~nervatype_2~refnumber_2</td>
+        <td>nervatype1~refnumber1~~nervatype2~refnumber2</td>
         <td>See <a href="#link_fields" style="font-weight: bold;">LINK</a></td>
         <td>Create a relationship between two objects.</td>
       </tr>
@@ -1413,7 +1413,7 @@ a {
 		<u><a name="link_fields"><b>LINK</b> items fieldname and type values:</a></u>
 	</p>
   <ul style="line-height: 25px;">
-    <li>Primary key / unique value: <b>nervatype_1~refnumber_1~~nervatype_2~refnumber_2</b></li>
+    <li>Primary key / unique value: <b>nervatype1~refnumber1~~nervatype2~refnumber2</b></li>
     <li>Logging settings: <i>log_link_update, log_link_delete</i> (or log_update, log_deleted)</li>
   </ul>
 	<table
@@ -1828,22 +1828,10 @@ a {
 				<td>Required in case of new value entry.</td>
 			</tr>
 			<tr>
-				<td>ref_planumber</td>
-				<td>text</td>
-				<td>If placetype equal store. Valid PLACE (inventory) link.</td>
-			</tr>
-			<tr>
 				<td>curr*</td>
 				<td>text</td>
 				<td>Required in case of new value entry, if placetype equals bank or cash.
 					Valid currency code from CURRENCY.</td>
-			</tr>
-			<tr>
-				<td>storetype*</td>
-				<td>text</td>
-				<td>Required in case of new value entry, if placetype equals store.
-					Valid values: all groupvalue from GROUPS, where groupname equal
-					storetype.</td>
 			</tr>
 			<tr>
 				<td>defplace</td>

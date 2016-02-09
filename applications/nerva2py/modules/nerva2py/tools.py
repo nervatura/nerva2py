@@ -169,6 +169,11 @@ class NervaTools(object):
   
   def getPriceValueDal(self, params):
     price = 0
+    customer_discount = 0
+    prow = self.ns.db.customer(id=params["customer_id"])
+    if prow:
+      customer_discount = prow.discount
+    
     #best listprice
     price_nervatype = self.ns.valid.get_groups_id("nervatype", "price")
     left = (self.ns.db.link.on((self.ns.db.price.id==self.ns.db.link.ref_id_1)&(self.ns.db.link.nervatype_1==price_nervatype)
@@ -198,6 +203,7 @@ class NervaTools(object):
       if prow[0]["mp"]!=None:
         if prow[0]["mp"]!=0 and prow[0]["mp"]<price:
           price = prow[0]["mp"]
+          customer_discount = 0
           
     #best customer groups price
     groups_nervatype = self.ns.valid.get_groups_id("nervatype", "groups")
@@ -221,7 +227,8 @@ class NervaTools(object):
         if prow[0]["mp"]!=None:
           if prow[0]["mp"]!=0 and prow[0]["mp"]<price:
             price = prow[0]["mp"]
-    return price
+            customer_discount = 0
+    return str(price)+ "|"+str(customer_discount)
   
   def getReportFiles(self, report_dir):
     reports = []; types = {}; labels = {}
@@ -279,7 +286,7 @@ class NervaTools(object):
     return DataOutput(self.ns).getReport({"report_id":report_[0].id, "output":"tmp"},{"@id":ref_id})
   
   def nextNumber(self, params):
-    return self.ns.connect.nextNumber(numberkey=params["id"],step=params["step"])
+    return self.ns.connect.nextNumber(numberkey=params["numberkey"],step=params["step"])
       
 class DataOutput(object):
   
@@ -416,7 +423,7 @@ class DataOutput(object):
       system = platform.system()
       if system=="Linux":
         try:
-          import cups #pycups support
+          import cups #pycups support @UnresolvedImport
           
           printer_server = self.ns.db((self.ns.db.fieldvalue.fieldname=="printer_server")
                                       &(self.ns.db.fieldvalue.ref_id==printer_prop["printer_id"])
@@ -988,13 +995,6 @@ class DatabaseTools(object):
           else:
             rs.append(DIV(SPAN("OK ",_style="color:green;font-weight: bold;"),
                           SPAN("Data initialization ...",_style="font-weight: bold;"),BR()))
-             
-          if self.ns.store.insertDefaultReports()==False:
-            rs.append(DIV(SPAN("Error: "+str(self.ns.error_message),_style="color:red;font-weight: bold;"),BR()))
-            err_no+=1
-          else:
-            rs.append(DIV(SPAN("OK ",_style="color:green;font-weight: bold;"),
-                          SPAN("Loading report templates and data ...",_style="font-weight: bold;"),BR()))
    
         if err_no==0:
           rs.append(DIV(SPAN("Result: ",_style="color:blue;font-weight: bold;"),

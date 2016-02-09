@@ -9,6 +9,13 @@
 .pydevproject
 .settings
 
+.vs
+bin
+obj
+*.sln
+*.pyproj
+web*.config
+
 parameters_8000.py
 parameters_8080.py
 parameters_80.py

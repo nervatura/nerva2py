@@ -12,7 +12,7 @@ if 0:
   from gluon.globals import Session
   global session; session = Session()
   global request; request = globals.Request()
-  import gluon.languages.translator as T
+  from gluon.languages import translator as T
   from gluon.sql import DAL
   global db; db = DAL()
   global response; response = globals.Response()

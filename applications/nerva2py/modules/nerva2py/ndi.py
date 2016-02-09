@@ -10,6 +10,7 @@ http://www.nervatura.com/nerva2py/default/licenses
 from datetime import date, datetime
 
 from gluon.html import TABLE, TR, TH, TD
+from nerva2py.ordereddict import OrderedDict
 
 class Ndi(object):
   ns = None
@@ -1474,10 +1475,6 @@ class Ndi(object):
               return "Error|Unknown placetype: "+str(row["placetype"])
             if (row["placetype"]=="bank" or row["placetype"]=="cash") and not row.has_key("curr"):
               return "Error|Missing required parameter: curr"
-            if (row["placetype"]=="store") and not row.has_key("ref_planumber"):
-              return "Error|Missing required parameter: ref_planumber"
-            if (row["placetype"]=="store") and not row.has_key("storetype"):
-              return "Error|Missing required parameter: storetype"
             del row["placetype"]
           if not row.has_key("planumber"):
             row["planumber"] = self.ns.connect.nextNumber("planumber")
@@ -1495,19 +1492,6 @@ class Ndi(object):
         if row["curr"]!="":
           if not self.ns.valid.get_id_from_refnumber("currency",str(row["curr"]),params.has_key("use_deleted")):
             return "Error|Unknown curr: "+row["curr"]
-      if row.has_key("ref_planumber"):
-        if row["ref_planumber"]!="":
-          values["place_id"] = self.ns.valid.get_id_from_refnumber("place",str(row["ref_planumber"]),params.has_key("use_deleted"))
-          if not values["place_id"]:
-            return "Error|Unknown ref_planumber: "+row["ref_planumber"]
-        else:
-          values["place_id"] = None
-        del row["ref_planumber"]
-      if row.has_key("storetype"):
-        if row["storetype"]!="":
-          values["storetype"] = self.ns.valid.get_groups_id("storetype",row["storetype"],params.has_key("use_deleted"))
-          if not values["storetype"]:
-            return "Error|Unknown storetype: "+str(row["storetype"])
        
       for key in row.keys():
         if key!="planumber" and key!="placetype":
@@ -1820,14 +1804,15 @@ class Ndi(object):
           return "Error|Unknown curr: "+str(row["curr"])
         else:
           values["curr"] = row["curr"]
-      if not row.has_key("planumber"):
-        return "Error|Missing required parameter: planumber"
-      else:
-        values["place_id"] = self.ns.valid.get_id_from_refnumber("place",row["planumber"],params.has_key("use_deleted"))
-        if not values["place_id"]:
-          return "Error|Unknown planumber: "+str(row["planumber"])
-      
-      values["id"] = self.ns.valid.get_id_from_refnumber("rate",row["ratetype"]+"~"+row["ratedate"]+"~"+row["curr"]+"~"+row["planumber"],params.has_key("use_deleted"))
+      refnumber = row["ratetype"]+"~"+row["ratedate"]+"~"+row["curr"]
+      if row.has_key("planumber"):
+        if row["planumber"].lower() != "none" and row["planumber"].lower() != "null":
+          values["place_id"] = self.ns.valid.get_id_from_refnumber("place",row["planumber"],params.has_key("use_deleted"))
+          if not values["place_id"]:
+            return "Error|Unknown planumber: "+str(row["planumber"])
+          refnumber += "~"+row["planumber"]
+        
+      values["id"] = self.ns.valid.get_id_from_refnumber("rate",refnumber,params.has_key("use_deleted"))
       if not values["id"]:  
         if params.has_key("insert_row"):
           if audit!="all":
@@ -1850,8 +1835,8 @@ class Ndi(object):
         insert_row=params.has_key("insert_row"), insert_field=params.has_key("insert_field"))
       if not row_id:
         return "Error|"+str(self.ns.error_message)
-      #ratetype~ratedate~curr~planumber
-      retvalue = retvalue+"|"+row["ratetype"]+"~"+row["ratedate"]+"~"+row["curr"]+"~"+row["planumber"]
+      #ratetype~ratedate~curr(~planumber)
+      retvalue = retvalue+"|"+refnumber
     return retvalue
   
   def delete_rate(self, params, data):
@@ -1875,13 +1860,13 @@ class Ndi(object):
       else:
         if not self.ns.valid.get_id_from_refnumber("currency",row["curr"],params.has_key("use_deleted")):
           return "Error|Unknown curr: "+str(row["curr"])
-      if not row.has_key("planumber"):
-        return "Error|Missing required parameter: planumber"
-      else:
-        if not self.ns.valid.get_id_from_refnumber("place",row["planumber"],params.has_key("use_deleted")):
-          return "Error|Unknown planumber: "+str(row["planumber"])
-      
-      refnumber = row["ratetype"]+"~"+row["ratedate"]+"~"+row["curr"]+"~"+row["planumber"]
+      refnumber = row["ratetype"]+"~"+row["ratedate"]+"~"+row["curr"]
+      if row.has_key("planumber"):
+        if row["planumber"].lower() != "none" and row["planumber"].lower() != "null":
+          if not self.ns.valid.get_id_from_refnumber("place",row["planumber"],params.has_key("use_deleted")):
+            return "Error|Unknown planumber: "+str(row["planumber"])
+          refnumber += "~"+row["planumber"]
+        
       if self.ns.connect.deleteData(nervatype="rate", ref_id=None, refnumber=refnumber):
         retvalue = retvalue+"|"+refnumber
       else:
@@ -2223,8 +2208,8 @@ class Ndi(object):
         return "Error|Invalid login!"
       
     if filter.has_key("output"):
-      if filter["output"] not in("text","html","xml","excel"):
-        return "Error|Valid output: text, html, xml, excel"
+      if filter["output"] not in("text","html","xml","excel","json"):
+        return "Error|Valid output: text, html, xml, excel, json"
     else:
       filter["output"]="text"
     header=[]
@@ -3106,23 +3091,21 @@ class Ndi(object):
           return "Error|Disabled type: setting"
       
       fld_value = "place"
-      fields_ = [{"planumber":"place.planumber"}, {"placetype":"g.groupvalue"}, {"description":"place.description"}, {"ref_planumber":"pm.planumber"}, 
-                 {"curr":"place.curr"}, {"storetype":"sg.groupvalue"}, {"defplace":"place.defplace"}, {"notes":"place.notes"}, {"inactive":"place.inactive"}]
-      select_str ="select @id, place.planumber, g.groupvalue as  placetype, place.description, pm.planumber as ref_planumber, place.curr, sg.groupvalue as storetype, place.defplace, place.notes, place.inactive "
+      fields_ = [{"planumber":"place.planumber"}, {"placetype":"g.groupvalue"}, {"description":"place.description"}, 
+                 {"curr":"place.curr"}, {"defplace":"place.defplace"}, {"notes":"place.notes"}, {"inactive":"place.inactive"}]
+      select_str ="select @id, place.planumber, g.groupvalue as  placetype, place.description, place.curr, place.defplace, place.notes, place.inactive "
       if filter.has_key("show_id"):
         fields.insert(0, "id")
         select_str = select_str.replace("@id,", "place.id,")
       else:
         select_str = select_str.replace("@id,", "")
       if params.has_key("use_deleted"):
-        from_str = " from place inner join groups g on place.placetype=g.id left join place pm on (place.place_id=pm.id) \
-          left join groups sg on (place.storetype=sg.id) "
+        from_str = " from place inner join groups g on place.placetype=g.id "
         where_str = " where 1=1 "+where_str
         fields_.append({"deleted":"place.deleted"})
         select_str+=", place.deleted "
       else:
-        from_str = " from place inner join groups g on place.placetype=g.id left join place pm on (place.place_id=pm.id and pm.deleted=0) \
-          left join groups sg on (place.storetype=sg.id and sg.deleted=0) "
+        from_str = " from place inner join groups g on place.placetype=g.id "
         where_str = " where place.deleted=0 "+where_str
       if orderby=="":
         orderby_str = " order by planumber"
@@ -3278,13 +3261,13 @@ class Ndi(object):
       else:
         select_str = select_str.replace("@id,", "")
       if params.has_key("use_deleted"):
-        from_str = " from rate inner join groups g on rate.ratetype=g.id inner join place p on (rate.place_id=p.id) \
+        from_str = " from rate inner join groups g on rate.ratetype=g.id left join place p on (rate.place_id=p.id) \
           left join groups rg on (rategroup=rg.id) "
         where_str = " where 1=1  "+where_str
         fields_.append({"deleted":"rate.deleted"})
         select_str+=", rate.deleted "
       else:
-        from_str = " from rate inner join groups g on rate.ratetype=g.id inner join place p on (rate.place_id=p.id and p.deleted=0) \
+        from_str = " from rate inner join groups g on rate.ratetype=g.id left join place p on (rate.place_id=p.id and p.deleted=0) \
           left join groups rg on (rategroup=rg.id and rg.deleted=0) "
         where_str = " where rate.deleted=0  "+where_str
       if orderby=="":
@@ -3634,6 +3617,13 @@ class Ndi(object):
             if col <= len(fields)-1:
               fields[col] = header[col]
                     
+      if filter["output"]=="json":
+        retvalue = []
+        for row in range(1,len(items)):
+          jrow = OrderedDict()
+          for col in range(len(fields)):
+            jrow[fields[col]] = items[row][col]
+          retvalue.append(jrow)  
       if filter["output"].startswith("xml"):
         retvalue = self.createXML(fields, items, item_str, xml_query, filter["show_id"])
       if filter["output"]=="text":

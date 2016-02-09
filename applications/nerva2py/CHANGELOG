@@ -1,3 +1,13 @@
+1.2.0
+- update web2py to 2.11.2
+- NAS: DSN connection support for mssql driver (host=<dsn name>, database=dsn, password=optional)
+- NDI/NDI Wizard: JSON-RPC and json output support
+- NWC: remove discont ui
+- NWC price function: add customer discount
+- database creation: remove default report templates
+- NOM: place object - remove place_id and storetype fields
+- many bug fixes
+
 1.1.0
 - update web2py to 2.10.3
 - Nervatura Report: fixes invoice template

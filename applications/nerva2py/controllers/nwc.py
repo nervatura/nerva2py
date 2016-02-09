@@ -13,7 +13,7 @@ if 0:
   from gluon.globals import Session
   global session; session = Session()
   global response; response = globals.Response()
-  import gluon.languages.translator as T
+  from gluon.languages import translator as T
   from gluon.sql import DAL
   global db; db = DAL()
   from db import DEMO_MODE
@@ -11066,7 +11066,7 @@ def frm_trans():
             fieldtype="product", search_url=URL("dlg_product_item"),
             label_id="production_product_label",
             label_url="'"+URL("frm_product/view/product")+"/'+document.getElementById('production_product_id').value",
-            label_txt=T('Missing product!'),value_id="production_product_id",width="100%",error_label=True)
+            label_txt=T('Missing product!'),value_id="production_product_id",error_label=True)
         else:
           response.production_product_selector=DIV(
                                    SPAN(T('Missing product!'), _id="production_product_label"), 
@@ -11079,7 +11079,7 @@ def frm_trans():
     if transtype=="production":
       if request.post_vars.duedate=="":
         form.errors["duedate"] = T("enter date as 1963-08-28")
-        response.flash = T('Missing Start Date!')
+        response.flash = T('Missing End Date!')
         check_ok=False
         
     if check_ok==True:

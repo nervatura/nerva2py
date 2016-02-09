@@ -297,7 +297,7 @@ class Validators(object):
 #         &(self.ns.db.contact.deleted==0)).select())>0: retvalue=False
       if len(self.ns.db((self.ns.db.event.nervatype==nervatype_id)&(self.ns.db.event.ref_id==ref_id)
         &(self.ns.db.event.deleted==0)).select())>0: retvalue=False
-      elif len(self.ns.db((self.ns.db.trans.place_id==ref_id)&(self.ns.db.trans.deleted==0)).select())>0: retvalue=False  
+      elif len(self.ns.db((self.ns.db.trans.project_id==ref_id)&(self.ns.db.trans.deleted==0)).select())>0: retvalue=False  
     elif nervatype=="tax":
       #item,product
       if len(self.ns.db((self.ns.db.item.tax_id==ref_id)&(self.ns.db.item.deleted==0)).select())>0: retvalue=False
@@ -445,17 +445,18 @@ class Validators(object):
       elif nervatype=="fieldvalue":
         #refnumber~~fieldname~rownumber
         if len(str(refnumber).split("~~"))>1:
-          ref_value = str(refnumber).split("~~")[0]
-          fieldname = str(str(refnumber).split("~~")[1]).split("~")[0]
-          ref_type = self.ns.db.groups(id=self.ns.db.deffield(fieldname=fieldname).nervatype).groupvalue
+          fieldname = str(refnumber).split("~~")[len(str(refnumber).split("~~"))-1]
+          ref_value = str(refnumber).replace("~~"+fieldname, "")
+          ref_type = self.ns.db.groups(id=self.ns.db.deffield(fieldname=fieldname.split("~")[0]).nervatype).groupvalue
           ref_id = self.get_id_from_refnumber(ref_type, ref_value, use_deleted=use_deleted)
-          if len(str(str(refnumber).split("~~")[1]).split("~"))>1:
-            if int(str(str(refnumber).split("~~")[1]).split("~")[1])<1:
+          if len(fieldname.split("~"))>1:
+            if int(fieldname.split("~")[1])<1:
               return None
             else:
-              ref_index = int(str(str(refnumber).split("~~")[1]).split("~")[1])-1
+              ref_index = int(fieldname.split("~")[1])-1
           else:
             ref_index = 0
+          fieldname = fieldname.split("~")[0]
           if use_deleted:
             return self.ns.db((self.ns.db.fieldvalue.fieldname==fieldname)&(self.ns.db.fieldvalue.ref_id==ref_id)).select()[ref_index]["id"]
           else:
@@ -594,12 +595,15 @@ class Validators(object):
         ratetype = self.get_groups_id("ratetype", str(refnumber).split("~")[0], use_deleted)
         ratedate = datetime.datetime.strptime(str(refnumber).split("~")[1],'%Y-%m-%d')
         curr = str(refnumber).split("~")[2]
+        place_id = None
         if use_deleted:
-          place_id = self.ns.db((self.ns.db.place.planumber==str(refnumber).split("~")[3])).select()[0]["id"]
+          if len(str(refnumber).split("~"))>3:
+            place_id = self.ns.db((self.ns.db.place.planumber==str(refnumber).split("~")[3])).select()[0]["id"]  
           return self.ns.db((self.ns.db.rate.ratetype==ratetype)&(self.ns.db.rate.ratedate==ratedate)
                        &(self.ns.db.rate.curr==curr)&(self.ns.db.rate.place_id==place_id)).select()[0]["id"]
         else:
-          place_id = self.ns.db((self.ns.db.place.planumber==str(refnumber).split("~")[3])&(self.ns.db.place.deleted==0)).select()[0]["id"]
+          if len(str(refnumber).split("~"))>3:
+            place_id = self.ns.db((self.ns.db.place.planumber==str(refnumber).split("~")[3])&(self.ns.db.place.deleted==0)).select()[0]["id"]
           return self.ns.db((self.ns.db.rate.ratetype==ratetype)&(self.ns.db.rate.ratedate==ratedate)
                        &(self.ns.db.rate.curr==curr)&(self.ns.db.rate.place_id==place_id)
                        &(self.ns.db.rate.deleted==0)).select()[0]["id"]
@@ -618,7 +622,12 @@ class Validators(object):
         usergroup = self.get_groups_id("usergroup", str(refnumber).split("~")[0])
         nervatype = self.get_groups_id("nervatype", str(refnumber).split("~")[1])
         if len(str(refnumber).split("~"))>2:
-          subtype = self.get_groups_id("transtype", str(refnumber).split("~")[2])
+          if str(refnumber).split("~")[1] == "trans":
+            subtype = self.get_groups_id("transtype", str(refnumber).split("~")[2])
+          elif str(refnumber).split("~")[1] == "report":
+            subtype = self.get_id_from_refnumber("ui_report", str(refnumber).split("~")[2])
+          else:
+            subtype = None
         else:
           subtype = None
         return self.ns.db((self.ns.db.ui_audit.usergroup==usergroup)&(self.ns.db.ui_audit.nervatype==nervatype)
@@ -1374,7 +1383,7 @@ class DataConnect(object):
     #Get current value from numberdef table (transnumber, custnumber, partnumber etc.)
     retnumber = ""
     if not self.ns.db.numberdef(numberkey=numberkey):
-      self.ns.db.numberdef.insert(numberkey=numberkey)
+      self.ns.db.numberdef.insert(numberkey=numberkey,prefix=numberkey.upper()[:3])
     defrow = self.ns.db.numberdef(numberkey=numberkey)
     if defrow.prefix:
       retnumber = defrow.prefix+defrow.sep
@@ -1447,7 +1456,8 @@ class DataConnect(object):
                               &(self.ns.db.deffield.nervatype==self.ns.valid.get_groups_id("nervatype", nervatype))
                               &(self.ns.db.deffield.addnew==1)).select()
           for nfield in addnew:
-            fv_values[nfield["fieldname"]]= self.ns.valid.get_default_value(nfield["fieldtype"])
+            if not fv_values.has_key(nfield["fieldname"]):
+              fv_values[nfield["fieldname"]]= self.ns.valid.get_default_value(nfield["fieldtype"])
           
       if len(nt_values)>0:
         if nervatype=="fieldvalue":
@@ -1931,7 +1941,7 @@ class DataStore(object):
         #Field('password', type='password', length=512, readable=False, writable=False, 
         #      requires = [IS_EMPTY_OR(IS_STRONG(), CRYPT())]),
         Field('password', type='password', length=512, readable=False, writable=False),
-        Field('registration_key', length=512, writable=False, readable=False, default=''),
+        Field('registration_key', type='string', length=512, writable=False, readable=False, default=''),
         Field('inactive', type='integer', default=0, notnull=True, 
               requires=self.ns.valid.check_boolean(self.ns.T), 
               widget=lambda field,value: SQLFORM.widgets.boolean.widget(field,bool(value))),
@@ -2295,12 +2305,8 @@ class DataStore(object):
               requires = IS_IN_DB(self.ns.db(self.ns.db.groups.groupname.like('placetype')), self.ns.db.groups.id, '%(groupvalue)s'),
               represent = lambda value,row: self.ns.valid.show_refnumber("refnumber", "groups", value, "groupvalue")),
         Field('description', type='string', length=255, notnull=True),
-        Field('place_id', 'reference place', ondelete='RESTRICT', label=self.ns.T('Ref.No.')),
         Field('curr', type='string', length=3, 
               requires = IS_EMPTY_OR(IS_IN_DB(self.ns.db(self.ns.db.currency), self.ns.db.currency.curr, '%(curr)s'))),
-        Field('storetype', self.ns.db.groups, ondelete='RESTRICT', label=self.ns.T('StoreType'), 
-              requires = IS_EMPTY_OR(IS_IN_DB(self.ns.db(self.ns.db.groups.groupname.like('storetype')), self.ns.db.groups.id, '%(groupvalue)s')),
-              represent = lambda value,row: self.ns.valid.show_refnumber("refnumber", "groups", value, "groupvalue")),
         Field('defplace', type='integer', default=0, notnull=True, label=self.ns.T('Default'), 
               requires=self.ns.valid.check_boolean(self.ns.T), 
               widget=lambda field,value: SQLFORM.widgets.boolean.widget(field,bool(value))),
@@ -2311,12 +2317,8 @@ class DataStore(object):
         Field('deleted', type='integer', default=0, notnull=True, 
               requires=self.ns.valid.check_boolean(self.ns.T), 
               widget=lambda field,value: SQLFORM.widgets.boolean.widget(field,bool(value))))
-      self.ns.db.place.place_id.requires = IS_EMPTY_OR(IS_IN_DB(self.ns.db, self.ns.db.place.id, '%(description)s (%(planumber)s)'))
-      self.ns.db.place.place_id.represent = lambda value,row: self.ns.valid.show_refnumber("refnumber", "place", value, "planumber")
       if self.ns.engine in("mssql"):
         table.placetype.ondelete = "NO ACTION"
-        table.place_id.ondelete = "NO ACTION"
-        table.storetype.ondelete = "NO ACTION"
         table.notes.type = 'string'
         table.notes.length = 'max'
       if create:
@@ -2684,23 +2686,6 @@ class DataStore(object):
       except:
         continue
     self.ns.db.commit()
-  
-  def insertDefaultReports(self):
-    #default reports init
-    try:
-      rfiles = os.listdir(os.path.join(self.ns.request.folder,'static/resources/report/dbs_ini/'))
-      for rfile in rfiles:
-        rp_sql = str(open(os.path.join(self.ns.request.folder,'static/resources/report/dbs_ini/'+rfile), 'r').read()).split(";")
-        for sql in rp_sql:
-          if str(sql).lower().find("insert")>-1 or str(sql).lower().find("update")>-1:
-            self.ns.db.executesql(sql)
-  
-      self.ns.db.commit()  
-      return True
-    except Exception, err:
-      self.ns.db.rollback()
-      self.ns.error_message = err
-      return False
   
   def setIniData(self):
     #create if does not exist (update_row=False)
@@ -3087,7 +3072,9 @@ class DataStore(object):
 
       
       currency = [{'id':self.ns.valid.get_id_from_refnumber('currency','EUR'),
-                   'curr':'EUR', 'description':'euro', 'digit':2, 'defrate':0, 'cround':0}]
+                   'curr':'EUR', 'description':'euro', 'digit':2, 'defrate':0, 'cround':0},
+                  {'id':self.ns.valid.get_id_from_refnumber('currency','USD'),
+                   'curr':'USD', 'description':'dollar', 'digit':2, 'defrate':0, 'cround':0}]
       for values in currency:
         self.ns.connect.updateData("currency", values=values, log_enabled=False, validate=False, insert_row=True, update_row=False)
       
@@ -3139,6 +3126,17 @@ class DataStore(object):
       for values in place:
         self.ns.connect.updateData("place", values=values, log_enabled=False, validate=False, insert_row=True, update_row=False)
       
+      tax = [{'id':self.ns.valid.get_id_from_refnumber('tax','TAM'), 'description':'tax-free (by product)', 'rate':0, 'taxcode':'TAM'},
+             {'id':self.ns.valid.get_id_from_refnumber('tax','AAM'), 'description':'tax-free (by customer)', 'rate':0, 'taxcode':'AAM'},
+             {'id':self.ns.valid.get_id_from_refnumber('tax','0%'), 'description':'VAT 0%', 'rate':0, 'taxcode':'0%'},
+             {'id':self.ns.valid.get_id_from_refnumber('tax','5%'), 'description':'VAT 5%', 'rate':0.05, 'taxcode':'5%'},
+             {'id':self.ns.valid.get_id_from_refnumber('tax','10%'), 'description':'VAT 10%', 'rate':0.1, 'taxcode':'10%'},
+             {'id':self.ns.valid.get_id_from_refnumber('tax','15%'), 'description':'VAT 15%', 'rate':0.15, 'taxcode':'15%'},
+             {'id':self.ns.valid.get_id_from_refnumber('tax','20%'), 'description':'VAT 20%', 'rate':0.2, 'taxcode':'20%'},
+             {'id':self.ns.valid.get_id_from_refnumber('tax','25%'), 'description':'VAT 25%', 'rate':0.25, 'taxcode':'25%'}]
+      for values in tax:
+        self.ns.connect.updateData("tax", values=values, log_enabled=False, validate=False, insert_row=True, update_row=False)
+        
       product = [{"id":self.ns.valid.get_id_from_refnumber("product","printer"),
                   "protype":self.ns.valid.get_groups_id("protype", "item"),
                   "partnumber":"printer", "description":"Generic printer", "unit":"piece",
@@ -3212,6 +3210,9 @@ class DataStore(object):
                    {'id':self.ns.valid.get_id_from_refnumber('numberdef','pronumber'),
                     'numberkey': 'pronumber', 'prefix':  'PRJ', 'curvalue': 0, 'isyear': 1, 'sep':  '/', 'len': 5, 
                     'description':  'project', 'visible': 1, 'readonly': 0, 'orderby': 0},
+                   {'id':self.ns.valid.get_id_from_refnumber('numberdef','planumber'),
+                    'numberkey': 'planumber', 'prefix':  'PLA', 'curvalue': 0, 'isyear': 1, 'sep':  '/', 'len': 5, 
+                    'description':  'place', 'visible': 1, 'readonly': 0, 'orderby': 0},
                    {'id':self.ns.valid.get_id_from_refnumber('numberdef','receipt_in'),
                     'numberkey': 'receipt_in', 'prefix':  'RECVD', 'curvalue': 0, 'isyear': 1, 'sep':  '/', 'len': 5, 
                     'description':  'vendor receipt', 'visible': 1, 'readonly': 0, 'orderby': 0},
@@ -3244,17 +3245,6 @@ class DataStore(object):
                     'description':  'worksheet', 'visible': 1, 'readonly': 0, 'orderby': 0}]
       for values in numberdef:
         self.ns.connect.updateData("numberdef", values=values, log_enabled=False, validate=False, insert_row=True, update_row=False)
-        
-      tax = [{'id':self.ns.valid.get_id_from_refnumber('tax','TAM'), 'description':'tax-free (by product)', 'rate':0, 'taxcode':'TAM'},
-             {'id':self.ns.valid.get_id_from_refnumber('tax','AAM'), 'description':'tax-free (by customer)', 'rate':0, 'taxcode':'AAM'},
-             {'id':self.ns.valid.get_id_from_refnumber('tax','0%'), 'description':'VAT 0%', 'rate':0, 'taxcode':'0%'},
-             {'id':self.ns.valid.get_id_from_refnumber('tax','5%'), 'description':'VAT 5%', 'rate':0.05, 'taxcode':'5%'},
-             {'id':self.ns.valid.get_id_from_refnumber('tax','10%'), 'description':'VAT 10%', 'rate':0.1, 'taxcode':'10%'},
-             {'id':self.ns.valid.get_id_from_refnumber('tax','15%'), 'description':'VAT 15%', 'rate':0.15, 'taxcode':'15%'},
-             {'id':self.ns.valid.get_id_from_refnumber('tax','20%'), 'description':'VAT 20%', 'rate':0.2, 'taxcode':'20%'},
-             {'id':self.ns.valid.get_id_from_refnumber('tax','25%'), 'description':'VAT 25%', 'rate':0.25, 'taxcode':'25%'}]
-      for values in tax:
-        self.ns.connect.updateData("tax", values=values, log_enabled=False, validate=False, insert_row=True, update_row=False)
       
       nervatype_trans_id = self.ns.valid.get_groups_id("nervatype", "trans")
       nervatype_tool_id = self.ns.valid.get_groups_id("nervatype", "tool")
@@ -3485,6 +3475,10 @@ class DataStore(object):
                            'fieldname':'default_taxcode', 'nervatype':nervatype_setting_id,
                            'subtype':None, 'fieldtype':fieldtype_string,
                            'description':'default taxcode', 'valuelist':None, 'addnew':0, 'visible':1, 'readonly':0},
+                          {'id':self.ns.valid.get_id_from_refnumber('deffield','default_printer'),
+                           'fieldname':'default_printer', 'nervatype':nervatype_setting_id,
+                           'subtype':None, 'fieldtype':fieldtype_string,
+                           'description':'default server printer', 'valuelist':None, 'addnew':0, 'visible':1, 'readonly':0},
                           {'id':self.ns.valid.get_id_from_refnumber('deffield','false_bool'),
                            'fieldname':'false_bool', 'nervatype':nervatype_setting_id,
                            'subtype':None, 'fieldtype':fieldtype_string,
@@ -3544,15 +3538,7 @@ class DataStore(object):
                           {'id':self.ns.valid.get_id_from_refnumber('deffield','log_login'),
                            'fieldname':'log_login', 'nervatype':nervatype_setting_id,
                            'subtype':None, 'fieldtype':fieldtype_bool,
-                           'description':'enabled userlogin', 'valuelist':None, 'addnew':0, 'visible':1, 'readonly':0},
-                          {'id':self.ns.valid.get_id_from_refnumber('deffield','prenew_all'),
-                           'fieldname':'prenew_all', 'nervatype':nervatype_setting_id,
-                           'subtype':None, 'fieldtype':fieldtype_bool,
-                           'description':'set new row control', 'valuelist':None, 'addnew':0, 'visible':1, 'readonly':0},
-                          {'id':self.ns.valid.get_id_from_refnumber('deffield','presave_all'),
-                           'fieldname':'presave_all', 'nervatype':nervatype_setting_id,
-                           'subtype':None, 'fieldtype':fieldtype_bool,
-                           'description':'set update row control', 'valuelist':None, 'addnew':0, 'visible':1, 'readonly':0}
+                           'description':'enabled userlogin', 'valuelist':None, 'addnew':0, 'visible':1, 'readonly':0}
                           ]
       for values in deffield_setting:
         self.ns.connect.updateData("deffield", values=values, log_enabled=False, validate=False, insert_row=True, update_row=False)
@@ -3584,6 +3570,8 @@ class DataStore(object):
                              'fieldname':'default_unit', 'ref_id':None, 'value':'piece', 'notes':None},
                             {'id':self.ns.valid.get_id_from_refnumber('fieldvalue','default_taxcode'),
                              'fieldname':'default_taxcode', 'ref_id':None, 'value':'20%', 'notes':None},
+                            {'id':self.ns.valid.get_id_from_refnumber('fieldvalue','default_printer'),
+                             'fieldname':'default_printer', 'ref_id':None, 'value':'', 'notes':None},
                             {'id':self.ns.valid.get_id_from_refnumber('fieldvalue','false_bool'),
                              'fieldname':'false_bool', 'ref_id':None, 'value':'FALSE', 'notes':None},
                             {'id':self.ns.valid.get_id_from_refnumber('fieldvalue','invoice_copy'),
@@ -3613,11 +3601,7 @@ class DataStore(object):
                             {'id':self.ns.valid.get_id_from_refnumber('fieldvalue','log_trans_closed'),
                              'fieldname':'log_trans_closed', 'ref_id':None, 'value':'false', 'notes':None},
                             {'id':self.ns.valid.get_id_from_refnumber('fieldvalue','log_login'),
-                             'fieldname':'log_login', 'ref_id':None, 'value':'false', 'notes':None},
-                            {'id':self.ns.valid.get_id_from_refnumber('fieldvalue','prenew_all'),
-                             'fieldname':'prenew_all', 'ref_id':None, 'value':'false', 'notes':None},
-                            {'id':self.ns.valid.get_id_from_refnumber('fieldvalue','presave_all'),
-                             'fieldname':'presave_all', 'ref_id':None, 'value':'false', 'notes':None}
+                             'fieldname':'log_login', 'ref_id':None, 'value':'false', 'notes':None}
                             ]
       for values in fieldvalue_setting:
         self.ns.connect.updateData("fieldvalue", values=values, log_enabled=False, validate=False, insert_row=True, update_row=False)
@@ -3694,6 +3678,10 @@ class LocalStore(object):
     elif erow.ename=="google_sql":
       conStr = conStr.replace("project:instance", arows[0].host)
       conStr = conStr.replace("database", arows[0].dbname)
+    elif erow.ename=="mssql" and arows[0].dbname.lower()=="dsn":
+      conStr = "mssql4://DSN="+arows[0].host
+      if arows[0].password!=None and arows[0].password!="":
+        conStr += ";PWD="+arows[0].password
     else:
       conStr = conStr.replace("database", arows[0].dbname)
       if arows[0].username==None or arows[0].username=="":

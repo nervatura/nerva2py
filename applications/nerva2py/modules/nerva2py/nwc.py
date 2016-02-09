@@ -82,7 +82,7 @@ class WebUiConnect(object):
       deadline=self.ui.ns.connect.getSetting("default_deadline")
       if deadline!="": duedate += datetime.timedelta(int(deadline))
     
-    #creat trans data from the original          
+    #create trans data from the original          
     values = {"transtype":transtype_id,"transnumber":nextnumber,"ref_transnumber":base_trans.transnumber,"crdate":datetime.datetime.now().date(),
               "transdate":datetime.datetime.now().date(),"duedate":duedate,"customer_id":base_trans.customer_id,
               "employee_id":base_trans.employee_id,"department":base_trans.department,"project_id":base_trans.project_id,
@@ -2616,8 +2616,8 @@ class WebUiMenu(object):
       if audit_filter!="disabled":
         self.ui.response.lo_menu.append(self.ui.control.get_mobil_button(self.ui.ns.T('Price'), href=URL('find_product_price'), 
                               cformat=None, icon="grid", style="text-align: left;", theme="a", ajax="false"))
-        self.ui.response.lo_menu.append(self.ui.control.get_mobil_button(self.ui.ns.T('Discount'), href=URL('find_product_discount'), 
-                              cformat=None, icon="grid", style="text-align: left;", theme="a", ajax="false"))
+        #self.ui.response.lo_menu.append(self.ui.control.get_mobil_button(self.ui.ns.T('Discount'), href=URL('find_product_discount'), 
+        #                      cformat=None, icon="grid", style="text-align: left;", theme="a", ajax="false"))
       audit_filter = self.ui.connect.get_audit_filter("event", None)[0]
       if audit_filter!="disabled":
         self.ui.response.lo_menu.append(self.ui.control.get_mobil_button(self.ui.ns.T('Events'), href=URL('find_product_event'), 
@@ -2632,7 +2632,7 @@ class WebUiMenu(object):
       audit_filter = self.ui.connect.get_audit_filter("price", None)[0]
       if audit_filter!="disabled":
         mnu_product[3].append((self.ui.ns.T('Price'), False, URL('find_product_price'), []))
-        mnu_product[3].append((self.ui.ns.T('Discount'), False, URL('find_product_discount'), []))
+        #mnu_product[3].append((self.ui.ns.T('Discount'), False, URL('find_product_discount'), []))
       audit_filter = self.ui.connect.get_audit_filter("event", None)[0]
       if audit_filter!="disabled":
         mnu_product[3].append((self.ui.ns.T('Events'), False, URL('find_product_event'), []))

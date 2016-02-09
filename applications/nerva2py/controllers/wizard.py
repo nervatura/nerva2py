@@ -395,16 +395,9 @@ def create_fieldlist(table):
     elif table=="place":
       if fname=="planumber":
         fieldcat=0
-      elif fname=="place_id":
-        fields_lst.append({"fieldname":"ref_planumber","label":T('Ref. No.'),
-                       "widget":INPUT(_type="text",_value="",_name="ref_planumber",_id=table+"_ref_planumber",_class="string"),
-                       "fieldcat":1})
-        continue
       elif fname=="placetype":  
         ns.db.place.placetype.requires = IS_IN_DB(ns.db(ns.db.groups.groupname.like('placetype')), 
                                                     ns.db.groups.groupvalue, '%(groupvalue)s')
-      elif fname=="storetype":
-        continue
     elif table=="price":
       if fname=="product_id":
         fields_lst.append({"fieldname":"partnumber","label":T('Product No.'),

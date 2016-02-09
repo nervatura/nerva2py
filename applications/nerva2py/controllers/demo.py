@@ -232,7 +232,7 @@ def create_demo():
   #----------------------------------------------------------------------------------------------------
     #-> def. 3 product additional data (product,integer and valulist types),
     #->create 13 products,
-    #->and more create and link to barcodes, events, prices and discount, product groups, additional data
+    #->and more create and link to barcodes, events, prices, product groups, additional data
     #----------------------------------------------------------------------------------------------------
     rs.append(DIV(SPAN("insert product data...",_style="color:brown;font-weight: bold;font-style: italic;"),BR()))
     deffield=[{"fieldname":"sample_product_reference","nervatype":"product","fieldtype":"product","description":"Sample product","visible":1},
@@ -310,9 +310,7 @@ def create_demo():
                     SPAN(str(retvalue),_style="color:green;font-weight: bold;"),BR()))
     
     price=[{"partnumber":"DMPROD/00001","pricetype":"price","validfrom":str(trans_year-1)+"-04-05","curr":"EUR","qty":0,"pricevalue":25},
-           {"partnumber":"DMPROD/00001","pricetype":"price","validfrom":str(trans_year-1)+"-04-05","curr":"EUR","qty":10,"pricevalue":20},
-           {"partnumber":"DMPROD/00001","pricetype":"discount","validfrom":str(trans_year-1)+"-04-12","validto":str(trans_year-1)+"-04-17","curr":"EUR",
-            "discount":15,"calcmode":"ded"}]
+           {"partnumber":"DMPROD/00001","pricetype":"price","validfrom":str(trans_year-1)+"-04-05","curr":"EUR","qty":10,"pricevalue":20}]
     retvalue = ndi.update_price(param,price)
     if retvalue.startswith("Error"):
       return rs.append(DIV(SPAN("price"+": ",_style="color:blue;font-weight: bold;"),
